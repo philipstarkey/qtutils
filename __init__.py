@@ -11,7 +11,7 @@ del qInstallMsgHandler
 from locking import qtlock
 qtlock.enforce()
 
-from invoke_in_main import inmain, inmain_later, inmain_decorator
+from invoke_in_main import inmain, inmain_later, inthread, inmain_decorator
 
 
 

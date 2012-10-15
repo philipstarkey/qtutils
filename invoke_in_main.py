@@ -64,7 +64,12 @@ def inmain_later(fn, *args, **kwargs):
     event = CallEvent(fn, *args, **kwargs)
     QCoreApplication.postEvent(caller, event)
     return event
-        
+
+def inthread(f,*args,**kwargs):
+    thread = threading.Thread(target=f, args=args, kwargs=kwargs)
+    thread.daemon=True
+    thread.start()
+    
 def inmain_decorator(fn, wait=True):
     """A decorator which sets any function to always run in the main thread."""
     @functools.wraps(fn)
@@ -74,4 +79,3 @@ def inmain_decorator(fn, wait=True):
         return inmain_later(fn, *args, **kwargs)  
     return f
     
-
