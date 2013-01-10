@@ -70,12 +70,12 @@ def inthread(f,*args,**kwargs):
     thread.daemon=True
     thread.start()
     
-def inmain_decorator(wait=True):
+def inmain_decorator(wait_for_return=True):
     def wrap(fn):
         """A decorator which sets any function to always run in the main thread."""
         @functools.wraps(fn)
         def f(*args,**kwargs):
-            if wait:
+            if wait_for_return:
                 return inmain(fn, *args, **kwargs)
             return inmain_later(fn, *args, **kwargs)  
         return f
