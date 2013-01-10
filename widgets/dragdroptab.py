@@ -70,7 +70,7 @@ class DragDropTabBar(QTabBar):
                     tabgroup.moving_tab_data = self.find_notebook_index(), current_index, text, icon, widget
                     
             # Force all animations to finish properly in all tab bars application wide
-            self.my_redraw()
+            self.finish_animation()
             
             # Make sure the moved page is focussed
             # Get the data again, so that it is current
@@ -206,7 +206,7 @@ class DragDropTabBar(QTabBar):
         QTabBar.dropEvent(self, e)
         
     # Hack to show the correct widget after dropping (bug introduced when allowing reordering to occur while dragging)
-    @inmain_decorator(False)  
+    @inmain_decorator(wait_for_return=False)  
     def fix_displayed_tab(self,notebook_index,index,widget):
         tabgroup = self.tab_widget.get_tab_widget_group()
         # change the current index to two different points, so that we are guaranteed to avoid Qt ignoring our request to reselect the
@@ -216,8 +216,8 @@ class DragDropTabBar(QTabBar):
         tabgroup.widget_list[notebook_index].setCurrentWidget(widget)
         
     # Hack to make any misplaced tab widgets animate back to their correct position
-    @inmain_decorator(False)  
-    def my_redraw(self):
+    @inmain_decorator(wait_for_return=False)  
+    def finish_animation(self):
         tabgroup = self.tab_widget.get_tab_widget_group()
         # if we have id==-1 there is no point running this on other notebooks
         if tabgroup.id == -1:
