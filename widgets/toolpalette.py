@@ -317,7 +317,7 @@ class ToolPalette(QScrollArea):
 # A simple test!
 if __name__ == '__main__':
     
-    qapplication = QApplication([])
+    qapplication = QApplication(sys.argv)
     
     window = QWidget()
     layout = QVBoxLayout(window)
