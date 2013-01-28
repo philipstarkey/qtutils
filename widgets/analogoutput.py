@@ -20,7 +20,7 @@ class AnalogOutput(QWidget):
         self._spin_widget.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
         self._combobox = QComboBox()
         self._combobox.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
-        self._combobox.currentIndexChanged.connect(self._on_combobox_change)
+        #self._combobox.currentIndexChanged.connect(self._on_combobox_change)
         
         self._value_changed_function = None
         
@@ -117,9 +117,11 @@ class AnalogOutput(QWidget):
         self._spin_widget.valueChanged.disconnect(self._value_changed_function)
     
     def set_combobox_model(self,model):
-        self._combobox.setModel(model)
+        pass
+        #self._combobox.setModel(model)
     
     def _on_combobox_change(self):
+        print '?'
         selected_text = self.selected_unit
         if self._AO is not None:
             self._AO.change_units(selected_text)
@@ -146,7 +148,7 @@ class AnalogOutput(QWidget):
     def set_selected_unit(self,unit):
         if unit != self.selected_unit:
             item = self._combobox.model().findItems(unit)
-            if item
+            if item:
                 model_index = self._combobox.model().indexFromItem(item)
                 self._combobox.setCurrentIndex(model_index.row())
                 

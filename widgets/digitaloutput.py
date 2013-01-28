@@ -17,12 +17,12 @@ class DigitalOutput(QPushButton):
         self._DO = None
     
     # Setting and getting methods for the Digitl Out object in charge of this button
-    def set_DO(self,DO):
+    def set_DO(self,DO,notify_old_DO=True,notify_new_DO=True):
         # If we are setting a new DO, remove this widget from the old one (if it isn't None) and add it to the new one (if it isn't None)
         if DO != self._DO:
-            if self._DO is not None:
+            if self._DO is not None and notify_old_DO:
                 self._DO.remove_widget(self)
-            if DO is not None:
+            if DO is not None and notify_new_DO:
                 DO.add_widget(self)
         # Store a reference to the digital out object
         self._DO = DO
@@ -56,14 +56,14 @@ class DigitalOutput(QPushButton):
     # This method unlocks (enables) the widget, and if the widget has a parent DO object, notifies it of the unlock    
     def unlock(self,notify_do=True): 
         self.setEnabled(True)
-        if self._DO is not None and notify_DO:
+        if self._DO is not None and notify_do:
             self._DO.unlock()
         
     @property
     def state(self):
         return self.isChecked()
         
-    @setter.state
+    @state.setter
     def state(self,state):
         # conversion to integer, then bool means we can safely pass in
         # either a string '1' or '0', True or False or 1 or 0
