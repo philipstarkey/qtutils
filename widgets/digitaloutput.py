@@ -48,17 +48,26 @@ class DigitalOutput(QPushButton):
             self.unlock()
     
     # This method locks (disables) the widget, and if the widget has a parent DO object, notifies it of the lock
-    def lock(self):        
+    def lock(self,notify_do=True):        
         self.setEnabled(False)
-        if self._DO is not None:
+        if self._DO is not None and notify_do:
             self._DO.lock()
     
     # This method unlocks (enables) the widget, and if the widget has a parent DO object, notifies it of the unlock    
-    def unlock(self):        
+    def unlock(self,notify_do=True): 
         self.setEnabled(True)
-        if self._DO is not None:
+        if self._DO is not None and notify_DO:
             self._DO.unlock()
         
+    @property
+    def state(self):
+        return self.isChecked()
+        
+    @setter.state
+    def state(self,state):
+        # conversion to integer, then bool means we can safely pass in
+        # either a string '1' or '0', True or False or 1 or 0
+        self.setChecked(bool(int(state)))
     
 # A simple test!
 if __name__ == '__main__':
