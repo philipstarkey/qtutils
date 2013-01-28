@@ -226,7 +226,7 @@ class ToolPalette(QScrollArea):
         
     def addWidget(self,widget):
         # Append to end of tool pallete
-        widget.clicked.connect(embed)
+        #widget.clicked.connect(embed)
         self._widget_list.append(widget)
         self._layout_widgets()
         
@@ -238,6 +238,8 @@ class ToolPalette(QScrollArea):
     def _find_max_item_width(self):
         # find the minimum size of the widest widget in the grid layout
         w_size_hints = [w.minimumSizeHint().width() for w in self._widget_list]
+        if len(w_size_hints) < 1:
+            return 0
         max_width = max(w_size_hints)
         return max_width
     
