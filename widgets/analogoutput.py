@@ -120,7 +120,7 @@ class AnalogOutput(QWidget):
     def _on_combobox_change(self):
         selected_text = self.selected_unit
         if self._AO is not None:
-            self._AO.change_units(selected_text)
+            self._AO.change_unit(selected_text)
             
     def block_spinbox_signals(self):
         return self._spin_widget.blockSignals(True)
