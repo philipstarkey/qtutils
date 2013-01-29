@@ -26,9 +26,13 @@ class AnalogOutput(QWidget):
         self.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
         
         # Handle spinbox context menu
+        # Lock/Unlock action
         self._lock_action = QAction("Lock",self._spin_widget)
         self._lock_action.triggered.connect(lambda:self._menu_triggered(self._lock_action))
-        
+        #change step size action
+        self._stepsize_action = QAction("Set step size",self._spin_widget)
+        self._stepsize_action.triggered.connect(self._change_step)
+        # Stepup/down Actions
         self._stepup_action = QAction("Step up",self._spin_widget)
         self._stepup_action.triggered.connect(lambda:self._spin_widget.stepBy(1))
         self._stepdown_action = QAction("Step down",self._spin_widget)
@@ -54,6 +58,7 @@ class AnalogOutput(QWidget):
             menu.addSeparator()
             # Add lock action
             menu.addAction(self._lock_action)
+            menu.addAction(self._stepsize_action)
             
             # Show the menu
             menu.popup(self.mapToGlobal(pos))
@@ -156,58 +161,15 @@ class AnalogOutput(QWidget):
         
     def set_step_size(self,step):
         self._spin_widget.setSingleStep(step)
+            
+    def _change_step(self):
+        maximum_step = abs(self._spin_widget.maximum()-self._spin_widget.minimum())
+        new_step,ok = QInputDialog.getDouble(self,"Set step size","Set step size",self._spin_widget.singleStep(),0.0,maximum_step,self._spin_widget.decimals())
     
-            
-    # def change_step(self, menu_item):
-        # def handle_entry(widget,dialog):
-            # dialog.response(gtk.RESPONSE_ACCEPT)
-        
-        # dialog = gtk.Dialog("My dialog",
-                     # None,
-                     # gtk.DIALOG_MODAL,
-                     # (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
-                      # gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
-        
-        # label = gtk.Label("Set the step size for the up/down controls on the spinbutton in %s"%self._current_units)
-        # dialog.vbox.pack_start(label, expand = False, fill = False)
-        # label.show()
-        # entry = gtk.Entry()
-        # entry.connect("activate",handle_entry,dialog)
-        # dialog.get_content_area().pack_end(entry)
-        # entry.show()
-        # response = dialog.run()
-        # value_str = entry.get_text()
-        # dialog.destroy()
-        
-        # if response == gtk.RESPONSE_ACCEPT:
-            
-            # try:
-                # # Get the value from the entry
-                # value = float(value_str)
-                
-                # # Check if the value is valid
-                # if value > (self._limits[1] - self._limits[0]):
-                    # raise Exception("The step size specified is greater than the difference between the current limits")
-                
-                # self.adjustment.set_step_increment(value)
-                # self.adjustment.set_page_increment(value*10)
-                
-                # # update the settings dictionary if it exists, to maintain continuity on tab restarts
-                # if hasattr(self,'settings'):
-                    # if 'front_panel_settings' in self.settings:
-                        # if self._hardware_name in self.settings['front_panel_settings']:
-                            # self.settings['front_panel_settings'][self._hardware_name]['base_step_size'] = self.get_step_size_in_base_units()
-                
-            # except Exception, e:
-                # # Make a message dialog with an error in
-                # dialog = gtk.MessageDialog(None,
-                     # gtk.DIALOG_MODAL,
-                     # gtk.MESSAGE_ERROR,
-                     # gtk.BUTTONS_NONE,
-                     # "An error occurred while updating the step size:\n\n%s"%e.message)
-                     
-                # dialog.run()
-                # dialog.destroy()
+        if ok:
+            self.set_step_size(new_step)
+            if self._AO:
+                self._AO.set_step_size(new_step,self.selected_unit)
     
     # The event filter that pops up a context menu on a right click, even when the button is disabled
     def eventFilter(self, obj, event):
