@@ -3,8 +3,6 @@ import sys
 from PySide.QtCore import *
 from PySide.QtGui import *
 
-from IPython import embed
-
 class AnalogOutput(QWidget):
     def __init__(self, hardware_name, connection_name='-', display_name=None, horizontal_alignment=False, parent=None):
         QWidget.__init__(self,parent)
@@ -20,7 +18,7 @@ class AnalogOutput(QWidget):
         self._spin_widget.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
         self._combobox = QComboBox()
         self._combobox.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
-        #self._combobox.currentIndexChanged.connect(self._on_combobox_change)
+        self._combobox.currentIndexChanged.connect(self._on_combobox_change)
         
         self._value_changed_function = None
         
@@ -65,7 +63,6 @@ class AnalogOutput(QWidget):
         # Create widgets and layouts        
         if horizontal_alignment:
             self._layout = QHBoxLayout(self)
-            #self._layout.setSizeConstraint(QLayout.SetMinAndMaxSize)
             self._layout.addWidget(self._label)
             self._layout.addWidget(self._spin_widget)
             self._layout.addWidget(self._combobox)
@@ -117,11 +114,9 @@ class AnalogOutput(QWidget):
         self._spin_widget.valueChanged.disconnect(self._value_changed_function)
     
     def set_combobox_model(self,model):
-        pass
-        #self._combobox.setModel(model)
+        self._combobox.setModel(model)
     
     def _on_combobox_change(self):
-        print '?'
         selected_text = self.selected_unit
         if self._AO is not None:
             self._AO.change_units(selected_text)
