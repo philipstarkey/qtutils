@@ -16,6 +16,7 @@ class AnalogOutput(QWidget):
         self._label.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
         self._spin_widget = QDoubleSpinBox()
         self._spin_widget.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
+        self._spin_widget.setKeyboardTracking(False)
         self._combobox = QComboBox()
         self._combobox.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
         self._combobox.currentIndexChanged.connect(self._on_combobox_change)
