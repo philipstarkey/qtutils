@@ -18,6 +18,7 @@ class CallEvent(QEvent):
         self.done = False
         self._returnval = Queue.Queue()
         self._lock = threading.Lock()
+        self._exc_info = None
         self.cancelled = False
         
     def wait(self):
@@ -25,7 +26,12 @@ class CallEvent(QEvent):
             message = ('Deadlock: Either you are already in the main thread or you have acquired the qtlock. ' +
                        'Either way the qt mainloop is blocked and the function you are waiting on will never run')
             raise threading.ThreadError(message)
-        return self._returnval.get()
+        result = self._returnval.get()
+        if self._exc_info is not None:
+            # If there was an exception, raise it:
+            type, value, traceback = self.exc_info
+            raise type, value, traceback
+        return result
     
     def cancel(self):
         with self._lock:
@@ -40,7 +46,12 @@ class Caller(QObject):
     def event(self, event):
         with event._lock:
             if not event.cancelled:
-                result = event.fn(*event.args, **event.kwargs)
+                try:
+                    result = event.fn(*event.args, **event.kwargs)
+                except Exception:
+                    # Will re-raise the exception in the calling thread:
+                    event._exc_info = sys.exc_info()
+                    result = None
                 event._returnval.put(result)
                 event.done = True
         return True
