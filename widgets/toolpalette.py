@@ -72,6 +72,11 @@ class ToolPaletteGroup(QVBoxLayout):
         # insert ...
         pass
     
+    def has_palette(self,name):
+        if name in self._widget_groups:
+            return True
+        return False
+    
     def get_palette(self,name):        
         if name not in self._widget_groups:
             raise RuntimeError('The tool palette group does not contain a palette named %s'%name)

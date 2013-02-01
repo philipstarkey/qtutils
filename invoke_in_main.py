@@ -1,3 +1,4 @@
+import sys
 import Queue
 import threading
 import functools
@@ -29,7 +30,7 @@ class CallEvent(QEvent):
         result = self._returnval.get()
         if self._exc_info is not None:
             # If there was an exception, raise it:
-            type, value, traceback = self.exc_info
+            type, value, traceback = self._exc_info
             raise type, value, traceback
         return result
     
