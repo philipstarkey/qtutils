@@ -268,7 +268,7 @@ class ToolPalette(QScrollArea):
             num_widgets_per_row = len(self._widget_list)
             
         if num_widgets_per_row != self._column_count:            
-            print 'changing number of columns'
+            #print 'changing number of columns'
             # remove all widgets
             for widget in self._widget_list:
                 self._layout.removeWidget(widget)
