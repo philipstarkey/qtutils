@@ -229,11 +229,11 @@ class ToolPalette(QScrollArea):
         self._column_count = 0
         self._row_count = 0
         
-    def addWidget(self,widget):
+    def addWidget(self,widget,force_relayout=False):
         # Append to end of tool pallete
         #widget.clicked.connect(embed)
         self._widget_list.append(widget)
-        self._layout_widgets()
+        self._layout_widgets(force_relayout)
         
     def insertWidget(self,index,widget):
         # Insert into position 'index'
@@ -248,7 +248,7 @@ class ToolPalette(QScrollArea):
         max_width = max(w_size_hints)
         return max_width
     
-    def _layout_widgets(self):
+    def _layout_widgets(self,force_relayout = False):
         h_size_hints = [w.sizeHint().height() for w in self._widget_list]
         max_width = self._parent_group._find_max_item_width(self._name)()
         
@@ -267,7 +267,7 @@ class ToolPalette(QScrollArea):
         elif num_widgets_per_row > len(self._widget_list):
             num_widgets_per_row = len(self._widget_list)
             
-        if num_widgets_per_row != self._column_count:            
+        if num_widgets_per_row != self._column_count or force_relayout:            
             #print 'changing number of columns'
             # remove all widgets
             for widget in self._widget_list:

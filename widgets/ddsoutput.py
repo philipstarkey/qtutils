@@ -57,12 +57,14 @@ class DDSOutput(QWidget):
     def hide_sub_widget(self,subchnl):
         if subchnl in self._widgets:
             self._widgets[subchnl].hide()
+            return
         
         raise RuntimeError('The sub-channel %s must be either gate, freq, amp or phase'%subchnl)  
     
     def show_sub_widget(self,subchnl):
         if subchnl in self._widgets:
             self._widgets[subchnl].show()
+            return
         
         raise RuntimeError('The sub-channel %s must be either gate, freq, amp or phase'%subchnl)
         
