@@ -150,7 +150,7 @@ class AnalogOutput(QWidget):
         if unit != self.selected_unit:
             item = self._combobox.model().findItems(unit)
             if item:
-                model_index = self._combobox.model().indexFromItem(item)
+                model_index = self._combobox.model().indexFromItem(item[0])
                 self._combobox.setCurrentIndex(model_index.row())
                 
     def set_num_decimals(self,decimals):
