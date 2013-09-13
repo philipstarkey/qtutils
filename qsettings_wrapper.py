@@ -10,7 +10,7 @@ class QSettingsWrapper(object):
         if not self._qsettings.contains(self._fields[0]):
             # set default values to None:
             for name in self._fields:
-                self._qsettings.setValue(name, repr(None))
+                self._set(name, None)
         
     def __getattr__(self, name):
         if name in self._fields:
