@@ -14,5 +14,6 @@ qtlock.enforce()
 
 from invoke_in_main import inmain, inmain_later, inthread, inmain_decorator
 
+from qsettings_wrapper import QSettingsWrapper
 from UiLoader import loadUi
 
