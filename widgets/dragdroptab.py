@@ -3,8 +3,6 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide.QtUiTools import QUiLoader
 
-from IPython import embed
-
 from qtutils import *
 
 debug = False
