@@ -56,20 +56,6 @@ class UiLoader(QUiLoader):
         self.baseinstance = baseinstance
         self._custom_widgets = {}
 
-    def _createWidget(self, class_name, parent=None, name=''):
-        if parent is None and self.baseinstance:
-            # supposed to create the top-level widget, return the base instance
-            # instead
-            return self.baseinstance
-        else:
-            # create a new widget for child widgets
-            widget = QUiLoader.createWidget(self, class_name, parent, name)
-            if self.baseinstance:
-                # set an attribute for the new child widget on the base
-                # instance, just like PyQt4.uic.loadUi does.
-                setattr(self.baseinstance, name, widget)
-            return widget
-
     def registerCustomWidget(self,class_):
         self._custom_widgets[class_.__name__] = class_
             
@@ -119,5 +105,5 @@ def loadUi(uifile, baseinstance=None, widget_classes_to_promote=None):
         for c in widget_classes_to_promote:
             loader.registerCustomWidget(c)
     widget = loader.load(uifile)
-    QMetaObject.connectSlotsByName(widget)
+    #QMetaObject.connectSlotsByName(widget)
     return widget
