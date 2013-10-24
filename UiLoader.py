@@ -54,8 +54,9 @@ class UiLoader(QUiLoader):
         """
         QUiLoader.__init__(self, baseinstance)
         self.baseinstance = baseinstance
+        self._custom_widgets = {}
 
-    def createWidget(self, class_name, parent=None, name=''):
+    def _createWidget(self, class_name, parent=None, name=''):
         if parent is None and self.baseinstance:
             # supposed to create the top-level widget, return the base instance
             # instead
@@ -69,8 +70,29 @@ class UiLoader(QUiLoader):
                 setattr(self.baseinstance, name, widget)
             return widget
 
+    def registerCustomWidget(self,class_):
+        self._custom_widgets[class_.__name__] = class_
+            
+    def createWidget(self, className, parent = None, name = ""):
+        if parent is None and self.baseinstance:
+            # supposed to create the top-level widget, return the base instance
+            # instead
+            return self.baseinstance
+        else:
+            if className in QUiLoader.availableWidgets(self):
+                widget = QUiLoader.createWidget(self, className, parent, name)
+            else:
+                if className in self._custom_widgets:
+                    widget = self._custom_widgets[className](parent)
+                else:
+                    raise KeyError("Unknown widget '%s'" % className)
+                
+            if self.baseinstance is not None:
+                setattr(self.baseinstance, name, widget)
 
-def loadUi(uifile, baseinstance=None):
+            return widget
+            
+def loadUi(uifile, baseinstance=None, widget_classes_to_promote=None):
     """
     Dynamically load a user interface from the given ``uifile``.
 
@@ -93,6 +115,9 @@ def loadUi(uifile, baseinstance=None):
     return the newly created instance of the user interface.
     """
     loader = UiLoader(baseinstance)
+    if widget_classes_to_promote:
+        for c in widget_classes_to_promote:
+            loader.registerCustomWidget(c)
     widget = loader.load(uifile)
     QMetaObject.connectSlotsByName(widget)
     return widget
