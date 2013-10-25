@@ -21,12 +21,20 @@ class CallEvent(QEvent):
         self._lock = threading.Lock()
         self._exc_info = None
         self.cancelled = False
+        # Whether to raise exceptions in the main thread or store them
+        # for raising in the calling thread:
+        self._exceptions_in_main = True
         
     def wait(self):
         if qtlock.held():
             message = ('Deadlock: Either you are already in the main thread or you have acquired the qtlock. ' +
                        'Either way the qt mainloop is blocked and the function you are waiting on will never run')
             raise threading.ThreadError(message)
+        # Any exceptions will now be raised here, we don't need to raise
+        # them in the main thread too. If the exception has already
+        # been raised in the main thread by this point, that's ok,
+        # we'll raise it here as well.
+        self._exceptions_in_main = False
         result = self._returnval.get()
         if self._exc_info is not None:
             # If there was an exception, raise it:
@@ -50,9 +58,14 @@ class Caller(QObject):
                 try:
                     result = event.fn(*event.args, **event.kwargs)
                 except Exception:
-                    # Will re-raise the exception in the calling thread:
+                    # Store for re-raising the exception in the calling thread:
                     event._exc_info = sys.exc_info()
                     result = None
+                    if event._exceptions_in_main:
+                        # Or, if nobody is listening for this exception,
+                        # better raise it here so it doesn't pass
+                        # silently:
+                        raise
                 event._returnval.put(result)
                 event.done = True
         return True
@@ -66,6 +79,7 @@ def inmain(fn, *args, **kwargs):
     if threading.current_thread().name == 'MainThread':
         return fn(*args, **kwargs)
     event = CallEvent(fn, *args, **kwargs)
+    event._exceptions_in_main = False
     QCoreApplication.postEvent(caller, event)
     return event.wait()
     
