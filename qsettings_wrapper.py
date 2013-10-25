@@ -21,8 +21,8 @@ class QSettingsWrapper(object):
     def __init__(self, companyname, appname):
         self._qsettings = QSettings(companyname, appname)
         # set default values to None:
-        if not self._qsettings.contains(self._fields[0]):
-            for name in self._fields:
+        for name in self._fields:
+            if not self._qsettings.contains(name):
                 self._set(name, None)
         
     def _get(self, name):
