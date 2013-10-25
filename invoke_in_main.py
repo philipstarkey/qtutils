@@ -66,8 +66,9 @@ class Caller(QObject):
                         # better raise it here so it doesn't pass
                         # silently:
                         raise
-                event._returnval.put(result)
-                event.done = True
+                finally:
+                    event._returnval.put(result)
+                    event.done = True
         return True
         
 caller = Caller()
