@@ -3,8 +3,6 @@ import sys
 from PySide.QtCore import *
 from PySide.QtGui import *
 
-from IPython import embed
-
 class ToolPaletteGroup(QVBoxLayout):
     
     def __init__(self,*args,**kwargs):

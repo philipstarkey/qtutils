@@ -113,7 +113,7 @@ class AnalogOutput(QWidget):
         return self._AO
     
     def connect_value_change(self,func):
-        self._value_changed_function = lambda value: func(value,self.selected_unit,True)
+        self._value_changed_function = lambda value,self=self: func(value,self.selected_unit,True)
         self._spin_widget.valueChanged.connect(self._value_changed_function)
         
     def disconnect_value_change(self):
