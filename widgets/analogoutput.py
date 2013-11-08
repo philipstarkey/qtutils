@@ -133,7 +133,11 @@ class AnalogOutput(QWidget):
     def unblock_spinbox_signals(self):
         return self._spin_widget.blockSignals(False)
     
-    def set_spinbox_value(self,value):
+    def set_spinbox_value(self,value,unit):
+        if self._AO is not None:
+            # get the value in the selected unit
+            value = self._AO.convert_value_to_base(value,unit)
+            value = self._AO.convert_value_from_base(value,self.selected_unit)            
         self._spin_widget.setValue(value)
     
     @property
