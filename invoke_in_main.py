@@ -44,9 +44,9 @@ caller = Caller()
 def inmain(fn, *args, **kwargs):
     """Execute a function in the main thread. Wait for it to complete
     and return its return value."""
-    return get_inmain_result(in_main_later(fn,False,*args,**kwargs)
+    return get_inmain_result(inmain_later(fn,False,*args,**kwargs))
     
-def in_main_later(self, fn, exceptions_in_main, *args, **kwargs):
+def inmain_later(fn, exceptions_in_main, *args, **kwargs):
     """Asks the mainloop to call a function when it has time. Immediately
     returns the queue that was sent to the mainloop.  A call to queue.get()
     will return a list of [result,exception] where exception=[type,value,traceback]
@@ -58,7 +58,7 @@ def in_main_later(self, fn, exceptions_in_main, *args, **kwargs):
     QCoreApplication.postEvent(caller, event)
     return queue
     
-def get_inmain_result(self,queue):
+def get_inmain_result(queue):
     result,exception = queue.get()
     if exception is not None:
         type, value, traceback = exception
