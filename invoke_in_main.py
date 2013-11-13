@@ -36,17 +36,22 @@ class Caller(QObject):
                 # silently:
                 raise
         finally:
-            event._returnval.put([result,exception])
+            event._returnval.put([result,exception])  
         return True
-        
+         
 caller = Caller()
 
 def inmain(fn, *args, **kwargs):
     """Execute a function in the main thread. Wait for it to complete
     and return its return value."""
-    return get_inmain_result(inmain_later(fn,False,*args,**kwargs))
+    if threading.current_thread().name == 'MainThread':
+        return fn(*args, **kwargs)
+    return get_inmain_result(in_main_later(fn,False,*args,**kwargs))
     
-def inmain_later(fn, exceptions_in_main, *args, **kwargs):
+def inmain_later(fn, *args, **kwargs):
+    return in_main_later(fn,True,*args,**kwargs)
+    
+def in_main_later(fn, exceptions_in_main, *args, **kwargs):
     """Asks the mainloop to call a function when it has time. Immediately
     returns the queue that was sent to the mainloop.  A call to queue.get()
     will return a list of [result,exception] where exception=[type,value,traceback]
@@ -72,7 +77,7 @@ def inthread(f,*args,**kwargs):
     return thread
     
 def inmain_decorator(wait_for_return=True,exceptions_in_main=True):
-    """ A decorator which sets any function t always run in the main thread
+    """ A decorator which sets any function to always run in the main thread
     If wait_for_return=True, then exceptions_in_main is ignored.
     """
     def wrap(fn):
@@ -81,7 +86,7 @@ def inmain_decorator(wait_for_return=True,exceptions_in_main=True):
         def f(*args,**kwargs):
             if wait_for_return:
                 return inmain(fn, *args, **kwargs)
-            return inmain_later(fn, exceptions_in_main, *args, **kwargs)  
+            return in_main_later(fn, exceptions_in_main, *args, **kwargs)  
         return f
     return wrap
     
