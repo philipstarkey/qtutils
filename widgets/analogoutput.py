@@ -13,9 +13,9 @@ class AnalogOutput(QWidget):
         label_text = (self._hardware_name + '\n' + self._connection_name) if display_name is None else display_name
         self._label = QLabel(label_text)
         self._label.setAlignment(Qt.AlignCenter)
-        self._label.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
+        self._label.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Minimum)
         self._spin_widget = QDoubleSpinBox()
-        self._spin_widget.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
+        self._spin_widget.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Minimum)
         self._spin_widget.setKeyboardTracking(False)
         self._combobox = QComboBox()
         self._combobox.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
@@ -23,7 +23,7 @@ class AnalogOutput(QWidget):
         
         self._value_changed_function = None
         
-        self.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
+        self.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Minimum)
         
         # Handle spinbox context menu
         # Lock/Unlock action
@@ -76,10 +76,12 @@ class AnalogOutput(QWidget):
             self._layout = QGridLayout(self)
             self._layout.setVerticalSpacing(0)
             self._layout.setHorizontalSpacing(0)
-            self._layout.setContentsMargins(0,0,0,0)
+            self._layout.setContentsMargins(5,5,5,5)
             
-            self._layout.addWidget(self._label)            
-            self._layout.addItem(QSpacerItem(0,0,QSizePolicy.MinimumExpanding,QSizePolicy.Minimum),0,1)
+            self._label.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Minimum)
+            
+            #self._layout.addWidget(self._label)            
+            #self._layout.addItem(QSpacerItem(0,0,QSizePolicy.MinimumExpanding,QSizePolicy.Minimum),0,1)
             
             h_widget = QWidget()            
             h_layout = QHBoxLayout(h_widget)
@@ -89,7 +91,7 @@ class AnalogOutput(QWidget):
             
             self._layout.addWidget(self._label,0,0)
             self._layout.addWidget(h_widget,1,0)            
-            self._layout.addItem(QSpacerItem(0,0,QSizePolicy.MinimumExpanding,QSizePolicy.Minimum),1,1)
+            #self._layout.addItem(QSpacerItem(0,0,QSizePolicy.MinimumExpanding,QSizePolicy.Minimum),1,1)
             self._layout.addItem(QSpacerItem(0,0,QSizePolicy.Minimum,QSizePolicy.MinimumExpanding),2,0)
         
         # Install the event filter that will allow us to catch right click mouse release events so we can popup a menu even when the button is disabled
