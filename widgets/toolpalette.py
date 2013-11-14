@@ -211,7 +211,7 @@ class ToolPaletteGroup(QVBoxLayout):
 class ToolPalette(QScrollArea):
     def __init__(self,parent,name,*args,**kwargs):
         QScrollArea.__init__(self,*args,**kwargs)
-        self.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Minimum)
+        self.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Minimum)
         # create the grid layout
         #self.setWidget(QWidget(self))
         #self.widget().setSizePolicy(QSizePolicy.Preferred,QSizePolicy.Preferred)
@@ -227,16 +227,16 @@ class ToolPalette(QScrollArea):
         self._column_count = 0
         self._row_count = 0
         
-    def addWidget(self,widget,force_relayout=False):
+    def addWidget(self,widget,force_relayout=True):
         # Append to end of tool pallete
         #widget.clicked.connect(embed)
         self._widget_list.append(widget)
         self._layout_widgets(force_relayout)
         
-    def insertWidget(self,index,widget):
+    def insertWidget(self,index,widget,force_relayout=True):
         # Insert into position 'index'
         self._widget_list.insert(index,widget)
-        self._layout_widgets()
+        self._layout_widgets(force_relayout)
     
     def _find_max_item_width(self):
         # find the minimum size of the widest widget in the grid layout
@@ -259,6 +259,14 @@ class ToolPalette(QScrollArea):
         # TODO: Work out hwy I need layout_spacing*3 here (we are getting the width of the scroll area, 
         # so need to take into account the borders around the grid layout? What are they?)
         num_widgets_per_row = int((layout_width-layout_spacing*3)/(max_width+layout_spacing))
+        
+        # print self._name
+        # print 'number_of_widgets: %d'%len(self._widget_list)
+        # print 'layout_width: %d'%layout_width
+        # print 'layout_spacing: %d'%layout_spacing
+        # print 'max_width: %d'%max_width
+        # print '(layout_width-layout_spacing*3)/(max_width+layout_spacing): %.3f'%((layout_width-layout_spacing*3)/(max_width+layout_spacing))
+        # print 'num_widgets_per_row: %d'%num_widgets_per_row 
         
         if num_widgets_per_row < 1:
             num_widgets_per_row = 1
@@ -288,7 +296,7 @@ class ToolPalette(QScrollArea):
             # update the row/column count
             self._column_count = num_widgets_per_row
             self._row_count = row
-
+            
             # print (max(h_size_hints)+self._layout.verticalSpacing())*self._row_count+self._layout.verticalSpacing()*2
             # print max(h_size_hints)
             # print self._layout.verticalSpacing()
@@ -302,9 +310,32 @@ class ToolPalette(QScrollArea):
                     self._layout.setRowMinimumHeight(i,0)
         
 
+    def minimumSize(self):
+        # Get the widgets minimum size:
+        widget_size = QWidget.minimumSize(self)
+        
+        # now get the smallest minimum size width of all child widgets:
+        widths = [w.minimumSizeHint().width() for w in self._widget_list]
+        #heights = [w.minimumSize().height() for w in self._widget_list]
+        #print 'number of widgets %d'%len(self._widget_list)
+        if len(widths) > 0:
+            max_width = max(widths)
+            #print 'max_width: %d'%max_width
+            #print 'widget width: %d'%widget_size.width()
+            if max_width > widget_size.width():
+                widget_size = QSize(max_width,widget_size.height())
+                #print 'modifying minimum size width'
+        
+        #print 'minimum size is %s'%str(widget_size)
+            
+        return widget_size
+        
+    def updateMinimumSize(self):
+        self.setMinimumSize(self.minimumSize())
+        
     def resizeEvent(self, event):
         # overwrite the resize event!
-        # print '---------'
+        # print '--------- %s'%self._name
         # print self._widget_list[0].size()
         # print self._widget_list[0].sizeHint()
         # print self._widget_list[0].minimumSizeHint()
@@ -324,6 +355,8 @@ if __name__ == '__main__':
     
     qapplication = QApplication(sys.argv)
     
+    from ddsoutput import DDSOutput
+    
     window = QWidget()
     layout = QVBoxLayout(window)
     widget = QWidget()
@@ -338,9 +371,9 @@ if __name__ == '__main__':
     
     layout.addItem(QSpacerItem(0,0,QSizePolicy.Minimum,QSizePolicy.MinimumExpanding))
     for i in range(20):
-        button = QPushButton('Button %d'%i)
-        
-        button.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
+        #button = QPushButton('Button %d'%i)
+        button = DDSOutput('DDS %d'%i)
+        #button.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
         toolpalette.addWidget(button)
         
     for i in range(20):

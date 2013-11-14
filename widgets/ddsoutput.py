@@ -15,10 +15,10 @@ class DDSOutput(QWidget):
         label_text = (self._hardware_name + ' - ' + self._connection_name) 
         self._label = QLabel(label_text)
         self._label.setAlignment(Qt.AlignCenter)
-        self._label.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
+        self._label.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Minimum)
         
         
-        self.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
+        self.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Minimum)
         
         # Create widgets
         self._widgets = {}
@@ -42,9 +42,9 @@ class DDSOutput(QWidget):
         h_layout.addWidget(self._widgets['phase'])
         
         self._layout.addWidget(self._label,0,0)
-        self._layout.addItem(QSpacerItem(0,0,QSizePolicy.MinimumExpanding,QSizePolicy.Minimum),0,1)
+        #self._layout.addItem(QSpacerItem(0,0,QSizePolicy.MinimumExpanding,QSizePolicy.Minimum),0,1)
         self._layout.addWidget(h_widget,1,0)            
-        self._layout.addItem(QSpacerItem(0,0,QSizePolicy.MinimumExpanding,QSizePolicy.Minimum),1,1)
+        #self._layout.addItem(QSpacerItem(0,0,QSizePolicy.MinimumExpanding,QSizePolicy.Minimum),1,1)
         self._layout.addItem(QSpacerItem(0,0,QSizePolicy.Minimum,QSizePolicy.MinimumExpanding),2,0)
         
         
