@@ -8,7 +8,7 @@ from PySide.QtCore import *
 class CallEvent(QEvent):
     """An event containing a request for a function call."""
     EVENT_TYPE = QEvent.Type(QEvent.registerEventType())
-    def __init__(self, queue, fn, *args, **kwargs):
+    def __init__(self, queue, exceptions_in_main, fn, *args, **kwargs):
         QEvent.__init__(self, self.EVENT_TYPE)
         self.fn = fn
         self.args = args
@@ -16,7 +16,7 @@ class CallEvent(QEvent):
         self._returnval = queue
         # Whether to raise exceptions in the main thread or store them
         # for raising in the calling thread:
-        self._exceptions_in_main = True
+        self._exceptions_in_main = exceptions_in_main
     
 
 class Caller(QObject):
@@ -58,9 +58,7 @@ def in_main_later(fn, exceptions_in_main, *args, **kwargs):
     of the exception.  Functions are guaranteed to be called in the order
     they were requested."""        
     queue = Queue.Queue()
-    event = CallEvent(queue, fn, *args, **kwargs)
-    event._exceptions_in_main = exceptions_in_main
-    QCoreApplication.postEvent(caller, event)
+    QCoreApplication.postEvent(caller, CallEvent(queue, exceptions_in_main, fn, *args, **kwargs))
     return queue
     
 def get_inmain_result(queue):
