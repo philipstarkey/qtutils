@@ -91,7 +91,12 @@ class DragDropTabBar(QTabBar):
         
         # if we don't have id==-1 (we support dragging to and from this notebook)
         # If the mimetype matches, and the id in the mimetype matches, we can accept the drag/drop event
-        if self.enable_reorder_while_dragging and int(e.mimeData().data("DragDropTabBar")) == tabgroup.id and tabgroup.id != -1 and tabgroup.moving_tab_data:
+        mime_data_id = -1
+        try:
+            mime_data_id = int(e.mimeData().data("DragDropTabBar"))
+        except Exception:
+            pass
+        if self.enable_reorder_while_dragging and mime_data_id == tabgroup.id and tabgroup.id != -1 and tabgroup.moving_tab_data:
             notebook_index, index, text, icon, widget = tabgroup.moving_tab_data
             
             print_debug('move event for notebook %d in group %d'%(self.find_notebook_index(),tabgroup.id))
@@ -183,7 +188,12 @@ class DragDropTabBar(QTabBar):
         
         # if we don't have id==-1 (we support dragging to and from this notebook)
         # If the mimetype matches, and the id in the mimetype matches, we can accept the drag/drop event
-        if int(e.mimeData().data("DragDropTabBar")) == tabgroup.id and tabgroup.id != -1 and tabgroup.moving_tab_data:
+        mime_data_id = -1
+        try:
+            mime_data_id = int(e.mimeData().data("DragDropTabBar"))
+        except Exception:
+            pass
+        if mime_data_id == tabgroup.id and tabgroup.id != -1 and tabgroup.moving_tab_data:
             print_debug('Accepting event')
             e.accept()
             notebook_index, index, text, icon, widget = tabgroup.moving_tab_data
@@ -212,7 +222,12 @@ class DragDropTabBar(QTabBar):
         
         # if we don't have id==-1 (we support dragging to and from this notebook)
         # If the mimetype matches, and the id in the mimetype matches, we can accept the drag/drop event
-        if int(e.mimeData().data("DragDropTabBar")) == tabgroup.id and tabgroup.id != -1 and tabgroup.moving_tab_data:
+        mime_data_id = -1
+        try:
+            mime_data_id = int(e.mimeData().data("DragDropTabBar"))
+        except Exception:
+            pass
+        if mime_data_id == tabgroup.id and tabgroup.id != -1 and tabgroup.moving_tab_data:
             e.accept()
         QTabBar.dropEvent(self, e)
         
