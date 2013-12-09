@@ -165,10 +165,13 @@ class EventPostingThread(QThread):
         
     # convenience function to simulate Python thread
     def join(self,timeout=None):
-        if timeout is None:
-            return self.wait()
+        if self.isRunning():
+            if timeout is None:
+                return self.wait()
+            else:
+                return self.wait(timeout*1000)
         else:
-            return self.wait(timeout*1000)
+            return True
     
     
 if __name__ == '__main__':   
