@@ -62,5 +62,5 @@ class UiLoader(QUiLoader):
 if __name__ == "__main__":
     loader = UiLoader()
     loader.registerCustomWidget(MyWidgetClassSpecifiedInQtDesignerPromoteTo)
-    loader.registerCustomWidget("myWidgetNameInQtDesigner",ClassToPromoteTo)
+    loader.registerCustomPromotion("myWidgetNameInQtDesigner",ClassToPromoteTo)
     ui = loader.load('myUiFile.ui')
