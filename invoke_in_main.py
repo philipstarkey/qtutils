@@ -63,11 +63,15 @@ def in_main_later(fn, exceptions_in_main, *args, **kwargs):
     of the exception.  Functions are guaranteed to be called in the order
     they were requested."""        
     queue = Queue.Queue()
-    try:
-        qthread = QThread.currentThread()
-        qthread.postingEvent.emit((queue, exceptions_in_main, fn, args, kwargs))
-    except Exception:
-        raise RuntimeError('You can only call the inmain and inmain_later functions, or a function decorated with the inmain_decorator, from an InMainThread or the main thread.')
+    
+    if threading.current_thread().name == 'MainThread':
+        post_event((queue, exceptions_in_main, fn, args, kwargs))
+    else:
+        try:
+            qthread = QThread.currentThread()
+            qthread.postingEvent.emit((queue, exceptions_in_main, fn, args, kwargs))
+        except Exception:
+            raise RuntimeError('You can only call the inmain and inmain_later functions, or a function decorated with the inmain_decorator, from an InMainThread or the main thread.')
     return queue
   
 def get_inmain_result(queue):
@@ -92,8 +96,12 @@ def inmain_decorator(wait_for_return=True,exceptions_in_main=True):
         return f
     return wrap
     
+def in_qt_thread(target, parent = None, args = (), kwargs = {}):
+    thread = EventPostingThread(target, parent, args, kwargs)
+    thread.start()
+    return thread
     
-class InMainThread(QThread):
+class EventPostingThread(QThread):
     postingEvent = Signal(tuple)
     def __init__(self, target, parent = None, args = (), kwargs = {}):
         """
@@ -151,13 +159,24 @@ class InMainThread(QThread):
     def run(self):
         self.func(*self.args,**self.kwargs)
     
+    # convenience function to simulate python thread
+    def is_alive(self):
+        return self.isRunning()
+        
+    # convenience function to simulate Python thread
+    def join(self,timeout=None):
+        if timeout is None:
+            return self.wait()
+        else:
+            return self.wait(timeout*1000)
+    
+    
 if __name__ == '__main__':   
     import signal
     
     def loop(index):
         if index < 3:
-            thread = InMainThread(target=loop,args=(index+1,))
-            thread.start()
+            thread = in_qt_thread(target=loop,args=(index+1,))
         while True:
             # print 'MyThread-%d: %s'%(index,str(QThread.currentThread()))
             # print 'MyThread-%d: %s'%(index,threading.current_thread().name)
@@ -177,8 +196,7 @@ if __name__ == '__main__':
       
     signal.signal(signal.SIGINT, sigint_handler)
 
-    thread = InMainThread(target=loop, args=(1,))
-    thread.start() 
-
+    thread = in_qt_thread(target=loop, args=(1,))
+    
     qapplication.exec_()
 
