@@ -23,7 +23,34 @@ class DragDropTabBar(QTabBar):
 
         self.enable_reorder_while_dragging = True
         self.havent_left_source_tab = False        
+    
+    def get_tab_information(self,index):
+        tab_data = self.tab_widget.tabBar().tabData(index)
+        text_colour = self.tab_widget.tabBar().tabTextColor(index)
+        tooltip = self.tab_widget.tabBar().tabToolTip(index)
+        whats_this = self.tab_widget.tabBar().tabWhatsThis(index)
+        button_left = self.tab_widget.tabBar().tabButton(index,QTabBar.LeftSide)
+        button_right = self.tab_widget.tabBar().tabButton(index,QTabBar.RightSide)
+        icon = self.tab_widget.tabBar().tabIcon(index)
         
+        return tab_data,text_colour,tooltip,whats_this,button_left,button_right,icon
+        
+    def set_tab_information(self,index,data):
+        tab_data,text_colour,tooltip,whats_this,button_left,button_right,icon = data
+        if tab_data:
+            self.tab_widget.tabBar().setTabData(index,tab_data)
+        self.tab_widget.tabBar().setTabTextColor(index,text_colour)
+        if tooltip:
+            self.tab_widget.tabBar().setTabToolTip(index,tooltip)
+        if whats_this:
+            self.tab_widget.tabBar().setTabWhatsThis(index,whats_this)
+        if button_left:
+            self.tab_widget.tabBar().setTabButton(index,QTabBar.LeftSide,button_left)
+        if button_right:
+            self.tab_widget.tabBar().setTabButton(index,QTabBar.RightSide,button_right)
+        if icon:
+            self.tab_widget.tabBar().setTabIcon(index,icon)
+            
     def mouseMoveEvent(self, e):
         # forward the event on...
         QTabBar.mouseMoveEvent(self, e)        
@@ -44,10 +71,11 @@ class DragDropTabBar(QTabBar):
             # Save all information pertaining to the tab
             current_index = self.currentIndex()
             text = self.tab_widget.tabText(current_index)
-            icon = self.tab_widget.tabIcon(current_index)
+            #icon = self.tab_widget.tabIcon(current_index)
+            tab_properties = self.get_tab_information(current_index)
             #widget = self.tab_widget.currentWidget()
             widget = self.tab_widget.widget(current_index)
-            tabgroup.moving_tab_data = self.find_notebook_index(), current_index, text, icon, widget
+            tabgroup.moving_tab_data = self.find_notebook_index(), current_index, text, tab_properties, widget
             
             self.havent_left_source_tab = True
             
@@ -68,16 +96,17 @@ class DragDropTabBar(QTabBar):
             #if dropAction == Qt.IgnoreAction:
             if tabgroup.moving_tab_data and tabgroup.moving_tab_data[0] == -1:
             # The tab is in no mans land...let's put it back somewhere nice
-                self.tab_widget.insertTab(current_index, widget, icon, text)
+                self.tab_widget.insertTab(current_index, widget, text)
+                self.set_tab_information(current_index, tab_properties)
                 self.tab_widget.setCurrentIndex(current_index)
-                tabgroup.moving_tab_data = self.find_notebook_index(), current_index, text, icon, widget
+                tabgroup.moving_tab_data = self.find_notebook_index(), current_index, text, tab_properties, widget
                     
             # Force all animations to finish properly in all tab bars application wide
             self.finish_animation()
             
             # Make sure the moved page is focussed
             # Get the data again, so that it is current
-            notebook_index, index, text, icon, widget = tabgroup.moving_tab_data
+            notebook_index, index, text, tab_properties, widget = tabgroup.moving_tab_data
             self.fix_displayed_tab(notebook_index,index,widget)
             
             # reset variables
@@ -97,7 +126,7 @@ class DragDropTabBar(QTabBar):
         except Exception:
             pass
         if self.enable_reorder_while_dragging and mime_data_id == tabgroup.id and tabgroup.id != -1 and tabgroup.moving_tab_data:
-            notebook_index, index, text, icon, widget = tabgroup.moving_tab_data
+            notebook_index, index, text, tab_properties, widget = tabgroup.moving_tab_data
             
             print_debug('move event for notebook %d in group %d'%(self.find_notebook_index(),tabgroup.id))
             
@@ -147,7 +176,7 @@ class DragDropTabBar(QTabBar):
                 print_debug('widget count afer move: %d'%(self.tab_widget.count()))
                 
                 # Update the moving tab data to the new position
-                tabgroup.moving_tab_data = notebook_index, tab_at_mouse, text, icon, widget
+                tabgroup.moving_tab_data = notebook_index, tab_at_mouse, text, self.get_tab_information(tab_at_mouse), widget
                 print_debug(tabgroup.moving_tab_data)
         
         QTabBar.dragMoveEvent(self,e)
@@ -171,9 +200,10 @@ class DragDropTabBar(QTabBar):
                 self.previous_active_tab = None
         
             # Remove the tab from the notebook we are leaving
-            notebook_index, index, text, icon, widget = tabgroup.moving_tab_data
+            notebook_index, index, text, tab_properties, widget = tabgroup.moving_tab_data
+            tab_properties = self.get_tab_information(index)
             self.tab_widget.removeTab(index)
-            tabgroup.moving_tab_data = -1, -1, text, icon, widget
+            tabgroup.moving_tab_data = -1, -1, text, tab_properties, widget
             print_debug('Moving tab index: %d'%index)
             print_debug('widget count (after remove): %d'%(self.tab_widget.count()))
             print_debug(tabgroup.moving_tab_data)
@@ -196,18 +226,20 @@ class DragDropTabBar(QTabBar):
         if mime_data_id == tabgroup.id and tabgroup.id != -1 and tabgroup.moving_tab_data:
             print_debug('Accepting event')
             e.accept()
-            notebook_index, index, text, icon, widget = tabgroup.moving_tab_data
+            notebook_index, index, text, tab_properties, widget = tabgroup.moving_tab_data
             # Save the current active tab incase we don't drop here
             if self.havent_left_source_tab is not True:
                 print_debug('setting previous_active_tab')
                 self.previous_active_tab = self.tab_widget.currentIndex()
             
             # Add the tab to this notebook
-            self.tab_widget.addTab(widget, icon, text)
-            self.tab_widget.setCurrentIndex(self.tab_widget.count()-1)
+            self.tab_widget.addTab(widget, text)
+            current_index = self.tab_widget.count()-1
+            self.tab_widget.setCurrentIndex(current_index)
+            self.set_tab_information(current_index,tab_properties)
             print_debug('widget count (after add): %d'%(self.tab_widget.count()))
             # Update the moving tab data
-            tabgroup.moving_tab_data = self.find_notebook_index(), self.tab_widget.count()-1, text, icon, widget
+            tabgroup.moving_tab_data = self.find_notebook_index(), self.tab_widget.count()-1, text, tab_properties, widget
             print_debug(tabgroup.moving_tab_data)
         
         # if self.havent_left_source_tab:
@@ -345,6 +377,8 @@ if __name__ == '__main__':
             container_layout.addWidget(self.tab_widget)
             self.tab_widget.addTab(QLabel("foo %d"%i), 'foo')
             self.tab_widget.addTab(QLabel("bar %d"%i), 'bar')
+            self.tab_widget.tabBar().setTabTextColor(0,"red")
+            self.tab_widget.tabBar().setTabTextColor(1,"green")
             
             
     class RunViewer(object):
@@ -353,21 +387,16 @@ if __name__ == '__main__':
             self.moving_tab = None
             self.moving_tab_index = -1
             
-            ui = QUiLoader().load('old.ui')
-            #embed()
-            self.window = ui
-            container_widgets = [ui.container_1,
-                                 ui.container_2,
-                                 ui.container_3,
-                                 ui.container_4]
+            self.window = QWidget()
+            container = QVBoxLayout(self.window)
+            
             self.viewports = []
-            for i,widget in enumerate(container_widgets):
-                container_layout = widget.layout()
-                viewport = ViewPort(3,container_layout,i)
+            for i in range(3):               
+                viewport = ViewPort(3,container,i)
                 self.viewports.append(viewport)
-            button = QPushButton("launch iPython")
-            button.clicked.connect(embed)
-            ui.verticalLayout_6.addWidget(button)
+            #button = QPushButton("launch iPython")
+            #button.clicked.connect(embed)
+            #ui.verticalLayout_6.addWidget(button)
             
             self.window.show()
         
