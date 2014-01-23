@@ -11,7 +11,7 @@
 from distutils.core import setup
 import os
 
-VERSION = '1.0.2'
+VERSION = '1.0.3'
 
 # Auto generate a __version__ package for the package to import
 with open(os.path.join('qtutils', '__version__.py'), 'w') as f:
@@ -25,5 +25,4 @@ setup(name='qtutils',
       url='https://bitbucket.org/philipstarkey/qtutils',
       license="BSD",
       packages=['qtutils'],
-      package_data={'qtutils': ['LICENSE.txt', 'README.md']}
      )
