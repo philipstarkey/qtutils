@@ -1,3 +1,17 @@
+#####################################################################
+#                                                                   #
+# locking.py                                                        #
+#                                                                   #
+# Copyright 2013, Christopher Billington, Philip Starkey            #
+#                                                                   #
+# This file is part of the qtutils project                          #
+# (see https://bitbucket.org/philipstarkey/qtutils )                #
+# and is licensed under the Simplified BSD License.                 #
+# See the license.txt file in the root of the project               #
+# for the full license.                                             #
+#                                                                   #
+#####################################################################
+
 import threading
 from PySide.QtCore import *
 
