@@ -15,7 +15,7 @@ QtUtils is a Python library that provides some convenient features to Python app
 
 QtUtils contains the following components:
 
-* invoke_in_main: This provides some helper functions to interact with Qt from threads. 
+* [invoke_in_main](https://bitbucket.org/philipstarkey/qtutils/wiki/invoke_in_main): This provides some helper functions to interact with Qt from threads. 
 
 * UiLoader: This provides a simplified means of promoting widgets in *.ui files to a custom widget of your choice.
 
