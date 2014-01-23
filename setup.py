@@ -11,7 +11,7 @@
 from distutils.core import setup
 
 setup(name='qtutils',
-      version='1.0.0',
+      version='1.0.1',
       description='Utilities for providing concurrent access to Qt objects, simplified QSettings storage, and dynamic widget promotion when loading UI files, in Python Qt applications.',
       author='Philip Starkey',
       author_email='threepineapples@gmail.com',
