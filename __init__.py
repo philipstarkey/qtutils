@@ -12,6 +12,8 @@
 #                                                                   #
 #####################################################################
 
+__version__ = '1.0.0'
+
 from PySide.QtCore import qInstallMsgHandler 
 
 def _message_handler(type, message):
