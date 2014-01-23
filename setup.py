@@ -9,9 +9,16 @@
 # python setup.py register
 
 from distutils.core import setup
+import os
 
+VERSION = '1.0.2'
+
+# Auto generate a __version__ package for the package to import
+with open(os.path.join('qtutils', '__version__.py'), 'w') as f:
+    f.write("__version__ = '%s'\n"%VERSION)
+    
 setup(name='qtutils',
-      version='1.0.1',
+      version=VERSION,
       description='Utilities for providing concurrent access to Qt objects, simplified QSettings storage, and dynamic widget promotion when loading UI files, in Python Qt applications.',
       author='Philip Starkey',
       author_email='threepineapples@gmail.com',
