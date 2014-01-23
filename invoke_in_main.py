@@ -19,36 +19,41 @@ import functools
 
 from PySide.QtCore import *
 
-def run_function(tup):
-    queue, exceptions_in_main, fn, args, kwargs = tup
-    exception = None
-    try:
-        result = fn(*args, **kwargs)
-    except Exception:
-        # Store for re-raising the exception in the calling thread:
-        exception = sys.exc_info()
-        result = None
-        if exceptions_in_main:
-            # Or, if nobody is listening for this exception,
-            # better raise it here so it doesn't pass
-            # silently:
-            raise
-    finally:
-        queue.put([result,exception])  
-        
-class Caller(QObject):        
-    main_thread_posting_event = Signal(tuple)
-    def __init__(self,*args,**kwargs):
-        QObject.__init__(self,*args,**kwargs)
-        self.main_thread_posting_event.connect(run_function)
+class CallEvent(QEvent):
+    """An event containing a request for a function call."""
+    EVENT_TYPE = QEvent.Type(QEvent.registerEventType())
+    def __init__(self, queue, exceptions_in_main, fn, *args, **kwargs):
+        QEvent.__init__(self, self.EVENT_TYPE)
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
+        self._returnval = queue
+        # Whether to raise exceptions in the main thread or store them
+        # for raising in the calling thread:
+        self._exceptions_in_main = exceptions_in_main
+    
 
+class Caller(QObject):
+    """An event handler which calls the function held within a CallEvent."""
+    def event(self, event):
+        event.accept()
+        exception = None
+        try:
+            result = event.fn(*event.args, **event.kwargs)
+        except Exception:
+            # Store for re-raising the exception in the calling thread:
+            exception = sys.exc_info()
+            result = None
+            if event._exceptions_in_main:
+                # Or, if nobody is listening for this exception,
+                # better raise it here so it doesn't pass
+                # silently:
+                raise
+        finally:
+            event._returnval.put([result,exception])  
+        return True
+         
 caller = Caller()
-        
-def inthread(f, *args, **kwargs):
-    thread = threading.Thread(target=f, args=args, kwargs=kwargs)
-    thread.daemon=True
-    thread.start()
-    return thread
 
 def inmain(fn, *args, **kwargs):
     """Execute a function in the main thread. Wait for it to complete
@@ -67,13 +72,9 @@ def in_main_later(fn, exceptions_in_main, *args, **kwargs):
     of the exception.  Functions are guaranteed to be called in the order
     they were requested."""        
     queue = Queue.Queue()
-    
-    if threading.current_thread().name == 'MainThread':
-        caller.main_thread_posting_event.emit((queue, exceptions_in_main, fn, args, kwargs))
-    else:
-        qt_thread_queue.put((queue, exceptions_in_main, fn, args, kwargs))
+    QCoreApplication.postEvent(caller, CallEvent(queue, exceptions_in_main, fn, *args, **kwargs))
     return queue
-  
+    
 def get_inmain_result(queue):
     result,exception = queue.get()
     if exception is not None:
@@ -81,6 +82,12 @@ def get_inmain_result(queue):
         raise type, value, traceback
     return result
 
+def inthread(f,*args,**kwargs):
+    thread = threading.Thread(target=f, args=args, kwargs=kwargs)
+    thread.daemon=True
+    thread.start()
+    return thread
+    
 def inmain_decorator(wait_for_return=True,exceptions_in_main=True):
     """ A decorator which sets any function to always run in the main thread
     If wait_for_return=True, then exceptions_in_main is ignored.
@@ -94,35 +101,7 @@ def inmain_decorator(wait_for_return=True,exceptions_in_main=True):
             return in_main_later(fn, exceptions_in_main, *args, **kwargs)  
         return f
     return wrap
- 
     
-class EventPostingThread(QThread):
-    postingEvent = Signal(tuple)
-    def __init__(self, queue, parent = None):
-        """
-        Must be instantiated in the main thread or the target function of another
-        instance of this class
-        
-        An exception will be raised if instantiated from a plain Python thread or 
-        a standard QThread.
-        """
-        # runs in the thread in which the thread is instantiated        
-        QThread.__init__(self,parent)
-        self.queue = queue
-        # If created in the main thread, this is just run in the main thread
-        # If created in another instance of this class, then inmain will
-        #    use that threads postingEvent signal to run the code in the main thread
-        inmain(self.postingEvent.connect,run_function)
-
-    def run(self):
-        while True:
-            tup = self.queue.get()
-            self.postingEvent.emit(tup)
-     
-qt_thread_queue = Queue.Queue()
-qt_thread = EventPostingThread(qt_thread_queue)
-qt_thread.start()
-
     
 if __name__ == '__main__':   
     import signal
