@@ -12,7 +12,8 @@
 #                                                                   #
 #####################################################################
 
-__version__ = '1.0.0'
+import pkg_resources
+__version__ = pkg_resources.require("qtutils")[0].version
 
 from PySide.QtCore import qInstallMsgHandler 
 
