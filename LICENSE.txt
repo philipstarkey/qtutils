@@ -1,22 +1,10 @@
 Copyright (c) 2013, Christopher Billington, Philip Starkey
 All rights reserved.
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met: 
+The components (python code, *.ui files) in this project are individually licensed under the 2-clause BSD license. Use of individual components is thus governed by the terms of the 2-clause BSD license (see BSD-LICENSE.txt in the root of this project). However, the license of this project, qtutils, is governed by the license of the GUI toolkit you use it with, determined by the conditions below:
 
-1. Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer. 
-2. Redistributions in binary form must reproduce the above copyright notice,
-   this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution. 
+1) If you own a commercial license of PyQt, this project is governed by the terms of the 2-clause BSD license.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+2) If you are using the free (GPLv2 or GPLv3 licensed) version of PyQt, this project is governed by the terms of one of the respective license (GPLv2 or GPLv3)
+
+3) If you are using PySide, this project is governed by the terms of the 2-clause BSD license.

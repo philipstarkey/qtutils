@@ -12,7 +12,11 @@
 #                                                                   #
 #####################################################################
 
-from PySide.QtCore import QSettings
+import sys
+if 'PySide' in sys.modules.copy():
+    from PySide.QtCore import QSettings
+else:
+    from PyQt4.QtCore import QSettings
 import ast
 
 class type_with_properties(type):
