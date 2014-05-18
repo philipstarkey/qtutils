@@ -13,7 +13,12 @@
 #####################################################################
 
 import threading
-from PySide.QtCore import *
+import sys
+
+if 'PySide' in sys.modules.copy():
+    from PySide.QtCore import *
+else:
+    from PyQt4.QtCore import *
 
 class BlockEvent(QEvent):
     """An event requesting the mainloop to be blocked until further notice."""

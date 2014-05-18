@@ -17,7 +17,11 @@ import Queue
 import threading
 import functools
 
-from PySide.QtCore import *
+if 'PySide' in sys.modules.copy():
+    from PySide.QtCore import *
+else:
+    from PyQt4.QtCore import *
+
 
 class CallEvent(QEvent):
     """An event containing a request for a function call."""

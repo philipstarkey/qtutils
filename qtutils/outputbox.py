@@ -1,6 +1,6 @@
 #####################################################################
 #                                                                   #
-# outputbox.py                                              #
+# outputbox.py                                                      #
 #                                                                   #
 # Copyright 2013, Christopher Billington, Philip Starkey            #
 #                                                                   #
@@ -13,9 +13,15 @@
 #####################################################################
 
 import threading
-from PySide.QtCore import *
-from PySide.QtGui import *
+import sys
 
+if 'PySide' in sys.modules.copy():
+    from PySide.QtCore import *
+    from PySide.QtGui import *
+else:
+    from PyQt4.QtCore import *
+    from PyQt4.QtGui import *
+    
 import zmq
 from qtutils import *
 
