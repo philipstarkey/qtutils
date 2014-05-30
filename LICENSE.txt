@@ -1,10 +1,10 @@
 Copyright (c) 2013, Christopher Billington, Philip Starkey
 All rights reserved.
 
-The components (python code, *.ui files) in this project are individually licensed under the 2-clause BSD license. Use of individual components is thus governed by the terms of the 2-clause BSD license (see BSD-LICENSE.txt in the root of this project). However, the license of this project, qtutils, is governed by the license of the GUI toolkit you use it with, determined by the conditions below:
+This project (qtutils) is dual licensed under the 2-clause BSD license and 3-clause BSD icense (see the files BSD-2-CLAUSE-LICENSE.txt and BSD-3-CLAUSE-LICENSE.txt), subject to the following conditions:
 
-1) If you own a commercial license of PyQt, this project is governed by the terms of the 2-clause BSD license.
+1) If you wish to use this project with PySide and/or a commercial license of PyQt, the use of this project is governed by the terms of one of the licenses, chosen at your discretion.
 
-2) If you are using the free (GPLv2 or GPLv3 licensed) version of PyQt, this project is governed by the terms of one of the respective license (GPLv2 or GPLv3)
+2) If you wish to use this project with the free (GPLv2 or GPLv3 licensed) version of PyQt, the use of this project is governed by the terms of the 3-clause BSD license only.
 
-3) If you are using PySide, this project is governed by the terms of the 2-clause BSD license.
+These terms are in place to guarantee compatibility with the terms outlined in the GPL License Exceptions of the PyQt project (see the GPL_EXCEPTIONS.TXT file in the source code of the PyQt project)
