@@ -5,3 +5,4 @@ include BSD-3-CLAUSE-LICENSE.txt
 include qtutils/icons/custom/*
 include qtutils/icons/fugue/*
 include qtutils/icons/README.txt
+include qtutils/icons/icons.qrc
