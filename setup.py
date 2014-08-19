@@ -8,8 +8,14 @@
 #
 # python setup.py register
 
+from __future__ import absolute_import
 from distutils.core import setup
+import sys
 import os
+
+# Do the build process
+sys.path.insert(0,'.')
+import qtutils.icons
 
 VERSION = '1.3.0-dev'
 
