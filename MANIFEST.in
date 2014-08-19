@@ -1,3 +1,7 @@
 include README.md
 include LICENSE.txt
-
+include BSD-2-CLAUSE-LICENSE.txt
+include BSD-3-CLAUSE-LICENSE.txt
+include qtutils/icons/custom/*
+include qtutils/icons/fugue/*
+include qtutils/icons/README.txt
