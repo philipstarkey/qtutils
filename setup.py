@@ -13,12 +13,15 @@ from distutils.core import setup
 import sys
 import os
 
-# Do the build process
-sys.path.insert(0,'.')
-import qtutils.icons
+VERSION = '1.3.0'
 
-VERSION = '1.3.0-dev'
-
+if not 'sdist' in sys.argv:
+    # Do the build process
+    sys.path.insert(0,'.')
+    print 'building qt icon resource file ...',
+    import qtutils.icons
+    print 'done' 
+    
 # Auto generate a __version__ package for the package to import
 with open(os.path.join('qtutils', '__version__.py'), 'w') as f:
     f.write("__version__ = '%s'\n"%VERSION)
@@ -31,4 +34,9 @@ setup(name='qtutils',
       url='https://bitbucket.org/philipstarkey/qtutils',
       license="2-clause BSD, 3-clause BSD (see LICENSE.TXT for full conditions)",
       packages=['qtutils', 'qtutils.icons'],
+      package_data={'qtutils.icons':
+                    ['custom/*',
+                     'fugue/*',
+                     'icons.qrc',
+                     'README.txt']}
      )
