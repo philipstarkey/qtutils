@@ -12,6 +12,7 @@
 #                                                                   #
 #####################################################################
 
+from __future__ import print_function
 import sys
 import Queue
 import threading
@@ -114,20 +115,20 @@ if __name__ == '__main__':
         if index < 3:
             thread = inthread(loop, index+1)
         while True:
-            # print 'MyThread-%d: %s'%(index,str(QThread.currentThread()))
-            # print 'MyThread-%d: %s'%(index,threading.current_thread().name)
+            # print('MyThread-%d: %s'%(index,str(QThread.currentThread())))
+            # print('MyThread-%d: %s'%(index,threading.current_thread().name))
             #another_function(index)
             inmain(myFunction,index)
     
     def another_function(index):
-        print 'in thread-%d, running in thread: %s'%(index,threading.currentThread().name)
+        print('in thread-%d, running in thread: %s'%(index,threading.currentThread().name))
     
     def myFunction(index):
-        print 'from thread-%d, running in thread: %s'%(index,threading.currentThread().name)
+        print('from thread-%d, running in thread: %s'%(index,threading.currentThread().name))
         pass
         
     def myFunction2():
-        print 'from MainThread, running in thread: %s'%(threading.currentThread().name)
+        print('from MainThread, running in thread: %s'%(threading.currentThread().name))
         QTimer.singleShot(0,x)
 
     qapplication = QCoreApplication(sys.argv)

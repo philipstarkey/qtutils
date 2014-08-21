@@ -12,6 +12,7 @@
 #                                                                   #
 #####################################################################
 
+from __future__ import print_function
 import sys
 if 'PySide' in sys.modules.copy():
     from PySide.QtCore import QSettings
