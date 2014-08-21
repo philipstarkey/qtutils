@@ -16,7 +16,7 @@ import os
 BUILD_PYQT4_ICONS_RESOURCE = True
 BUILD_PYSIDE_ICONS_RESOURCE = True
 
-VERSION = '1.4.0'
+VERSION = '1.4.1-dev'
 
 # Do the build process for icon resource files, this will only do anything
 # if the files are not already present.  The idea is that someone like me

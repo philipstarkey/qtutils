@@ -12,6 +12,7 @@
 #                                                                   #
 #####################################################################
 
+from __future__ import print_function
 import threading
 import sys
 
@@ -126,7 +127,7 @@ if __name__ == '__main__':
     def button_pushed(*args,**kwargs):
         global output_box
         output_box.output('More Text')
-        print output_box.output_textedit.toHtml()
+        print(output_box.output_textedit.toHtml())
         
     button = QPushButton("push me")
     button.clicked.connect(button_pushed)
