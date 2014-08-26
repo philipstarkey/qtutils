@@ -95,7 +95,7 @@ class QtLock():
         # Keep track of the re-entrance depth:
         self.local.held += 1
                     
-    def __exit__(self,*args):
+    def __exit__(self, *exc_info):
         # Only unblock the mainloop if we've popped out of the outer-most
         # context:
         self.local.held -= 1
