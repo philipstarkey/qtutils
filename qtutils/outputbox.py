@@ -47,9 +47,10 @@ class OutputBox(object):
         # for this is much easier than expecting every thread to have
         # its own push socket that the user has to manage. Also we can't
         # give callers direct access to the output code, because then
-        # it matters whether they hold the gtk lock, and we'll either
-        # have deadlocks when they already do, or have to have calling
-        # code peppered with lock acquisitions. Screw that.
+        # it matters whether they're in the GUI main thread or not. We could
+        # decorate it with inmain_decorator, but it is still useful for the
+        # all threads and processed to send to the same zmq socket - it
+        # keeps messages in order, nobody 'jumps the queue' so to speak.
         self.local = threading.local()
         
         self.mainloop = threading.Thread(target=self.mainloop,args=(socket,))
@@ -77,10 +78,6 @@ class OutputBox(object):
             red = (stream == 'stderr')
             self.add_text(text,red)
     
-    # I think if we don't wait for the function to run in the main thread, then
-    # we might avoid a backlog of messages when printing large amounts (eg in lyse)
-    # It might just transfer the backlog to a queue of functions to be executed in 
-    # the main thread, so perhaps it makes no difference!
     @inmain_decorator(False) 
     def add_text(self,text,red):
         if self.scrollbar.value() == self.scrollbar.maximum():
