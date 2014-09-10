@@ -31,7 +31,7 @@ def _message_handler(type, message):
     unnoticed"""
     print('%s: %s'%(type,message))
     #raise Exception('%s: %s'%(type,message))
-        
+
 qInstallMsgHandler(_message_handler)
 del qInstallMsgHandler
 
@@ -44,3 +44,9 @@ from qsettings_wrapper import QSettingsWrapper
 from disconnect_contextmanager import DisconnectContextManager
 from UiLoader import UiLoader
 
+@inmain_decorator()
+def qstring_to_unicode(qstring):
+    if sys.version > '3':
+        return str(qstring.toUtf8(), encoding="UTF-8")
+    else:
+        return unicode(qstring.toUtf8(), encoding="UTF-8")

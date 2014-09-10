@@ -41,8 +41,8 @@ def find_pyrcc4():
               'and put it in your PATH, or modify this module\'s find_pyrcc4() function to ' + 
               'also search in the location that pyrcc4 resides on your system. ' +
               'Please also report a bug to the qtutils project so we can fix it! ' +
-              'If you want to install qtutils without PyQt4 support, simply set ' +
-              'BUILD_PYQT4_ICONS_RESOURCE = False in setup.py.')
+              'If you want to install qtutils without PyQt4 support, simply run ' +
+              'python setup.py install NO_PYQT4')
         raise OSError(msg)
 
 def find_pyside_rcc():
@@ -67,8 +67,8 @@ def find_pyside_rcc():
               'and put it in your PATH, or modify this module\'s find_pyside_rcc() function to ' + 
               'also search in the location that pyside-rcc resides on your system. ' +
               'Please also report a bug to the qtutils project so we can fix it! ' +
-              'If you want to install qtutils without PySide support, simply set ' +
-              'BUILD_PYSIDE_ICONS_RESOURCE = False in setup.py.')
+              'If you want to install qtutils without PySide support, simply run ' +
+              'python setup.py install NO_PYSIDE')
         raise OSError(msg)
         
 def make_py_file_pyqt4():

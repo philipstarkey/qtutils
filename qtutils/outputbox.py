@@ -15,6 +15,8 @@
 from __future__ import print_function
 import threading
 import sys
+import cgi
+from qtutils import qstring_to_unicode
 
 if 'PySide' in sys.modules.copy():
     from PySide.QtCore import *
@@ -27,17 +29,28 @@ import zmq
 from qtutils import *
 
 class OutputBox(object):
-    def __init__(self, container):    
-        self.output_textedit = QTextEdit()
+    def __init__(self, container, scrollback_lines=200):    
+        self.output_textedit = QPlainTextEdit()
         container.addWidget(self.output_textedit)
         self.output_textedit.setReadOnly(True)
-        self.output_textedit.setHtml("""<html><head></head><body bgcolor="#000000"></body></html>""")
+        # self.output_textedit.setStyleSheet("QPlainTextEdit { background-color: black}");
         self.scrollbar = self.output_textedit.verticalScrollBar()
-        self.scroll_to_end = True            
+        self.output_textedit.setMaximumBlockCount(scrollback_lines)
+        
+        # state to keep track of
+        self.scroll_to_end = True 
+        self.mid_line = False
+        
+        normal_text_format = QTextCharFormat()
+        red_text_format = QTextCharFormat()
         
         context = zmq.Context.instance()
         socket = context.socket(zmq.PULL)
         socket.setsockopt(zmq.LINGER, 0)
+        
+        poller = zmq.Poller()
+        poller.register(socket, zmq.POLLIN)
+        
         self.port = socket.bind_to_random_port('tcp://127.0.0.1')
         
         # Tread-local storage so we can have one push_sock per
@@ -53,7 +66,7 @@ class OutputBox(object):
         # keeps messages in order, nobody 'jumps the queue' so to speak.
         self.local = threading.local()
         
-        self.mainloop = threading.Thread(target=self.mainloop,args=(socket,))
+        self.mainloop = threading.Thread(target=self.mainloop, args=(socket, poller))
         self.mainloop.daemon = True
         self.mainloop.start()
     
@@ -65,60 +78,98 @@ class OutputBox(object):
         self.local.push_sock.setsockopt(zmq.LINGER, 0)
         self.local.push_sock.connect('tcp://127.0.0.1:%d'%self.port)
         
-    def output(self, text,red=False):
+    def output(self, text, red=False):
         if not hasattr(self.local, 'push_sock'):
             self.new_socket()
         # Queue the output on the socket:
-        self.local.push_sock.send_multipart(['stderr' if red else 'stdout',text.encode('utf8')])
+        self.local.push_sock.send_multipart(['stderr' if red else 'stdout', text.encode('utf8')])
         
-    def mainloop(self,socket):
+    def mainloop(self, socket, poller):
         while True:
-            stream, text = socket.recv_multipart()
-            text = text.decode('utf8')
-            red = (stream == 'stderr')
-            self.add_text(text,red)
+            messages = []
+            current_stream = None
+            # Wait for messages
+            poller.poll()
+            while True:
+                # Get all messages waiting in the pipe, concatenate strings to
+                # reduce the number of times we call add_text (which requires posting
+                # to the qt main thread, which can be a bottleneck when there is a lot of output
+                try:
+                    stream, text = socket.recv_multipart(zmq.NOBLOCK)
+                except zmq.ZMQError:
+                    break
+                else:
+                    if stream != current_stream:
+                        current_stream = stream
+                        current_message = []
+                        messages.append((current_stream, current_message))
+                    current_message.append(text)
+            for stream, message in messages:
+                message_text = ''.join(message).decode('utf8')
+                red = (stream == 'stderr')
+                self.add_text(message_text, red)
     
     @inmain_decorator(False) 
-    def add_text(self,text,red):
+    def add_text(self, text, red):
+        # self.output_textedit.setCurrentCharFormat()
         if self.scrollbar.value() == self.scrollbar.maximum():
             self.scroll_to_end = True
         else:
+            print(self.scrollbar.maximum() == self.scrollbar.minimum())
             self.scroll_to_end = False
-    
+        
+        # The convolution below is because we want to take advantage of 
         cursor = self.output_textedit.textCursor()
-        cursor.movePosition(QTextCursor.End)
-        text = text.replace(' ','&nbsp;').replace('\n','<br>')
-        cursor.insertHtml('<p style="font-family:\'Courier New\'">' +
-                          '<font color="%s" size=4>'%('red' if red else 'white') + 
-                          '<b>%s</b>'%text +
-                          '</font></p>')
-        #cursor.insertBlock()
-       
+        lines = text.split('\n')
+        if self.mid_line:
+            first_line = lines.pop(0)
+            cursor.movePosition(QTextCursor.End)
+            cursor.insertText(first_line)
+        for line in lines[:-1]:
+            self.output_textedit.appendPlainText(line)
+        if lines:
+            last_line = lines[-1]
+            if last_line:
+                self.output_textedit.appendPlainText(last_line)
+                self.mid_line = True
+            else:
+                self.mid_line = False
         if self.scroll_to_end:
             self.scrollbar.setValue(self.scrollbar.maximum())
-
+                
 if __name__ == '__main__':    
-    import sys,os    
+    import sys,os
+    from qtutils import qstring_to_unicode
     app = QApplication(sys.argv)
     window = QWidget()
     layout = QVBoxLayout(window)
     
     output_box = OutputBox(layout)
-    for i in range(3):
-        output_box.output('some text\n')
-        output_box.output('some text\n',True)
-        output_box.output('Blah blah\n',True)
-        output_box.output('The quick brown fox jumped over the lazy dog\n')
-        output_box.output('The quick brown fox jumped over the lazy dog\n',True)
+    for i in range(1):
+        output_box.output('some text\n\n')
+        output_box.output('some text')
+        output_box.output('Fish & Chips\n', True)
+        output_box.output('Blah blah\n', True)
+        output_box.output('The \"quick brown fox\" jumped over the \'lazy\' dog\n')
+        output_box.output('<The quick brown fox jumped over the lazy dog>\n', True)
+        output_box.output('Der schnelle braune Fuchs springte \xc3\xbcber den faulen Hund\n'.decode('utf8'), True)
         
     def button_pushed(*args,**kwargs):
-        global output_box
         output_box.output('More Text\n')
-        print(output_box.output_textedit.toHtml())
         
     button = QPushButton("push me")
     button.clicked.connect(button_pushed)
     layout.addWidget(button)
+    
+    i = 0
+    def do_it():
+        global i
+        i += 1
+        output_box.output('some text %d\n\n'%i)
+        
+    timer = QTimer()
+    timer.timeout.connect(do_it)
+    # timer.start(30)
     
     window.show()
     def run():
