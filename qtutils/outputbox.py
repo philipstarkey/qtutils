@@ -87,10 +87,11 @@ class OutputBox(object):
     
         cursor = self.output_textedit.textCursor()
         cursor.movePosition(QTextCursor.End)
-        if red:
-            cursor.insertHtml('<p style="font-family:\'Courier New\'"><font color="red"><b>%s<br/></b></font></p>'%text.replace(' ','&nbsp;').replace('\n','<br/>'))
-        else:
-            cursor.insertHtml('<p style="font-family:\'Courier New\'"><font color="white"><b>%s<br/></b></font></p>'%text.replace(' ','&nbsp;').replace('\n','<br/>'))
+        text = text.replace(' ','&nbsp;').replace('\n','<br>')
+        cursor.insertHtml('<p style="font-family:\'Courier New\'">' +
+                          '<font color="%s" size=4>'%('red' if red else 'white') + 
+                          '<b>%s</b>'%text +
+                          '</font></p>')
         #cursor.insertBlock()
        
         if self.scroll_to_end:
@@ -103,27 +104,16 @@ if __name__ == '__main__':
     layout = QVBoxLayout(window)
     
     output_box = OutputBox(layout)
-    output_box.output('some text')
-    output_box.output('some text',True)
-    output_box.output('Blah blah',True)
-    output_box.output('The quick brown fox jumped over the lazy dog')
-    output_box.output('The quick brown fox jumped over the lazy dog',True)
-    
-    output_box.output('some text')
-    output_box.output('some text',True)
-    output_box.output('Blah blah',True)
-    output_box.output('The quick brown fox jumped over the lazy dog')
-    output_box.output('The quick brown fox jumped over the lazy dog',True)
-    
-    output_box.output('some text')
-    output_box.output('some text',True)
-    output_box.output('Blah blah',True)
-    output_box.output('The quick brown fox jumped over the lazy dog')
-    output_box.output('The quick brown fox jumped over the lazy dog',True)
-    
+    for i in range(3):
+        output_box.output('some text\n')
+        output_box.output('some text\n',True)
+        output_box.output('Blah blah\n',True)
+        output_box.output('The quick brown fox jumped over the lazy dog\n')
+        output_box.output('The quick brown fox jumped over the lazy dog\n',True)
+        
     def button_pushed(*args,**kwargs):
         global output_box
-        output_box.output('More Text')
+        output_box.output('More Text\n')
         print(output_box.output_textedit.toHtml())
         
     button = QPushButton("push me")
