@@ -28,22 +28,52 @@ else:
 import zmq
 from qtutils import *
 
+# This should cover most platforms:
+acceptable_fonts = ["Ubuntu mono", 
+                    "Courier 10 Pitch", 
+                    "Courier Std", 
+                    "Consolas", 
+                    "Courier", 
+                    "FreeMono", 
+                    "Nimbus Mono L", 
+                    "Courier New", 
+                    "monospace"]
+                    
 class OutputBox(object):
-    def __init__(self, container, scrollback_lines=200):    
+    def __init__(self, container, scrollback_lines=1000):    
         self.output_textedit = QPlainTextEdit()
         container.addWidget(self.output_textedit)
         self.output_textedit.setReadOnly(True)
-        # self.output_textedit.setStyleSheet("QPlainTextEdit { background-color: black}");
+        palette = self.output_textedit.palette();
+        palette.setColor(QPalette.Base, QColor('black'));
+        self.output_textedit.setPalette(palette);
+        
+        self.output_textedit.setBackgroundVisible(False)
+        self.output_textedit.setWordWrapMode(QTextOption.WrapAnywhere)
         self.scrollbar = self.output_textedit.verticalScrollBar()
+        self.scrollbar.valueChanged.connect(self.on_scrollbar_value_changed)
+        self.scrollbar.rangeChanged.connect(self.on_scrollbar_range_changed)
         self.output_textedit.setMaximumBlockCount(scrollback_lines)
         
-        # state to keep track of
+        # State to keep track of whether we should automatically scroll
+        # to the end when the range of the scrollbar changes:
         self.scroll_to_end = True 
+        # And keeping track of whether the output is in the middle of a line or not:
         self.mid_line = False
         
-        normal_text_format = QTextCharFormat()
-        red_text_format = QTextCharFormat()
+        normal_font = QFont("SomeMonoFont", 11)
+        normal_font.insertSubstitutions("SomeMonoFont", acceptable_fonts)
+        self.normal_text_format = QTextCharFormat()
+        self.normal_text_format.setForeground(QBrush(QColor('white')))
+        self.normal_text_format.setFont(normal_font)
         
+        red_font = QFont("SomeMonoFont", 11)
+        red_font.insertSubstitutions("SomeMonoFont", acceptable_fonts)
+        red_font.setBold(True)
+        self.red_text_format = QTextCharFormat()
+        self.red_text_format.setForeground(QBrush(QColor('red')))
+        self.red_text_format.setFont(red_font)
+            
         context = zmq.Context.instance()
         socket = context.socket(zmq.PULL)
         socket.setsockopt(zmq.LINGER, 0)
@@ -53,7 +83,7 @@ class OutputBox(object):
         
         self.port = socket.bind_to_random_port('tcp://127.0.0.1')
         
-        # Tread-local storage so we can have one push_sock per
+        # Thread-local storage so we can have one push_sock per
         # thread. push_sock is for sending data to the output queue in
         # a non-blocking way from the same process as this object is
         # instantiated in.  Providing the function OutputBox.output()
@@ -109,20 +139,31 @@ class OutputBox(object):
                 red = (stream == 'stderr')
                 self.add_text(message_text, red)
     
-    @inmain_decorator(False) 
-    def add_text(self, text, red):
-        # self.output_textedit.setCurrentCharFormat()
-        if self.scrollbar.value() == self.scrollbar.maximum():
+    def on_scrollbar_value_changed(self, value):
+        if value == self.scrollbar.maximum():
             self.scroll_to_end = True
         else:
-            print(self.scrollbar.maximum() == self.scrollbar.minimum())
             self.scroll_to_end = False
         
-        # The convolution below is because we want to take advantage of 
+    def on_scrollbar_range_changed(self, minval, maxval):
+        if self.scroll_to_end:
+            self.scrollbar.setValue(maxval)
+        
+    @inmain_decorator(False) 
+    def add_text(self, text, red):
+        # The convoluted logic below is because we want a few things that conflict slightly.
+        # Firstly, we want to take advantage of our setMaximumBlockCount setting; Qt will
+        # automatically remove old lines, but only if each line is a separate 'block'. So
+        # each line has to be inserted with appendPlainText - this appends a new block.
+        # However, we also want to support partial lines coming in, and we want to print that
+        # partial line without waiting until we have the full line. So we keep track (with the
+        # instance variable self.mid_line) whether we are in the middle of a line or not,
+        # and if we are we call insertText, which does *not* start a new block.
         cursor = self.output_textedit.textCursor()
         lines = text.split('\n')
         if self.mid_line:
             first_line = lines.pop(0)
+            cursor = self.output_textedit.textCursor()
             cursor.movePosition(QTextCursor.End)
             cursor.insertText(first_line)
         for line in lines[:-1]:
@@ -134,44 +175,50 @@ class OutputBox(object):
                 self.mid_line = True
             else:
                 self.mid_line = False
-        if self.scroll_to_end:
-            self.scrollbar.setValue(self.scrollbar.maximum())
-                
+
+        n_chars_printed = len(text)
+        if not self.mid_line:
+            n_chars_printed -= 1 # Because we didn't print the final newline character
+        cursor.movePosition(QTextCursor.End)
+        cursor.movePosition(QTextCursor.PreviousCharacter, n=n_chars_printed)
+        cursor.movePosition(QTextCursor.End, mode=QTextCursor.KeepAnchor)
+        if red:
+            cursor.setCharFormat(self.red_text_format)
+        else:
+            cursor.setCharFormat(self.normal_text_format)
+            
 if __name__ == '__main__':    
     import sys,os
-    from qtutils import qstring_to_unicode
     app = QApplication(sys.argv)
     window = QWidget()
     layout = QVBoxLayout(window)
     
     output_box = OutputBox(layout)
-    for i in range(1):
-        output_box.output('some text\n\n')
-        output_box.output('some text')
-        output_box.output('Fish & Chips\n', True)
-        output_box.output('Blah blah\n', True)
-        output_box.output('The \"quick brown fox\" jumped over the \'lazy\' dog\n')
-        output_box.output('<The quick brown fox jumped over the lazy dog>\n', True)
-        output_box.output('Der schnelle braune Fuchs springte \xc3\xbcber den faulen Hund\n'.decode('utf8'), True)
+    for i in range(3):
+        output_box.output('white, two line breaks.\n\n')
+        output_box.output('white, no linebreak.')
+        output_box.output('Red.\n', True)
+        output_box.output('More red.\n', True)
+        output_box.output('The \"quick white fox\" jumped over the \'lazy\' dog\n')
+        output_box.output('<The quick red fox jumped over the lazy dog>\n', True)
+        output_box.output('Der schnelle braune Fuchs hat \xc3\xbcber den faulen Hund gesprungen\n'.decode('utf8'), True)
         
     def button_pushed(*args,**kwargs):
-        output_box.output('More Text\n')
+        import random
+        uchars = [random.randint(0x20, 0x7e) for _ in range(random.randint(0, 50))]
+        ustr   = u''
+        for uc in uchars:
+            ustr += unichr(uc)
+        red = random.randint(0,1)
+        newline = random.randint(0,1)
+        output_box.output(ustr + ('\n' if newline else ''), red=red)
         
-    button = QPushButton("push me")
+    button = QPushButton("push me to output random text")
     button.clicked.connect(button_pushed)
     layout.addWidget(button)
     
-    i = 0
-    def do_it():
-        global i
-        i += 1
-        output_box.output('some text %d\n\n'%i)
-        
-    timer = QTimer()
-    timer.timeout.connect(do_it)
-    # timer.start(30)
-    
     window.show()
+    window.resize(500,500)
     def run():
         app.exec_()
         
