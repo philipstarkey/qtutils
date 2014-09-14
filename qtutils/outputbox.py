@@ -105,7 +105,6 @@ class OutputBox(object):
         # to send:
         context = zmq.Context.instance()
         self.local.push_sock = context.socket(zmq.PUSH)
-        self.local.push_sock.setsockopt(zmq.LINGER, 0)
         self.local.push_sock.connect('tcp://127.0.0.1:%d'%self.port)
         
     def output(self, text, red=False):
@@ -119,21 +118,17 @@ class OutputBox(object):
             messages = []
             current_stream = None
             # Wait for messages
-            poller.poll()
-            while True:
+            events = poller.poll()
+            for i in range(len(events)):
                 # Get all messages waiting in the pipe, concatenate strings to
                 # reduce the number of times we call add_text (which requires posting
-                # to the qt main thread, which can be a bottleneck when there is a lot of output
-                try:
-                    stream, text = socket.recv_multipart(zmq.NOBLOCK)
-                except zmq.ZMQError:
-                    break
-                else:
-                    if stream != current_stream:
-                        current_stream = stream
-                        current_message = []
-                        messages.append((current_stream, current_message))
-                    current_message.append(text)
+                # to the qt main thread, which can be a bottleneck when there is a lot of output)
+                stream, text = socket.recv_multipart(zmq.NOBLOCK)
+                if stream != current_stream:
+                    current_stream = stream
+                    current_message = []
+                    messages.append((current_stream, current_message))
+                current_message.append(text)
             for stream, message in messages:
                 message_text = ''.join(message).decode('utf8')
                 red = (stream == 'stderr')
