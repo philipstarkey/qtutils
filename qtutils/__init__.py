@@ -43,10 +43,3 @@ from invoke_in_main import inmain, inmain_later, inthread, inmain_decorator
 from qsettings_wrapper import QSettingsWrapper
 from disconnect_contextmanager import DisconnectContextManager
 from UiLoader import UiLoader
-
-@inmain_decorator()
-def qstring_to_unicode(qstring):
-    if sys.version > '3':
-        return str(qstring.toUtf8(), encoding="UTF-8")
-    else:
-        return unicode(qstring.toUtf8(), encoding="UTF-8")
