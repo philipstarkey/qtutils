@@ -16,7 +16,6 @@ from __future__ import print_function
 import threading
 import sys
 import cgi
-from qtutils import qstring_to_unicode
 
 if 'PySide' in sys.modules.copy():
     from PySide.QtCore import *
