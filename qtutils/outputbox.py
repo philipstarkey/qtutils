@@ -119,22 +119,24 @@ class OutputBox(object):
             messages = []
             current_stream = None
             # Wait for messages
-            events = poller.poll()
-            for i in range(len(events)):
-                # Get all messages waiting in the pipe, concatenate strings to
-                # reduce the number of times we call add_text (which requires
-                # posting to the qt main thread, which can be a bottleneck
-                # when there is a lot of output)
-                stream, text = socket.recv_multipart(zmq.NOBLOCK)
+            poller.poll()
+            # Get all messages waiting in the pipe, concatenate strings to
+            # reduce the number of times we call add_text (which requires posting
+            # to the qt main thread, which can be a bottleneck when there is a lot of output)
+            while True:
+                try:
+                    stream, text = socket.recv_multipart(zmq.NOBLOCK)
+                except zmq.Again:
+                    break
                 if stream != current_stream:
                     current_stream = stream
                     current_message = []
                     messages.append((current_stream, current_message))
                 current_message.append(text)
             for stream, message in messages:
-                message_text = ''.join(message).decode('utf8')
+                text = ''.join(message).decode('utf8')
                 red = (stream == 'stderr')
-                self.add_text(message_text, red)
+                self.add_text(text, red)
 
     def on_scrollbar_value_changed(self, value):
         if value == self.scrollbar.maximum():
@@ -146,7 +148,7 @@ class OutputBox(object):
         if self.scroll_to_end:
             self.scrollbar.setValue(maxval)
 
-    @inmain_decorator(False)
+    @inmain_decorator(True)
     def add_text(self, text, red):
         # The convoluted logic below is because we want a few things that
         # conflict slightly. Firstly, we want to take advantage of our
