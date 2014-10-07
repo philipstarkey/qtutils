@@ -79,9 +79,6 @@ class OutputBox(object):
         socket = context.socket(zmq.PULL)
         socket.setsockopt(zmq.LINGER, 0)
 
-        poller = zmq.Poller()
-        poller.register(socket, zmq.POLLIN)
-
         self.port = socket.bind_to_random_port('tcp://127.0.0.1')
 
         # Thread-local storage so we can have one push_sock per thread.
@@ -97,7 +94,7 @@ class OutputBox(object):
         # to speak.
         self.local = threading.local()
 
-        self.mainloop = threading.Thread(target=self.mainloop, args=(socket, poller))
+        self.mainloop = threading.Thread(target=self.mainloop, args=(socket,))
         self.mainloop.daemon = True
         self.mainloop.start()
 
@@ -114,12 +111,12 @@ class OutputBox(object):
         # Queue the output on the socket:
         self.local.push_sock.send_multipart(['stderr' if red else 'stdout', text.encode('utf8')])
 
-    def mainloop(self, socket, poller):
+    def mainloop(self, socket):
         while True:
             messages = []
             current_stream = None
             # Wait for messages
-            poller.poll()
+            socket.poll()
             # Get all messages waiting in the pipe, concatenate strings to
             # reduce the number of times we call add_text (which requires posting
             # to the qt main thread, which can be a bottleneck when there is a lot of output)
