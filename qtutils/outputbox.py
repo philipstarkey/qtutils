@@ -24,6 +24,7 @@ else:
     from PyQt4.QtGui import *
 
 import zmq
+from qtutils.auto_scroll_to_end import set_auto_scroll_to_end
 from qtutils import *
 
 # This should cover most platforms:
@@ -50,15 +51,10 @@ class OutputBox(object):
 
         self.output_textedit.setBackgroundVisible(False)
         self.output_textedit.setWordWrapMode(QTextOption.WrapAnywhere)
-        self.scrollbar = self.output_textedit.verticalScrollBar()
-        self.scrollbar.valueChanged.connect(self.on_scrollbar_value_changed)
-        self.scrollbar.rangeChanged.connect(self.on_scrollbar_range_changed)
+        set_auto_scroll_to_end(self.output_textedit.verticalScrollBar())
         self.output_textedit.setMaximumBlockCount(scrollback_lines)
 
-        # State to keep track of whether we should automatically scroll to the
-        # end when the range of the scrollbar changes:
-        self.scroll_to_end = True
-        # And keeping track of whether the output is in the middle of a line
+        # Keeping track of whether the output is in the middle of a line
         # or not:
         self.mid_line = False
 
@@ -135,16 +131,6 @@ class OutputBox(object):
                 red = (stream == 'stderr')
                 self.add_text(text, red)
 
-    def on_scrollbar_value_changed(self, value):
-        if value == self.scrollbar.maximum():
-            self.scroll_to_end = True
-        else:
-            self.scroll_to_end = False
-
-    def on_scrollbar_range_changed(self, minval, maxval):
-        if self.scroll_to_end:
-            self.scrollbar.setValue(maxval)
-
     @inmain_decorator(True)
     def add_text(self, text, red):
         # The convoluted logic below is because we want a few things that
@@ -185,6 +171,7 @@ class OutputBox(object):
         else:
             cursor.setCharFormat(self.normal_text_format)
 
+            
 if __name__ == '__main__':
     import sys
     app = QApplication(sys.argv)
