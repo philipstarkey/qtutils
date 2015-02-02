@@ -14,10 +14,13 @@
 
 from __future__ import print_function
 import sys
-if 'PySide' in sys.modules.copy():
+if 'PySide' in sys.modules:
     from PySide.QtCore import QSettings
+    QVariant = None
 else:
     from PyQt4.QtCore import QSettings
+    from PyQt4.QtCore import QVariant
+
 import ast
 
 class type_with_properties(type):
@@ -46,6 +49,8 @@ class QSettingsWrapper(object):
         
     def _get(self, name):
         valrepr = self._qsettings.value(name)
+        if QVariant is not None and isinstance(valrepr, QVariant):
+            valrepr = str(valrepr.toString())
         return ast.literal_eval(valrepr)
         
     def _set(self, name, value):
