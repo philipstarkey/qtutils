@@ -35,11 +35,11 @@ def _message_handler(type, message):
 qInstallMsgHandler(_message_handler)
 del qInstallMsgHandler
 
-from locking import qtlock
+from qtutils.locking import qtlock
 qtlock.enforce()
 
-from invoke_in_main import inmain, inmain_later, inthread, inmain_decorator
+from qtutils.invoke_in_main import inmain, inmain_later, inthread, inmain_decorator
 
-from qsettings_wrapper import QSettingsWrapper
-from disconnect_contextmanager import DisconnectContextManager
-from UiLoader import UiLoader
+from qtutils.qsettings_wrapper import QSettingsWrapper
+from qtutils.disconnect_contextmanager import DisconnectContextManager
+from qtutils.UiLoader import UiLoader
