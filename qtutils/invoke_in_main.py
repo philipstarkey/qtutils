@@ -14,7 +14,13 @@
 
 from __future__ import print_function
 import sys
-import Queue
+
+PYTHON2 = sys.version < '3'
+
+if PYTHON2:
+    import Queue
+else:
+    import queue as Queue
 import threading
 import functools
 
@@ -84,7 +90,10 @@ def get_inmain_result(queue):
     result,exception = queue.get()
     if exception is not None:
         type, value, traceback = exception
-        raise type, value, traceback
+        if PYTHON2:
+            exec('raise type, value, traceback')
+        else:
+            raise value.with_traceback(traceback)
     return result
 
 def inthread(f,*args,**kwargs):
