@@ -23,7 +23,7 @@ if 'NO_PYQT4' in sys.argv:
     BUILD_PYQT4_ICONS_RESOURCE = False
     sys.argv.remove('NO_PYQT4')
 
-VERSION = '1.5.5'
+VERSION = '1.6.0'
 
 # Do the build process for icon resource files, this will only do anything
 # if the files are not already present.  The idea is that someone like me
