@@ -23,6 +23,8 @@ else:
 
 import ast
 
+from qtutils import inmain_decorator
+
 class type_with_properties(type):
     """A metaclass to create properties for a class based on the contents
     of its a class _fields. _fields should be a list of strings. At
@@ -47,12 +49,14 @@ class QSettingsWrapper(object):
             if not self._qsettings.contains(name):
                 self._set(name, None)
         
+    @inmain_decorator()
     def _get(self, name):
         valrepr = self._qsettings.value(name)
         if QVariant is not None and isinstance(valrepr, QVariant):
             valrepr = str(valrepr.toString())
         return ast.literal_eval(valrepr)
         
+    @inmain_decorator()
     def _set(self, name, value):
         valrepr = repr(value)
         try:

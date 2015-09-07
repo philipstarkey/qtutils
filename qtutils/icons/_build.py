@@ -34,16 +34,18 @@ def find_pyrcc4():
         return pyrcc4
     except OSError:
         # Still no?
-        msg = ('Cannot find pyrcc4, the PyQt4 utility for building resource files. ' + 
-              'This module was configured to find it in the PyQt4 directory on Windows, ' +
-              'which is where it is for the Anaconda Python distribution. This module ' +
-              'should also find pyrcc4 if it in in the PATH, on any OS. Please find pyrcc4 ' +
-              'and put it in your PATH, or modify this module\'s find_pyrcc4() function to ' + 
-              'also search in the location that pyrcc4 resides on your system. ' +
-              'Please also report a bug to the qtutils project so we can fix it! ' +
-              'If you want to install qtutils without PyQt4 support, simply run ' +
-              'python setup.py install NO_PYQT4')
-        raise OSError(msg)
+        msg = """
+              Cannot find pyrcc4, the PyQt4 utility for building resource
+              files. This module was configured to find it in the PyQt4
+              directory on Windows, which is where it is for the Anaconda
+              Python distribution. This module should also find pyrcc4 if it
+              in in the PATH, on any OS. Please find pyrcc4 and put it in your
+              PATH. On Debian based systems it is available in the pyqt4-dev-
+              tools package. If you want to install qtutils without PyQt4
+              support, simply run:
+              python setup.py install NO_PYQT4"""
+        import textwrap
+        raise OSError(textwrap.dedent(msg).strip())
 
 def find_pyside_rcc():
     import PySide
@@ -60,16 +62,18 @@ def find_pyside_rcc():
         return pyside_rcc
     except OSError:
         # Still no?
-        msg = ('Cannot find pyside-rcc, the PySide utility for building resource files. ' + 
-              'This module was configured to find it in the PySide directory on Windows, ' +
-              'which is where it is for the Anaconda Python distribution. This module ' +
-              'should also find pyside-rcc if it in in the PATH, on any OS. Please find pyside-rcc ' +
-              'and put it in your PATH, or modify this module\'s find_pyside_rcc() function to ' + 
-              'also search in the location that pyside-rcc resides on your system. ' +
-              'Please also report a bug to the qtutils project so we can fix it! ' +
-              'If you want to install qtutils without PySide support, simply run ' +
-              'python setup.py install NO_PYSIDE')
-        raise OSError(msg)
+        msg = """
+              Cannot find pyside-rcc, the PySide utility for building
+              resource files. This module was configured to find it in the
+              PySide directory on Windows, which is where it is for the
+              Anaconda Python distribution. This module should also find
+              pyside-rcc if it in in the PATH, on any OS. Please find pyside-
+              rcc and put it in your PATH. On Debian based systems it is
+              available in the pyqt4-dev- tools package. If you want to
+              install qtutils without PySide support, simply run:
+              python setup.py install NO_PYSIDE"""
+        import textwrap
+        raise OSError(textwrap.dedent(msg).strip())
         
 def make_py_file_pyqt4():
     pyrcc4 = find_pyrcc4()
