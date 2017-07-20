@@ -18,12 +18,17 @@ if 'PySide' in sys.modules:
     from PySide.QtCore import QSettings
     QVariant = None
 else:
-    from PyQt4.QtCore import QSettings
-    from PyQt4.QtCore import QVariant
+    try:
+        from PyQt4.QtCore import QSettings
+        from PyQt4.QtCore import QVariant
+    except ImportError:
+        from PyQt5.QtCore import QSettings
+        from PyQt5.QtCore import QVariant
 
 import ast
 
 from qtutils import inmain_decorator
+
 
 class type_with_properties(type):
     """A metaclass to create properties for a class based on the contents
@@ -36,26 +41,28 @@ class type_with_properties(type):
             method = property(lambda self, name=name: cls._get(self, name),
                               lambda self, value, name=name: cls._set(self, name, value))
             setattr(cls, name, method)
-    
+
+
 class QSettingsWrapper(object):
     """A class that wraps QSettings to provide automatic type conversion
     and reduce the need for boilerplace code"""
     __metaclass__ = type_with_properties
-    _fields = [] # to be overridden by subclasses
+    _fields = []  # to be overridden by subclasses
+
     def __init__(self, companyname, appname):
         self._qsettings = QSettings(companyname, appname)
         # set default values to None:
         for name in self._fields:
             if not self._qsettings.contains(name):
                 self._set(name, None)
-        
+
     @inmain_decorator()
     def _get(self, name):
         valrepr = self._qsettings.value(name)
         if QVariant is not None and isinstance(valrepr, QVariant):
             valrepr = str(valrepr.toString())
         return ast.literal_eval(valrepr)
-        
+
     @inmain_decorator()
     def _set(self, name, value):
         valrepr = repr(value)
@@ -65,20 +72,20 @@ class QSettingsWrapper(object):
             raise ValueError('Value too complex to store. Can only store values for which x == ast.literal_eval(repr(x))')
         self._qsettings.setValue(name, valrepr)
         self._qsettings.sync()
-        
-        
+
+
 if __name__ == '__main__':
-    
+
     # Test and example implementation
-    
+
     class TestSettings(QSettingsWrapper):
         _fields = ['test']
+
         def __init__(self):
             QSettingsWrapper.__init__(self, 'test', 'test')
-            
+
     s = TestSettings()
     s.test = 5
     assert s.test == 5
     s.test += 2
     assert s.test == 7
-    

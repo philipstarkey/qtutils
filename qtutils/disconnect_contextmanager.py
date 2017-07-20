@@ -18,14 +18,19 @@ import sys
 if 'PySide' in sys.modules:
     from PySide.QtCore import *
 else:
-    from PyQt4.QtCore import *
-    
+    try:
+        from PyQt4.QtCore import *
+    except ImportError:
+        from PyQt5.QtCore import *
+
+
 class DisconnectContextManager(object):
     def __init__(self, signal, slot):
         self.signal = signal
         self.slot = slot
+
     def __enter__(self):
         self.signal.disconnect(self.slot)
+
     def __exit__(self, *exc_info):
         self.signal.connect(self.slot)
-        

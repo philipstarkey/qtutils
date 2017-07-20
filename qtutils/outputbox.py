@@ -20,8 +20,13 @@ if 'PySide' in sys.modules:
     from PySide.QtCore import *
     from PySide.QtGui import *
 else:
-    from PyQt4.QtCore import *
-    from PyQt4.QtGui import *
+    try:
+        from PyQt4.QtCore import *
+        from PyQt4.QtGui import *
+    except ImportError:
+        from PyQt5.QtCore import *
+        from PyQt5.QtGui import *
+        from PyQt5.QtWidgets import *
 
 import zmq
 from qtutils.auto_scroll_to_end import set_auto_scroll_to_end
@@ -171,7 +176,7 @@ class OutputBox(object):
         else:
             cursor.setCharFormat(self.normal_text_format)
 
-            
+
 if __name__ == '__main__':
     import sys
     app = QApplication(sys.argv)
@@ -186,7 +191,7 @@ if __name__ == '__main__':
         output_box.output('More red.\n', True)
         output_box.output('The \"quick white fox\" jumped over the \'lazy\' dog\n')
         output_box.output('<The quick red fox jumped over the lazy dog>\n', True)
-        output_box.output('Der schnelle braune Fuchs hat \xc3\xbcber den faulen Hund gesprungen\n'.decode('utf8'), True)
+        output_box.output('Der schnelle braune Fuchs ist \xc3\xbcber den faulen Hund gesprungen\n'.decode('utf8'), True)
 
     def button_pushed(*args, **kwargs):
         import random
