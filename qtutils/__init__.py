@@ -25,6 +25,16 @@ if 'PySide' in sys.modules.copy():
     from PySide.QtCore import qInstallMsgHandler
 else:
     try:
+        import sip
+        # Have to set PyQt API via sip before importing PyQt:
+        API_NAMES = ["QDate", "QDateTime", "QString", "QTextStream", "QTime", "QUrl", "QVariant"]
+        API_VERSION = 2
+        for name in API_NAMES:
+            try:
+                sip.setapi(name, API_VERSION)
+            except ValueError:
+                pass
+
         from PyQt4.QtCore import qInstallMsgHandler
     except ImportError:
         from PyQt5.QtCore import qInstallMessageHandler as qInstallMsgHandler

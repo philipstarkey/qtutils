@@ -19,17 +19,13 @@ if QT_ENV is None:
 
 if QT_ENV == PYQT5:
     from PyQt5 import QtGui, QtCore, QtWidgets
-elif QT_ENV == PYQT4:
-    import sip
+else:
+    if QT_ENV == PYQT4:
+        from PyQt4 import QtGui, QtCore
 
-    # Have to set PyQt API via sip before importing PyQt:
-    API_NAMES = ["QDate", "QDateTime", "QString", "QTextStream", "QTime", "QUrl", "QVariant"]
-    API_VERSION = 2
-    for name in API_NAMES:
-        sip.setapi(name, API_VERSION)
+    elif QT_ENV == PYSIDE:
+        from PySide import QtGui, QtCore
 
-    from PyQt4 import QtGui, QtCore
-    QtWidget = QtGui
-elif QT_ENV == PYSIDE:
-    from PySide import QtGui, QtCore
-    QtWidget = QtGui
+    QtWidgets = QtGui
+    QtCore.QSortFilterProxyModel = QtGui.QSortFilterProxyModel
+    QtWidgets.QStyleOptionProgressBar = QtGui.QStyleOptionProgressBarV2
