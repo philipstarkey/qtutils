@@ -1,3 +1,21 @@
+#####################################################################
+#                                                                   #
+# Qt.py                                                             #
+#                                                                   #
+# Copyright 2017, Jan Werkmann                                      #
+#                                                                   #
+# This file is part of the qtutils project                          #
+# (see https://bitbucket.org/philipstarkey/qtutils )                #
+# and is licensed under the 2-clause, or 3-clause, BSD License.     #
+# See the license.txt file in the root of the project               #
+# for the full license.                                             #
+#                                                                   #
+# The purpose of this wrapper is to provide a abstraction layer     #
+# around the different versions of QtGui, QtCore and QtWidgets.     #
+# The warpper is supposed to act like PyQt5, but might need         #
+# addition in some cases.                                           #
+#####################################################################
+
 PYSIDE = 'PySide'
 PYQT4 = 'PyQt4'
 PYQT5 = 'PyQt5'
@@ -29,3 +47,8 @@ else:
     QtWidgets = QtGui
     QtCore.QSortFilterProxyModel = QtGui.QSortFilterProxyModel
     QtWidgets.QStyleOptionProgressBar = QtGui.QStyleOptionProgressBarV2
+    QtWidgets.QHeaderView.setSectionsMovable = QtWidgets.QHeaderView.setMovable
+    # Todo:
+    # QtWidgets.QFileDialog.getOpenFileName -> (QtWidgets.QFileDialog.getOpenFileName, Filter)
+    # QtGui.QWheelEvent.angleDelta -> QtGui.QWheelEvent.delta
+    # QtGui.QWheelEvent.angleDelta -> QtGui.QWheelEvent.orientation for Button in qtWidgets
