@@ -13,15 +13,19 @@ from distutils.core import setup
 import sys
 import os
 
+BUILD_PYQT5_ICONS_RESOURCE = True
 BUILD_PYQT4_ICONS_RESOURCE = True
 BUILD_PYSIDE_ICONS_RESOURCE = True
 
 if 'NO_PYSIDE' in sys.argv:
-    sys.argv.remove('NO_PYSIDE')
-    BUILD_PYSIDE_ICONS_RESOURCE = False
+  sys.argv.remove('NO_PYSIDE')
+  BUILD_PYSIDE_ICONS_RESOURCE = False
 if 'NO_PYQT4' in sys.argv:
-    BUILD_PYQT4_ICONS_RESOURCE = False
-    sys.argv.remove('NO_PYQT4')
+  BUILD_PYQT4_ICONS_RESOURCE = False
+  sys.argv.remove('NO_PYQT4')
+if 'NO_PYQT5' in sys.argv:
+  BUILD_PYQT5_ICONS_RESOURCE = False
+  sys.argv.remove('NO_PYQT5')
 
 VERSION = '1.6.1'
 
@@ -35,17 +39,19 @@ VERSION = '1.6.1'
 # pyside-rcc and pyrcc4 installed for the following to work, or they
 # can disable one of the via the boolean flags at the top of this file.
 print('building qt icon resource files ...')
-sys.path.insert(0,'qtutils/icons')
+sys.path.insert(0, 'qtutils/icons')
 import _build
+if BUILD_PYQT5_ICONS_RESOURCE:
+  _build.pyqt5()
 if BUILD_PYQT4_ICONS_RESOURCE:
-    _build.pyqt4()
+  _build.pyqt4()
 if BUILD_PYSIDE_ICONS_RESOURCE:
-    _build.pyside()
+  _build.pyside()
 print('done')
 
 # Auto generate a __version__ package for the package to import
 with open(os.path.join('qtutils', '__version__.py'), 'w') as f:
-    f.write("__version__ = '%s'\n"%VERSION)
+  f.write("__version__ = '%s'\n" % VERSION)
 
 setup(name='qtutils',
       version=VERSION,
@@ -60,4 +66,4 @@ setup(name='qtutils',
                      'fugue/*',
                      'icons.qrc',
                      'README.txt']}
-     )
+      )
