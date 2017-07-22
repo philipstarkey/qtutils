@@ -43,12 +43,27 @@ else:
 
     elif QT_ENV == PYSIDE:
         from PySide import QtGui, QtCore
-
+        import PySide
+        QtCore.QT_VERSION_STR = PySide.QtCore.__version__
+        QtCore.PYQT_VERSION_STR = PySide.__version__
     QtWidgets = QtGui
     QtCore.QSortFilterProxyModel = QtGui.QSortFilterProxyModel
     QtWidgets.QStyleOptionProgressBar = QtGui.QStyleOptionProgressBarV2
-    QtWidgets.QHeaderView.setSectionsMovable = QtWidgets.QHeaderView.setMovable
-    # Todo:
-    # QtWidgets.QFileDialog.getOpenFileName -> (QtWidgets.QFileDialog.getOpenFileName, Filter)
-    # QtGui.QWheelEvent.angleDelta -> QtGui.QWheelEvent.delta
-    # QtGui.QWheelEvent.angleDelta -> QtGui.QWheelEvent.orientation for Button in qtWidgets
+
+    class NewQHeaderView(QtWidgets.QHeaderView):
+        def setSectionsMovable(self, *args, **kwargs):
+            self.setMovable(*args, **kwargs)
+
+        def setSectionsClickable(self, *args, **kwargs):
+            self.setClickable(*args, **kwargs)
+
+        def setSectionResizeMode(self, *args, **kwargs):
+            self.setResizeMode(*args, **kwargs)
+
+    QtWidgets.QHeaderView = NewQHeaderView
+
+    class NewQFileDialog(QtWidgets.QFileDialog):
+        def getOpenFileName(self, *args, **kwargs):
+            self.getOpenFileNamesAndFilter(*args, **kwargs)
+
+    QtWidgets.QFileDialog = NewQFileDialog
