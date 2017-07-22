@@ -15,6 +15,7 @@
 # The warpper is supposed to act like PyQt5, but might need         #
 # addition in some cases.                                           #
 #####################################################################
+import sys
 
 PYSIDE = 'PySide'
 PYQT4 = 'PyQt4'
@@ -67,3 +68,8 @@ else:
             self.getOpenFileNamesAndFilter(*args, **kwargs)
 
     QtWidgets.QFileDialog = NewQFileDialog
+
+
+sys.modules['qtutils.Qt.QtGui'] = QtGui
+sys.modules['qtutils.Qt.QtWidgets'] = QtWidgets
+sys.modules['qtutils.Qt.QtCore'] = QtCore
