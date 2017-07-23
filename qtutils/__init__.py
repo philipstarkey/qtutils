@@ -34,7 +34,6 @@ def _message_handler(type, message):
 qInstallMessageHandler(_message_handler)
 del qInstallMessageHandler
 
-from qtutils.locking import qtlock
 qtlock.enforce()
 
 from qtutils.invoke_in_main import inmain, inmain_later, inthread, inmain_decorator
