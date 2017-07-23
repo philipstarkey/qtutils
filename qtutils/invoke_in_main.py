@@ -129,7 +129,7 @@ if __name__ == '__main__':
 
     def loop(index):
         if index < 3:
-            thread = inthread(loop, index + 1)
+            inthread(loop, index + 1)
         while True:
             # print('MyThread-%d: %s'%(index,str(QThread.currentThread())))
             # print('MyThread-%d: %s'%(index,threading.current_thread().name))
@@ -155,6 +155,5 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, sigint_handler)
 
     thread = inthread(loop, 1)
-    x = lambda: inmain(myFunction2)
-    timer = QTimer.singleShot(0, x)
+    timer = QTimer.singleShot(0, lambda: inmain(myFunction2))
     qapplication.exec_()
