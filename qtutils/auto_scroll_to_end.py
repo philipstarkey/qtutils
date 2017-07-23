@@ -1,19 +1,10 @@
 from __future__ import print_function
 import sys
-import threading
 import weakref
 
-if 'PySide' in sys.modules:
-    from PySide.QtCore import *
-    from PySide.QtGui import *
-else:
-    try:
-        from PyQt4.QtCore import *
-        from PyQt4.QtGui import *
-    except ImportError:
-        from PyQt5.QtCore import *
-        from PyQt5.QtGui import *
-        from PyQt5.QtWidgets import *
+from qtutils.qt.QtCore import *
+from qtutils.qt.QtGui import *
+from qtutils.qt.QtWidgets import *
 
 # These are weakref dictionarys so that we do not hold references
 # to the scrollbars after nobody else does:

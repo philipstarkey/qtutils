@@ -1,8 +1,7 @@
-import sys
-if 'Pyside' in sys.modules:
+import qtutils.qt
+if qtutils.qt.QT_ENV is 'Pyside':
     import qtutils.icons._icons_pyside
-else:
-    try:
+elif qtutils.qt.QT_ENV is 'PyQt4':
         import qtutils.icons._icons_pyqt4
-    except:
-        import qtutils.icons._icons_pyqt5
+elif qtutils.qt.QT_ENV is 'PyQt5':
+    import qtutils.icons._icons_pyqt5
