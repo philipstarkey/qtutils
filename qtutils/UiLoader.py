@@ -24,6 +24,7 @@ class UiLoaderPromotionException(Exception):
 class UiLoaderUnknownWidgetException(Exception):
     pass
 
+
 if qtutils.qt.QT_ENV == 'PySide':
     from PySide.QtUiTools import QUiLoader
 
@@ -115,6 +116,7 @@ else:
 
         def load(self, *args, **kwargs):
             return uic.loadUi(*args, **kwargs)
+
 
 if __name__ == "__main__":
     loader = UiLoader()

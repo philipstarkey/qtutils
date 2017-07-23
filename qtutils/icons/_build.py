@@ -147,5 +147,6 @@ def pyside():
     if not os.path.exists(py_filename_pyside):
         make_py_file_pyside()
 
+
 if not os.path.exists(qrc_filename):
     make_qrc_file()
