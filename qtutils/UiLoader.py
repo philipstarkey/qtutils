@@ -14,6 +14,7 @@
 
 from __future__ import print_function
 import sys
+import qtutils.qt
 
 
 class UiLoaderPromotionException(Exception):
@@ -23,7 +24,7 @@ class UiLoaderPromotionException(Exception):
 class UiLoaderUnknownWidgetException(Exception):
     pass
 
-if 'PySide' in sys.modules.copy():
+if qtutils.qt.QT_ENV is 'PySide':
     from PySide.QtUiTools import QUiLoader
 
     class UiLoader(QUiLoader):
@@ -94,9 +95,9 @@ if 'PySide' in sys.modules.copy():
 
 else:
     from types import ModuleType
-    try:
+    if qtutils.qt.QT_ENV is 'PyQt4':
         from PyQt4 import uic
-    except ImportError:
+    elif qtutils.qt.QT_ENV is 'PyQt5':
         from PyQt5 import uic
 
     class UiLoader(object):

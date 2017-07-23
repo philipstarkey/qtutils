@@ -16,19 +16,57 @@
 # addition in some cases.                                           #
 #####################################################################
 import sys
+import sip
 
 PYSIDE = 'PySide'
 PYQT4 = 'PyQt4'
 PYQT5 = 'PyQt5'
+QT_ENV = None
+
+
+def set_pyqt4_API2():
+    import sip
+    # This must be done before importing PyQt4:
+    API_NAMES = ["QDate", "QDateTime", "QString", "QTextStream", "QTime", "QUrl", "QVariant"]
+    API_VERSION = 2
+    for name in API_NAMES:
+        try:
+            sip.setapi(name, API_VERSION)
+        except ValueError:
+            pass
+
+
+def check_pyqt4_api():
+    """If PyQt4 was already imported before we got a chance to set API version 2, ensure the API
+    versions were already set to version 2. Otherwise confusing errors may occur later - better to catch this now"""
+    API_NAMES = ["QDate", "QDateTime", "QString", "QTextStream", "QTime", "QUrl", "QVariant"]
+    API_VERSION = 2
+    for name in API_NAMES:
+        try:
+            if sip.getapi(name) != API_VERSION:
+                raise RuntimeError("qtutils only compatible with version 2 of the  PYQt4 API. Either set the API to version 2 before importing PyQt4, or import qtutils first, which will set it for you")
+        except ValueError:
+            pass
+
 
 libs = [PYQT5, PYQT4, PYSIDE]
 for lib in libs:
-    try:
-        __import__(lib)
+    if lib in sys.modules:
         QT_ENV = lib
+        if lib == PYQT4:
+            check_pyqt4_api()
         break
-    except ImportError:
-        pass
+else:
+    for lib in libs:
+        if lib == PYQT4:
+            # Have to set pyqt API v2 before importing PyQt4:
+            set_pyqt4_API2()
+        try:
+            __import__(lib)
+            QT_ENV = lib
+            break
+        except ImportError:
+            pass
 
 if QT_ENV is None:
     raise Exception("No Qt Enviroment was detected!")
@@ -66,7 +104,8 @@ else:
     QtWidgets = QtGui
     QtCore.QSortFilterProxyModel = QtGui.QSortFilterProxyModel
     QtWidgets.QStyleOptionProgressBar = QtGui.QStyleOptionProgressBarV2
+    QtCore.qInstallMessageHandler = QtCore.qInstallMsgHandler
 
-sys.modules['qtutils.Qt.QtGui'] = QtGui
-sys.modules['qtutils.Qt.QtWidgets'] = QtWidgets
-sys.modules['qtutils.Qt.QtCore'] = QtCore
+sys.modules['qtutils.qt.QtGui'] = QtGui
+sys.modules['qtutils.qt.QtWidgets'] = QtWidgets
+sys.modules['qtutils.qt.QtCore'] = QtCore

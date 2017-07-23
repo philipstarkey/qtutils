@@ -14,15 +14,8 @@
 
 from __future__ import print_function
 import threading
-import sys
 
-if 'PySide' in sys.modules.copy():
-    from PySide.QtCore import *
-else:
-    try:
-        from PyQt4.QtCore import *
-    except ImportError:
-        from PyQt5.QtCore import *
+from qtutils.qt.QtCore import *
 
 
 class BlockEvent(QEvent):
@@ -43,6 +36,7 @@ class Blocker(QObject):
         event.unblock.wait()
         event.unblock.clear()
         return True
+
 
 blocker = Blocker()
 
@@ -110,5 +104,6 @@ class QtLock():
         self.local.held -= 1
         if not self.local.held:
             self.local.unblock.set()
+
 
 qtlock = QtLock()

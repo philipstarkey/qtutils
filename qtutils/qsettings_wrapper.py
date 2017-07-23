@@ -13,17 +13,9 @@
 #####################################################################
 
 from __future__ import print_function
-import sys
-if 'PySide' in sys.modules:
-    from PySide.QtCore import QSettings
-    QVariant = None
-else:
-    try:
-        from PyQt4.QtCore import QSettings
-        from PyQt4.QtCore import QVariant
-    except ImportError:
-        from PyQt5.QtCore import QSettings
-        from PyQt5.QtCore import QVariant
+
+from qtutils.qt.QtCore import QSettings
+from qtutils.qt.QtCore import QVariant
 
 import ast
 

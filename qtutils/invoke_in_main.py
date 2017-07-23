@@ -21,16 +21,11 @@ if PYTHON2:
     import Queue
 else:
     import queue as Queue
+
 import threading
 import functools
 
-if 'PySide' in sys.modules.copy():
-    from PySide.QtCore import *
-else:
-    try:
-        from PyQt4.QtCore import *
-    except ImportError:
-        from PyQt5.QtCore import *
+from qtutils.qt.QtCore import *
 
 
 class CallEvent(QEvent):

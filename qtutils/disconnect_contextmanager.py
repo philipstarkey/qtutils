@@ -14,15 +14,6 @@
 
 from __future__ import print_function
 
-import sys
-if 'PySide' in sys.modules:
-    from PySide.QtCore import *
-else:
-    try:
-        from PyQt4.QtCore import *
-    except ImportError:
-        from PyQt5.QtCore import *
-
 
 class DisconnectContextManager(object):
     def __init__(self, signal, slot):
