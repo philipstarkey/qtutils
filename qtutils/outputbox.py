@@ -1,3 +1,4 @@
+# -- coding: utf-8 --
 #####################################################################
 #                                                                   #
 # outputbox.py                                                      #
@@ -101,7 +102,8 @@ class OutputBox(object):
         if not hasattr(self.local, 'push_sock'):
             self.new_socket()
         # Queue the output on the socket:
-        self.local.push_sock.send_multipart(['stderr' if red else 'stdout', text.encode('utf8')])
+        msg_type = 'stderr' if red else 'stdout'
+        self.local.push_sock.send_multipart([msg_type.encode('utf8'), text.encode('utf8')])
 
     def mainloop(self, socket):
         while True:
@@ -123,8 +125,8 @@ class OutputBox(object):
                     messages.append((current_stream, current_message))
                 current_message.append(text)
             for stream, message in messages:
-                text = ''.join(message).decode('utf8')
-                red = (stream == 'stderr')
+                text = ''.join(map(lambda s: s.decode('utf8'), message))
+                red = (stream.decode('utf8') == 'stderr')
                 self.add_text(text, red)
 
     @inmain_decorator(True)
@@ -182,7 +184,7 @@ if __name__ == '__main__':
         output_box.output('More red.\n', True)
         output_box.output('The \"quick white fox\" jumped over the \'lazy\' dog\n')
         output_box.output('<The quick red fox jumped over the lazy dog>\n', True)
-        output_box.output('Der schnelle braune Fuchs ist \xc3\xbcber den faulen Hund gesprungen\n'.decode('utf8'), True)
+        output_box.output(u'Der schnelle braune Fuchs ist über den faulen Hund gesprungen\n', True)
 
     def button_pushed(*args, **kwargs):
         import random
