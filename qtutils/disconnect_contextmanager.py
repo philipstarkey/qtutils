@@ -1,6 +1,6 @@
 #####################################################################
 #                                                                   #
-# disconnect_contextmanager.py                                                       #
+# disconnect_contextmanager.py                                      #
 #                                                                   #
 # Copyright 2013, Christopher Billington, Philip Starkey            #
 #                                                                   #
