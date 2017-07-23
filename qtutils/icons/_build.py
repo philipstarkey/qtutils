@@ -41,9 +41,9 @@ def find_pyrcc5():
                 Cannot find pyrcc5, the PyQt5 utility for building resource
                 files. This module was configured to find it in the PyQt5
                 directory on Windows, which is where it is for the Anaconda
-                Python distribution. This module should also find pyrcc4 if it
-                in in the PATH, on any OS. Please find pyrcc4 and put it in your
-                PATH. On Debian based systems it is available in the pyqt4-dev-
+                Python distribution. This module should also find pyrcc5 if it
+                in in the PATH, on any OS. Please find pyrcc5 and put it in your
+                PATH. On Debian based systems it is available in the pyqt5-dev-
                 tools package. If you want to install qtutils without PyQt5
                 support, simply run:
                 python setup.py install NO_PYQT5"""

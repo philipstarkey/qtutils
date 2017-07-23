@@ -15,7 +15,6 @@
 from __future__ import print_function
 
 from qtutils.qt.QtCore import QSettings
-from qtutils.qt.QtCore import QVariant
 
 import ast
 
@@ -51,8 +50,6 @@ class QSettingsWrapper(object):
     @inmain_decorator()
     def _get(self, name):
         valrepr = self._qsettings.value(name)
-        if QVariant is not None and isinstance(valrepr, QVariant):
-            valrepr = str(valrepr.toString())
         return ast.literal_eval(valrepr)
 
     @inmain_decorator()
