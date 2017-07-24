@@ -107,8 +107,9 @@ else:
     _patch(QtGui.QHeaderView, "setSectionsClickable", "setClickable")
     _patch(QtGui.QHeaderView, "setSectionResizeMode", "setResizeMode")
 
-    # No deprecation message here as the function exists under Qt4 aswell but returns str insted of tuple
-    setattr(QtGui.QFileDialog, "getOpenFileName", QtGui.QFileDialog.__dict__["getOpenFileNamesAndFilter"])
+    _patch(QtGui.QFileDialog, "getOpenFileName", "getOpenFileNamesAndFilter")
+    _patch(QtGui.QFileDialog, "getOpenFileNames", "getOpenFileNamesAndFilter")
+    _patch(QtGui.QFileDialog, "getSaveFileName", "getSaveFileNameAndFilter")
 
     QtWidgets = QtGui
     QtCore.QSortFilterProxyModel = QtGui.QSortFilterProxyModel
