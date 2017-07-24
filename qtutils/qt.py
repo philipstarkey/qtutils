@@ -16,7 +16,6 @@
 # addition in some cases.                                           #
 #####################################################################
 import sys
-import sip
 
 PYSIDE = 'PySide'
 PYQT4 = 'PyQt4'
@@ -39,6 +38,7 @@ def set_pyqt4_API2():
 def check_pyqt4_api():
     """If PyQt4 was already imported before we got a chance to set API version 2, ensure the API
     versions were already set to version 2. Otherwise confusing errors may occur later - better to catch this now"""
+    import sip
     API_NAMES = ["QDate", "QDateTime", "QString", "QTextStream", "QTime", "QUrl", "QVariant"]
     API_VERSION = 2
     for name in API_NAMES:
