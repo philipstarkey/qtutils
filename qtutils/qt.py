@@ -83,23 +83,32 @@ else:
         QtCore.QT_VERSION_STR = PySide.QtCore.__version__
         QtCore.PYQT_VERSION_STR = PySide.__version__
 
-    class NewQHeaderView(QtGui.QHeaderView):
-        def setSectionsMovable(self, *args, **kwargs):
-            self.setMovable(*args, **kwargs)
 
-        def setSectionsClickable(self, *args, **kwargs):
-            self.setClickable(*args, **kwargs)
+    def _patch(cls, qt5_method_name, qt4_method_name):
+        """In Qt 4, alias the qt5 method names to point to the qt4
+        equivalents. Replace the qt4 method with one that raises an exception
+        pointing the user to use the qt5 method name"""
 
-        def setSectionResizeMode(self, *args, **kwargs):
-            self.setResizeMode(*args, **kwargs)
+        # Alias the new method name to point to the existing method
+        setattr(cls, qt5_method_name, cls.__dict__[qt4_method_name])
 
-    QtGui.QHeaderView = NewQHeaderView
+        def deprecation_error(self, *args, **kwargs):
+            msg = ("{}.{} has been renamed to ".format(cls.__name__, qt4_method_name) +
+                   "{}.{} in qt5.".format(cls.__name__, qt5_method_name) +
+                   "qtutils requires you use the new method names even in qt4 " +
+                   " (they are aliased to point to the existing methods) so that code works " +
+                   "with both qt4 and qt5")
+            raise NameError(msg)
 
-    class NewQFileDialog(QtGui.QFileDialog):
-        def getOpenFileName(self, *args, **kwargs):
-            self.getOpenFileNamesAndFilter(*args, **kwargs)
+        # Accesing the existing method by name will raise an error:
+        setattr(cls, qt4_method_name, deprecation_error)
 
-    QtGui.QFileDialog = NewQFileDialog
+    _patch(QtGui.QHeaderView, "setSectionsMovable", "setMovable")
+    _patch(QtGui.QHeaderView, "setSectionsClickable", "setClickable")
+    _patch(QtGui.QHeaderView, "setSectionResizeMode", "setResizeMode")
+
+    # No deprecation message here as the function exists under Qt4 aswell but returns str insted of tuple
+    setattr(QtGui.QFileDialog, "getOpenFileName", QtGui.QFileDialog.__dict__["getOpenFileNamesAndFilter"])
 
     QtWidgets = QtGui
     QtCore.QSortFilterProxyModel = QtGui.QSortFilterProxyModel
