@@ -107,9 +107,11 @@ else:
     _patch(QtGui.QHeaderView, "setSectionsClickable", "setClickable")
     _patch(QtGui.QHeaderView, "setSectionResizeMode", "setResizeMode")
 
-    _patch(QtGui.QFileDialog, "getOpenFileName", "getOpenFileNameAndFilter")
-    _patch(QtGui.QFileDialog, "getOpenFileNames", "getOpenFileNamesAndFilter")
-    _patch(QtGui.QFileDialog, "getSaveFileName", "getSaveFileNameAndFilter")
+    if QT_ENV == PYQT4:
+        # Pyside does not have the methods ending in "-AndFilter":
+        _patch(QtGui.QFileDialog, "getOpenFileName", "getOpenFileNameAndFilter")
+        _patch(QtGui.QFileDialog, "getOpenFileNames", "getOpenFileNamesAndFilter")
+        _patch(QtGui.QFileDialog, "getSaveFileName", "getSaveFileNameAndFilter")
 
     QtWidgets = QtGui
     QtCore.QSortFilterProxyModel = QtGui.QSortFilterProxyModel
