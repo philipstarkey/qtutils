@@ -116,6 +116,7 @@ else:
     QtWidgets = QtGui
     QtCore.QSortFilterProxyModel = QtGui.QSortFilterProxyModel
     QtWidgets.QStyleOptionProgressBar = QtGui.QStyleOptionProgressBarV2
+    QtWidgets.QStyleOptionTab = QtGui.QStyleOptionTabV3
     QtCore.qInstallMessageHandler = QtCore.qInstallMsgHandler
 
 sys.modules['qtutils.qt.QtGui'] = QtGui
