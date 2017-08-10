@@ -92,15 +92,15 @@ else:
 
     # Allow the methods that have been renamed in Qt5 to be accessed by their
     # Qt5 names:
-    QtGui.QHeaderView.setSectionsMovable = QtGui.QHeaderView.setMovable
-    QtGui.QHeaderView.setSectionsClickable = QtGui.QHeaderView.setClickable
-    QtGui.QHeaderView.setSectionResizeMode = QtGui.QHeaderView.setResizeMode
+    setattr(QtGui.QHeaderView, "setSectionsMovable", QtGui.QHeaderView.__dict__["setMovable"])
+    setattr(QtGui.QHeaderView, "setSectionsClickable", QtGui.QHeaderView.__dict__["setClickable"])
+    setattr(QtGui.QHeaderView, "setSectionResizeMode", QtGui.QHeaderView.__dict__["setResizeMode"])
 
     if QT_ENV == PYQT4:
         # Pyside does not have the methods ending in "-AndFilter":
-        QtGui.QFileDialog.getOpenFileName = QtGui.QFileDialog.getOpenFileNameAndFilter
-        QtGui.QFileDialog.getOpenFileNames = QtGui.QFileDialog.getOpenFileNamesAndFilter
-        QtGui.QFileDialog.getSaveFileName = QtGui.QFileDialog.getSaveFileNameAndFilter
+        setattr(QtGui.QFileDialog, "getOpenFileName", QtGui.QFileDialog.__dict__["getOpenFileNameAndFilter"])
+        setattr(QtGui.QFileDialog, "getOpenFileNames", QtGui.QFileDialog.__dict__["getOpenFileNamesAndFilter"])
+        setattr(QtGui.QFileDialog, "getSaveFileName", QtGui.QFileDialog.__dict__["getSaveFileNameAndFilter"])
 
     QtWidgets = QtGui
     QtCore.QSortFilterProxyModel = QtGui.QSortFilterProxyModel
