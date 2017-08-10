@@ -23,7 +23,7 @@ PYQT5 = 'PyQt5'
 QT_ENV = None
 
 
-def set_pyqt4_API2():
+def set_pyqt4_api():
     import sip
     # This must be done before importing PyQt4:
     API_NAMES = ["QDate", "QDateTime", "QString", "QTextStream", "QTime", "QUrl", "QVariant"]
@@ -36,16 +36,22 @@ def set_pyqt4_API2():
 
 
 def check_pyqt4_api():
-    """If PyQt4 was already imported before we got a chance to set API version 2, ensure the API
-    versions were already set to version 2. Otherwise confusing errors may occur later - better to catch this now"""
+    """If PyQt4 was already imported before we got a chance to set API version
+    2, ensure the API versions are either not set, or set to version 2.
+    Otherwise confusing errors may occur later - better to catch this now"""
     import sip
     API_NAMES = ["QDate", "QDateTime", "QString", "QTextStream", "QTime", "QUrl", "QVariant"]
     API_VERSION = 2
     for name in API_NAMES:
         try:
             if sip.getapi(name) != API_VERSION:
-                raise RuntimeError("qtutils only compatible with version 2 of the  PYQt4 API. Either set the API to version 2 before importing PyQt4, or import qtutils first, which will set it for you")
+                msg = ("qtutils is only compatible with version 2 of the  PyQt4 API." +
+                       "Whilst you can import PyQt4 prior to importing qtutils (in order to tell qtutils " +
+                       "to use PyQt4), either set the API version to 2 yourself, or import qtutils " +
+                       "(which will set it for you) prior to importing QtGui or QtCore.")
+                raise RuntimeError(msg)
         except ValueError:
+            # API version not set yet.
             pass
 
 
@@ -55,12 +61,13 @@ for lib in libs:
         QT_ENV = lib
         if lib == PYQT4:
             check_pyqt4_api()
+            set_pyqt4_api()
         break
 else:
     for lib in libs:
         if lib == PYQT4:
             # Have to set pyqt API v2 before importing PyQt4:
-            set_pyqt4_API2()
+            set_pyqt4_api()
         try:
             __import__(lib)
             QT_ENV = lib
