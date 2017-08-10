@@ -90,35 +90,17 @@ else:
         QtCore.QT_VERSION_STR = PySide.QtCore.__version__
         QtCore.PYQT_VERSION_STR = PySide.__version__
 
-
-    def _patch(cls, qt5_method_name, qt4_method_name):
-        """In Qt 4, alias the qt5 method names to point to the qt4
-        equivalents. Replace the qt4 method with one that raises an exception
-        pointing the user to use the qt5 method name"""
-
-        # Alias the new method name to point to the existing method
-        setattr(cls, qt5_method_name, cls.__dict__[qt4_method_name])
-
-        def deprecation_error(self, *args, **kwargs):
-            msg = ("{}.{} has been renamed to ".format(cls.__name__, qt4_method_name) +
-                   "{}.{} in qt5.".format(cls.__name__, qt5_method_name) +
-                   "qtutils requires you use the new method names even in qt4 " +
-                   " (they are aliased to point to the existing methods) so that code works " +
-                   "with both qt4 and qt5")
-            raise NameError(msg)
-
-        # Accesing the existing method by name will raise an error:
-        setattr(cls, qt4_method_name, deprecation_error)
-
-    _patch(QtGui.QHeaderView, "setSectionsMovable", "setMovable")
-    _patch(QtGui.QHeaderView, "setSectionsClickable", "setClickable")
-    _patch(QtGui.QHeaderView, "setSectionResizeMode", "setResizeMode")
+    # Allow the methods that have been renamed in Qt5 to be accessed by their
+    # Qt5 names:
+    QtGui.QHeaderView.setSectionsMovable = QtGui.QHeaderView.setMovable
+    QtGui.QHeaderView.setSectionsClickable = QtGui.QHeaderView.setClickable
+    QtGui.QHeaderView.setSectionResizeMode = QtGui.QHeaderView.setResizeMode
 
     if QT_ENV == PYQT4:
         # Pyside does not have the methods ending in "-AndFilter":
-        _patch(QtGui.QFileDialog, "getOpenFileName", "getOpenFileNameAndFilter")
-        _patch(QtGui.QFileDialog, "getOpenFileNames", "getOpenFileNamesAndFilter")
-        _patch(QtGui.QFileDialog, "getSaveFileName", "getSaveFileNameAndFilter")
+        QtGui.QFileDialog.getOpenFileName = QtGui.QFileDialog.getOpenFileNameAndFilter
+        QtGui.QFileDialog.getOpenFileNames = QtGui.QFileDialog.getOpenFileNamesAndFilter
+        QtGui.QFileDialog.getSaveFileName = QtGui.QFileDialog.getSaveFileNameAndFilter
 
     QtWidgets = QtGui
     QtCore.QSortFilterProxyModel = QtGui.QSortFilterProxyModel
