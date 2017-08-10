@@ -23,17 +23,6 @@ except ImportError:
 from qtutils.qt.QtCore import qInstallMessageHandler
 from qtutils.locking import qtlock
 
-
-def _message_handler(type, message):
-    """Handle qt warnings etc with an exception, so they don't pass
-    unnoticed"""
-    print('%s: %s' % (type, message))
-    # raise Exception('%s: %s'%(type,message))
-
-
-qInstallMessageHandler(_message_handler)
-del qInstallMessageHandler
-
 qtlock.enforce()
 
 from qtutils.invoke_in_main import inmain, inmain_later, inthread, inmain_decorator
