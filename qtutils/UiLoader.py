@@ -13,6 +13,8 @@
 #####################################################################
 
 from __future__ import print_function
+from __future__ import division, unicode_literals, print_function, absolute_import
+
 import sys
 import qtutils.qt
 
@@ -104,7 +106,7 @@ else:
     class UiLoader(object):
         def __init__(self):
             # dummy module
-            self.module = sys.modules['qtutils.widgets'] = ModuleType('widgets')
+            self.module = sys.modules['qtutils.widgets'] = ModuleType(str('widgets'))
 
         def registerCustomWidget(self, class_):
             self.registerCustomPromotion(class_.__name__, class_)
