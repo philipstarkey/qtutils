@@ -1,3 +1,5 @@
+from __future__ import print_function
+from __future__ import division, unicode_literals, print_function, absolute_import
 import qtutils.qt
 if qtutils.qt.QT_ENV == qtutils.qt.PYSIDE:
     import qtutils.icons._icons_pyside
