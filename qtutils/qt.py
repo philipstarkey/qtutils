@@ -15,7 +15,7 @@
 # The warpper is supposed to act like PyQt5, but might need         #
 # addition in some cases.                                           #
 #####################################################################
-from __future__ import print_function
+
 from __future__ import division, unicode_literals, print_function, absolute_import
 
 import sys
