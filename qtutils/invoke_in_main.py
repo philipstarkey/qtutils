@@ -94,7 +94,7 @@ def in_main_later(fn, exceptions_in_main, *args, **kwargs):
 def get_inmain_result(queue):
     result, exception = queue.get()
     if exception is not None:
-        six.reraise(exception)
+        six.reraise(*exception)
     return result
 
 
