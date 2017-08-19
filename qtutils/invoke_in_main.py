@@ -21,6 +21,7 @@ if PY2:
 else:
     import queue as Queue
 
+import six
 import threading
 import functools
 
@@ -93,11 +94,7 @@ def in_main_later(fn, exceptions_in_main, *args, **kwargs):
 def get_inmain_result(queue):
     result, exception = queue.get()
     if exception is not None:
-        type, value, traceback = exception
-        if PY2:
-            exec('raise type, value, traceback')
-        else:
-            raise value.with_traceback(traceback)
+        six.reraise(exception)
     return result
 
 
