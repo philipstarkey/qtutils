@@ -104,6 +104,7 @@ else:
 
     QtWidgets = QtGui
     QtCore.QSortFilterProxyModel = QtGui.QSortFilterProxyModel
+    QtCore.QItemSelectionModel = QtGui.QItemSelectionModel
     QtWidgets.QStyleOptionProgressBar = QtGui.QStyleOptionProgressBarV2
     QtWidgets.QStyleOptionTab = QtGui.QStyleOptionTabV3
     QtWidgets.QStyleOptionViewItem = QtGui.QStyleOptionViewItemV4
