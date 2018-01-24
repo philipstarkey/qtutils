@@ -12,7 +12,12 @@
 #                                                                   #
 #####################################################################
 
-from __future__ import print_function
+from __future__ import division, unicode_literals, print_function, absolute_import
+import sys
+PY2 = sys.version_info[0] == 2
+if PY2:
+    chr = unichr
+
 import threading
 
 from qtutils.qt.QtCore import *
@@ -101,7 +106,7 @@ class OutputBox(object):
         if not hasattr(self.local, 'push_sock'):
             self.new_socket()
         # Queue the output on the socket:
-        self.local.push_sock.send_multipart(['stderr' if red else 'stdout', text.encode('utf8')])
+        self.local.push_sock.send_multipart([b'stderr' if red else b'stdout', text.encode('utf8')])
 
     def mainloop(self, socket):
         while True:
@@ -123,8 +128,8 @@ class OutputBox(object):
                     messages.append((current_stream, current_message))
                 current_message.append(text)
             for stream, message in messages:
-                text = ''.join(message).decode('utf8')
-                red = (stream == 'stderr')
+                text = ''.join(map(lambda s: s.decode('utf8'), message))
+                red = (stream.decode('utf8') == 'stderr')
                 self.add_text(text, red)
 
     @inmain_decorator(True)
@@ -182,14 +187,14 @@ if __name__ == '__main__':
         output_box.output('More red.\n', True)
         output_box.output('The \"quick white fox\" jumped over the \'lazy\' dog\n')
         output_box.output('<The quick red fox jumped over the lazy dog>\n', True)
-        output_box.output('Der schnelle braune Fuchs ist \xc3\xbcber den faulen Hund gesprungen\n'.decode('utf8'), True)
+        output_box.output(b'Der schnelle braune Fuchs ist \xc3\xbcber den faulen Hund gesprungen\n'.decode('utf8'), True)
 
     def button_pushed(*args, **kwargs):
         import random
         uchars = [random.randint(0x20, 0x7e) for _ in range(random.randint(0, 50))]
         ustr = u''
         for uc in uchars:
-            ustr += unichr(uc)
+            ustr += chr(uc)
         red = random.randint(0, 1)
         newline = random.randint(0, 1)
         output_box.output(ustr + ('\n' if newline else ''), red=red)

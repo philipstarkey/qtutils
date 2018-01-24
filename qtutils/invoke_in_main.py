@@ -12,16 +12,16 @@
 #                                                                   #
 #####################################################################
 
-from __future__ import print_function
+from __future__ import division, unicode_literals, print_function, absolute_import
 import sys
-
-PYTHON2 = sys.version < '3'
-
-if PYTHON2:
+PY2 = sys.version_info[0] == 2
+if PY2:
+    str = unicode
     import Queue
 else:
     import queue as Queue
 
+import six
 import threading
 import functools
 
@@ -94,11 +94,7 @@ def in_main_later(fn, exceptions_in_main, *args, **kwargs):
 def get_inmain_result(queue):
     result, exception = queue.get()
     if exception is not None:
-        type, value, traceback = exception
-        if PYTHON2:
-            exec('raise type, value, traceback')
-        else:
-            raise value.with_traceback(traceback)
+        six.reraise(*exception)
     return result
 
 
@@ -145,7 +141,7 @@ if __name__ == '__main__':
 
     def myFunction2():
         print('from MainThread, running in thread: %s' % (threading.currentThread().name))
-        QTimer.singleShot(0, x)
+        QTimer.singleShot(0, lambda: inmain(myFunction2))
 
     qapplication = QCoreApplication(sys.argv)
 
