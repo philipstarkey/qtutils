@@ -1,5 +1,8 @@
-from __future__ import print_function
+from __future__ import division, unicode_literals, print_function, absolute_import
 import sys
+PY2 = sys.version_info[0] == 2
+if PY2:
+    str = unicode
 import weakref
 
 from qtutils.qt.QtCore import *
