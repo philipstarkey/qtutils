@@ -25,7 +25,7 @@ else:
 import threading
 import functools
 
-from qtutils.qt.QtCore import *
+from qtutils.qt.QtCore import QEvent, QObject, QCoreApplication, QTimer, QThread
 
 
 class CallEvent(QEvent):
