@@ -9,8 +9,10 @@ QtUtils is a Python library that provides convenient tools for Python Developers
 
 Utilities include those providing thread-safe access to Qt objects, a PySide/PyQt4 abstraction layer that matches the PyQt5 API, simplified QSettings storage, and dynamic widget promotion when loading UI files. QtUtils also includes the Fugue icon set, free to use with attribution to `Yusuke Kamiyamane`_.
 
-.. _`Yusuke Kamiyamane`:http://p.yusukekamiyamane.com/
+.. _`Yusuke Kamiyamane`: http://p.yusukekamiyamane.com/
 
+Contents
+========
 .. toctree::
    :maxdepth: 1
    
