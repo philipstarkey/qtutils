@@ -15,6 +15,7 @@ Utilities include those providing thread-safe access to Qt objects, a PySide/PyQ
    :maxdepth: 1
    
    install
+   invoke_in_main
 
 
 
