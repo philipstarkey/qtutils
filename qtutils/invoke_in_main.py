@@ -137,7 +137,7 @@ def _in_main_later(fn, exceptions_in_main, *args, **kwargs):
 def get_inmain_result(queue):
     """ Processes the result of :func:`qtutils.invoke_in_main.inmain_later`.
     
-    This function takes the queue returned by :code:`inmain_later` and nlocks
+    This function takes the queue returned by :code:`inmain_later` and blocks
     until a result is obtained. If an exception occurred when executing the
     function in the MainThread, it is raised again here (it is also raised in the
     MainThread). If no exception was raised, the result from the execution of the
