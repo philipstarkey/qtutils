@@ -29,25 +29,30 @@ if 'NO_PYQT5' in sys.argv:
 
 VERSION = '2.0.0'
 
-# Do the build process for icon resource files, this will only do anything
-# if the files are not already present.  The idea is that someone like me
-# will run this during sdist, upload the results to PyPI, and then the
-# files should already be there for those installing via easy_install
-# or pip. So those people will not require pyside-rcc or pyrcc4 on
-# their systems in order to install icon support for both PyQt4 and
-# Pyside. Those installing from an hg clone however will have to have
-# pyside-rcc and pyrcc4 installed for the following to work, or they
-# can disable one of the via the boolean flags at the top of this file.
-print('building qt icon resource files ...')
-sys.path.insert(0, 'qtutils/icons')
-import _build
-if BUILD_PYQT5_ICONS_RESOURCE:
-    _build.pyqt5()
-if BUILD_PYQT4_ICONS_RESOURCE:
-    _build.pyqt4()
-if BUILD_PYSIDE_ICONS_RESOURCE:
-    _build.pyside()
-print('done')
+# conditional for readthedocs environment
+on_rtd = os.environ.get('READTHEDOCS') == 'True'
+if not on_rtd:
+    # Do the build process for icon resource files, this will only do anything
+    # if the files are not already present.  The idea is that someone like me
+    # will run this during sdist, upload the results to PyPI, and then the
+    # files should already be there for those installing via easy_install
+    # or pip. So those people will not require pyside-rcc or pyrcc4 on
+    # their systems in order to install icon support for both PyQt4 and
+    # Pyside. Those installing from an hg clone however will have to have
+    # pyside-rcc and pyrcc4 installed for the following to work, or they
+    # can disable one of the via the boolean flags at the top of this file.
+    print('building qt icon resource files ...')
+    sys.path.insert(0, 'qtutils/icons')
+    import _build
+    if BUILD_PYQT5_ICONS_RESOURCE:
+        _build.pyqt5()
+    if BUILD_PYQT4_ICONS_RESOURCE:
+        _build.pyqt4()
+    if BUILD_PYSIDE_ICONS_RESOURCE:
+        _build.pyside()
+    print('done')
+else:
+    print('Skipping icon building on readthedocs...')
 
 # Auto generate a __version__ package for the package to import
 with open(os.path.join('qtutils', '__version__.py'), 'w') as f:
