@@ -16,9 +16,9 @@ We recommend installing qtutils from the Python Package Index. To do this, open 
 
     pip install qtutils
     
--------------------
+-----------------
 Upgrading qtutils
--------------------
+-----------------
 
 To upgrade to the latest version of qtutils, run::
 
