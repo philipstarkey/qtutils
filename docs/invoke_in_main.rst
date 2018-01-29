@@ -1,6 +1,6 @@
-*************
-Thread Safety
-*************
+*************************************************************
+Convenience functions for using Qt safely from Python threads
+*************************************************************
 
 QtUtils provides convenience functions for accessing Qt objects in a thread safe way. 
 Qt requires that all GUI objects exist in the MainThread and that access to these objects is only made from the MainThread (see `Qt documentation`_).
