@@ -24,6 +24,10 @@ from qtutils.auto_scroll_to_end import set_auto_scroll_to_end
 from qtutils import *
 import ast
 
+import sys
+if sys.version_info.major == 2:
+    chr = unichr
+    
 # This should cover most platforms:
 acceptable_fonts = ["Ubuntu mono",
                     "Courier 10 Pitch",
@@ -291,7 +295,7 @@ if __name__ == '__main__':
         uchars = [random.randint(0x20, 0x7e) for _ in range(random.randint(0, 50))]
         ustr = u''
         for uc in uchars:
-            ustr += unichr(uc)
+            ustr += chr(uc)
         red = random.randint(0, 1)
         newline = random.randint(0, 1)
         hex = __builtins__.hex
