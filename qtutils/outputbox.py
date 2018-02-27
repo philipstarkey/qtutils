@@ -12,7 +12,12 @@
 #                                                                   #
 #####################################################################
 
-from __future__ import print_function
+from __future__ import division, unicode_literals, print_function, absolute_import
+import sys
+
+if sys.version_info.major == 2:
+    chr = unichr
+    
 import threading
 
 from qtutils.qt.QtCore import *
@@ -24,9 +29,6 @@ from qtutils.auto_scroll_to_end import set_auto_scroll_to_end
 from qtutils import *
 import ast
 
-import sys
-if sys.version_info.major == 2:
-    chr = unichr
     
 # This should cover most platforms:
 acceptable_fonts = ["Ubuntu mono",
