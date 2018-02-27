@@ -17,15 +17,23 @@ import sys
 PY2 = sys.version_info[0] == 2
 if PY2:
     str = unicode
-    import Queue
+    from Queue import Queue
 else:
-    import queue as Queue
+    from queue import Queue
 
-import six
 import threading
 import functools
 
 from qtutils.qt.QtCore import QEvent, QObject, QCoreApplication, QTimer, QThread
+
+
+def _reraise(exc_info):
+    type, value, traceback = exc_info
+    # handle python2/3 difference in raising exception        
+    if PY2:
+        exec('raise type, value, traceback', globals(), locals())
+    else:
+        raise value.with_traceback(traceback)
 
 
 class CallEvent(QEvent):
@@ -129,7 +137,7 @@ def _in_main_later(fn, exceptions_in_main, *args, **kwargs):
     will return a list of [result,exception] where exception=[type,value,traceback]
     of the exception.  Functions are guaranteed to be called in the order
     they were requested."""
-    queue = Queue.Queue()
+    queue = Queue()
     QCoreApplication.postEvent(caller, CallEvent(queue, exceptions_in_main, fn, *args, **kwargs))
     return queue
 
@@ -153,7 +161,7 @@ def get_inmain_result(queue):
     """
     result, exception = queue.get()
     if exception is not None:
-        six.reraise(*exception)
+        _reraise(exception)
     return result
 
 
