@@ -14,10 +14,10 @@
 
 from __future__ import division, unicode_literals, print_function, absolute_import
 import sys
-
-if sys.version_info.major == 2:
+PY2 = sys.version_info[0] == 2
+if PY2:
     chr = unichr
-    
+
 import threading
 
 from qtutils.qt.QtCore import *
