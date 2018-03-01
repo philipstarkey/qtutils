@@ -3,9 +3,9 @@
 Utilities for providing concurrent access to Qt objects, simplified QSettings storage, and dynamic widget promotion when loading UI files, in Python Qt applications.
 Includes the Fugue icon set, free to use with attribution to Yusuke Kamiyamane.
 
-[Documentation](https://http://qtutils.readthedocs.io)
-[view on pypi](https://pypi.python.org/pypi/qtutils/)
-[view on Bitbucket](https://bitbucket.org/philipstarkey/qtutils)
+[[Documentation](https://http://qtutils.readthedocs.io)] 
+[[view on pypi](https://pypi.python.org/pypi/qtutils/)] 
+[[view on Bitbucket](https://bitbucket.org/philipstarkey/qtutils)]
 
 
 ## Installation
