@@ -87,12 +87,11 @@ def charformats(charformat_repr):
 class OutputBox(object):
 
     def __init__(self, container, scrollback_lines=1000,
-                 zmq_context=None, bind_to_all_interfaces=False):
+                 zmq_context=None, bind_address='tcp://127.0.0.1'):
         """Instantiate an outputBox and insert into container widget. Set the
         number of lines of scrollback to keep. Set a zmq_context for creating
         sockets, otherwise zmq.Context.instance() will be used. set
-        bind_to_all_interfaces=True if you wish to receive data from other
-        computers, otherwise data will only be received from localhost"""
+        bind_address, defaulting to the local interface."""
         self.output_textedit = QPlainTextEdit()
         container.addWidget(self.output_textedit)
         self.output_textedit.setReadOnly(True)
@@ -116,11 +115,7 @@ class OutputBox(object):
         socket = self.zmq_context.socket(zmq.PULL)
         socket.setsockopt(zmq.LINGER, 0)
 
-        if bind_to_all_interfaces:
-            endpoint = 'tcp://*'
-        else:
-            endpoint = 'tcp://127.0.0.1'
-        self.port = socket.bind_to_random_port(endpoint)
+        self.port = socket.bind_to_random_port(bind_address)
 
         # Thread-local storage so we can have one push_sock per thread.
         # push_sock is for sending data to the output queue in a non-blocking
@@ -143,7 +138,7 @@ class OutputBox(object):
         # One socket per thread, so we don't have to acquire a lock
         # to send:
         self.local.push_sock = self.zmq_context.socket(zmq.PUSH)
-        self.local.push_sock.connect('tcp://localhost:%d' % self.port)
+        self.local.push_sock.connect('tcp://127.0.0.1:%d' % self.port)
 
     def write(self, text, color=WHITE, bold=False, italic=False):
         """Write to the output box as if it were a file. Takes a string as
