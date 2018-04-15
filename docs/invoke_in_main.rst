@@ -7,10 +7,11 @@ Qt requires that all GUI objects exist in the MainThread and that access to thes
 This, while understandable, imposes significant limits on Python applications where threading is easy.
 While there are solutions using Qt signals, slots and a :code:`QThread`, these require significant boiler plate code that we believe is unnecessary.
 
-.. note:: There is some debate as to whether using Python threads with any part of the Qt library is safe (see `this`_ Stack Overflow post). The QtUtils library only instantiates a :code:`QEvent` and calls :code:`QCoreApplication.postEvent()` from a Python thread. While we have not observed any issues doing this (despite extensive use), this does not mean they do not exist.
+.. note:: There is some `debate`_ as to whether using Python threads with any part of the Qt library is safe, however this has been recently `challenged`_. The QtUtils library only instantiates a :code:`QEvent` and calls :code:`QCoreApplication.postEvent()` from a Python thread. It seems likely that as long as the underlying Python threading implementation matches the underlying Qt threading implementation **for your particular platform**, that there is no issue with how we have written this library. While we have not observed any issues with our library (and we have used it extensively on Windows, OSX and Ubuntu), this does not mean all platforms will behave in the same way. If this matters to you, we suggest you confirm the underlying thread implementation for your build of Python and Qt.
 
 .. _`Qt documentation`: http://doc.qt.io/qt-5/threads-qobject.html
-.. _`this`: https://stackoverflow.com/q/1595649
+.. _`debate`: https://stackoverflow.com/q/1595649
+.. _`challenged`: https://stackoverflow.com/a/49802578
   
 
 ========
