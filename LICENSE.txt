@@ -21,3 +21,5 @@ source code of the PyQt project)
 
 This project includes the Fugue icon set by Yusuke Kamiyamane, licensed under a
 Creative Commons Attribution 3.0 License. See qtutils/icons/README.txt.
+
+This project includes the Ubuntu Mono font by Canonical, licensed under the Ubuntu Font License 1.0. See qtutils/fonts/LICENSE.txt.
