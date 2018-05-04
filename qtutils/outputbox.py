@@ -18,6 +18,7 @@ PY2 = sys.version_info[0] == 2
 if PY2:
     chr = unichr
 
+import os
 import threading
 
 from qtutils.qt.QtCore import *
@@ -29,17 +30,25 @@ from qtutils.auto_scroll_to_end import set_auto_scroll_to_end
 from qtutils import *
 import ast
 
-    
-# This should cover most platforms:
-acceptable_fonts = ["Ubuntu mono",
-                    "Courier 10 Pitch",
-                    "Courier Std",
-                    "Consolas",
-                    "Courier",
-                    "FreeMono",
-                    "Nimbus Mono L",
-                    "Courier New",
-                    "monospace"]
+
+if sys.platform == 'darwin':
+    # Gotta make the font bigger on macOS for some reason:
+    FONT_SIZE = 13
+else:
+    FONT_SIZE = 11
+
+_fonts_initalised = False
+
+def _add_fonts():
+    """Add bundled fonts to the font database from file"""
+    global _fonts_initalised
+    this_folder = os.path.dirname(os.path.abspath(__file__))
+    fonts_folder = os.path.join(this_folder, 'fonts')
+    for name in os.listdir(fonts_folder):
+        if name.endswith('.ttf'):
+            path = os.path.join(fonts_folder, name)
+            QFontDatabase.addApplicationFont(path)
+    _fonts_initalised = True
 
 
 GREY = GRAY = '#75715E' 
@@ -73,8 +82,11 @@ def charformats(charformat_repr):
     except Exception:
         # invalid color, use white:
         qcolor = QColor(WHITE)
-    font = QFont("SomeMonoFont", 11)
-    font.insertSubstitutions("SomeMonoFont", acceptable_fonts)
+
+    if not _fonts_initalised:
+        _add_fonts()
+
+    font = QFont("Ubuntu Mono", FONT_SIZE)
     font.setBold(bold)
     font.setItalic(italic)
     fmt = QTextCharFormat()
