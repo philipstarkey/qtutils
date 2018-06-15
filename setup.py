@@ -16,10 +16,14 @@ import os
 BUILD_PYQT5_ICONS_RESOURCE = True
 BUILD_PYQT4_ICONS_RESOURCE = True
 BUILD_PYSIDE_ICONS_RESOURCE = True
+BUILD_PYSIDE2_ICONS_RESOURCE = True
 
 if 'NO_PYSIDE' in sys.argv:
     sys.argv.remove('NO_PYSIDE')
     BUILD_PYSIDE_ICONS_RESOURCE = False
+if 'NO_PYSIDE2' in sys.argv:
+    sys.argv.remove('NO_PYSIDE2')
+    BUILD_PYSIDE2_ICONS_RESOURCE = False
 if 'NO_PYQT4' in sys.argv:
     BUILD_PYQT4_ICONS_RESOURCE = False
     sys.argv.remove('NO_PYQT4')
@@ -50,6 +54,8 @@ if not on_rtd:
         _build.pyqt4()
     if BUILD_PYSIDE_ICONS_RESOURCE:
         _build.pyside()
+    if BUILD_PYSIDE2_ICONS_RESOURCE:
+        _build.pyside2()
     print('done')
 else:
     print('Skipping icon building on readthedocs...')
