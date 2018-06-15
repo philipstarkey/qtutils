@@ -8,6 +8,7 @@ qrc_filename = os.path.join(this_folder, 'icons.qrc')
 py_filename_pyqt5 = os.path.join(this_folder, '_icons_pyqt5.py')
 py_filename_pyqt4 = os.path.join(this_folder, '_icons_pyqt4.py')
 py_filename_pyside = os.path.join(this_folder, '_icons_pyside.py')
+py_filename_pyside2 = os.path.join(this_folder, '_icons_pyside2.py')
 icon_folders = ['custom', 'fugue']
 
 
@@ -103,12 +104,40 @@ def find_pyside_rcc():
               PySide directory on Windows, which is where it is for the
               Anaconda Python distribution. This module should also find
               pyside-rcc if it in in the PATH, on any OS. Please find pyside-
-              rcc and put it in your PATH. On Debian based systems it is
-              available in the pyqt4-dev- tools package. If you want to
+              rcc and put it in your PATH. If you want to
               install qtutils without PySide support, simply run:
               python setup.py install NO_PYSIDE"""
         import textwrap
         raise OSError(textwrap.dedent(msg).strip())
+
+
+def find_pyside2_rcc():
+    import PySide2
+    # If we're on Windows, it's probably in the PySide2 directory:
+    if os.name == 'nt':
+        pyside2_dir = os.path.abspath(os.path.dirname(PySide2.__file__))
+        pyside2_rcc = os.path.join(pyside2_dir, 'pyside2-rcc.exe')
+        if os.path.exists(pyside2_rcc):
+            return pyside2_rcc
+    # Otherwise, or if it was not found there, check if it's in the PATH:
+    pyside2_rcc = 'pyside2-rcc'
+    try:
+        subprocess.call([pyside2_rcc], stdout=open(os.devnull), stderr=open(os.devnull))
+        return pyside2_rcc
+    except OSError:
+        # Still no?
+        msg = """
+              Cannot find pyside2-rcc, the PySide2 utility for building
+              resource files. This module was configured to find it in the
+              PySide2 directory on Windows, which is where it is for the
+              Anaconda Python distribution. This module should also find
+              pyside2-rcc if it in in the PATH, on any OS. Please find pyside2-
+              rcc and put it in your PATH. If you want to
+              install qtutils without PySide support, simply run:
+              python setup.py install NO_PYSIDE2"""
+        import textwrap
+        raise OSError(textwrap.dedent(msg).strip())
+
 
 
 def make_py_file_pyqt5():
@@ -134,6 +163,13 @@ def make_py_file_pyside():
     if child.returncode != 0:
         raise OSError(stderrdata)
 
+def make_py_file_pyside2():
+    pyside2_rcc = find_pyside2_rcc()
+    child = subprocess.Popen([pyside2_rcc, '-py3', '-o', py_filename_pyside2, qrc_filename])
+    stdoutdata, stderrdata = child.communicate()
+    if child.returncode != 0:
+        raise OSError(stderrdata)
+
 
 def pyqt5():
     if not os.path.exists(py_filename_pyqt5):
@@ -149,6 +185,9 @@ def pyside():
     if not os.path.exists(py_filename_pyside):
         make_py_file_pyside()
 
+def pyside2():
+    if not os.path.exists(py_filename_pyside2):
+        make_py_file_pyside2()
 
 if not os.path.exists(qrc_filename):
     make_qrc_file()
