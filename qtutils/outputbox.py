@@ -250,6 +250,7 @@ class OutputBox(object):
         # This probably won't work with obscure stuff line form feeds, vertical tabs and so on!
         cursor = self.output_textedit.textCursor()
         lines = text.splitlines(True) # This keeps the line endings in the strings!
+        cursor.movePosition(QTextCursor.End)
         for line in lines:
             trimmed = line.rstrip('\r\n') # Remove any of \r, \n or \r\n
             if self.linepos == 'start':
@@ -268,7 +269,7 @@ class OutputBox(object):
                 self.linepos = 'start'
             else:
                 self.linepos = 'mid'
-            #cursor.movePosition(QTextCursor.End)
+            cursor.movePosition(QTextCursor.End)
             cursor.movePosition(QTextCursor.StartOfBlock)
             cursor.movePosition(QTextCursor.End, mode=QTextCursor.KeepAnchor)
             cursor.setCharFormat(charformats(charformat_repr))
