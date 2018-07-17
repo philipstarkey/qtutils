@@ -120,7 +120,7 @@ class OutputBox(object):
 
         # Keeping track of whether the output is in the middle of a line
         # or not:
-        self.mid_line = False
+        #self.mid_line = False
 
         if zmq_context is None:
             zmq_context = zmq.Context.instance()
@@ -268,8 +268,8 @@ class OutputBox(object):
                 self.linepos = 'start'
             else:
                 self.linepos = 'mid'
-            cursor.movePosition(QTextCursor.End)
-            cursor.movePosition(QTextCursor.PreviousCharacter, n=len(trimmed))
+            #cursor.movePosition(QTextCursor.End)
+            cursor.movePosition(QTextCursor.StartOfBlock)
             cursor.movePosition(QTextCursor.End, mode=QTextCursor.KeepAnchor)
             cursor.setCharFormat(charformats(charformat_repr))
 
@@ -315,9 +315,11 @@ if __name__ == '__main__':
             output_box.print('success in bold green', color=GREEN, bold=True, italic=True)
             output_box.print('warning: queue is paused in orange', color=ORANGE, italic=True)
     
-    output_box.write("This sentence ends in a carriage return and should be overwritten at the start...\r")
+    output_box.write("This sentence ends in a carriage return and should be overwritten and not be visible at all...\r")
     output_box.write("This should overwrite and then move on to the next line\n")
 
+    output_box.print("This sentence is produced with print and ends in carriage return and should be overwritten and not be visible at all...",end="\r")
+    output_box.print("This should overwrite with print and then move on to the next line")
 
     def button_pushed(*args, **kwargs):
         import random
