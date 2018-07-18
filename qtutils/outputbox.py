@@ -250,19 +250,26 @@ class OutputBox(object):
         # This probably won't work with obscure stuff line form feeds, vertical tabs and so on!
         cursor = self.output_textedit.textCursor()
         lines = text.splitlines(True) # This keeps the line endings in the strings!
-        cursor.movePosition(QTextCursor.End)
+        cursor = self.output_textedit.textCursor()
+        self.prevline_len = 0
+        charsprinted = 0
         for line in lines:
-            trimmed = line.rstrip('\r\n') # Remove any of \r, \n or \r\n
-            if self.linepos == 'start':
-                cursor = self.output_textedit.textCursor()
-                cursor.movePosition(QTextCursor.StartOfBlock,mode=QTextCursor.KeepAnchor)
-                cursor.insertText(trimmed)
+            cursor.movePosition(QTextCursor.End)
+            thisline = line.rstrip('\r\n') # Remove any of \r, \n or \r\n
+            if self.linepos == 'start':    # Previous line ended in a carriage return. 
+                cursor.movePosition(QTextCursor.StartOfBlock, mode=QTextCursor.KeepAnchor) # "Highlight" the text to be overwritten
+                cursor.insertText(thisline)
+                charsprinted -= self.prevline_len # We are replacing the previous line...
+                self.prevline_len = len(thisline) # Reset the line length to this overwriting line
             elif self.linepos == 'mid':
-                cursor = self.output_textedit.textCursor()
-                cursor.movePosition(QTextCursor.End)
-                cursor.insertText(trimmed)
-            else:
-                self.output_textedit.appendPlainText(trimmed)           
+                cursor.insertText(thisline)
+                self.prevline_len += len(thisline)
+            else: # it's a new line!
+                self.output_textedit.appendPlainText(thisline)
+                charsprinted += 1  # Account for newline character here
+                self.prevline_len = len(thisline)
+            charsprinted += len(thisline)
+            # Set the line position for the next line, whenever that arrives
             if '\n' in line:
                 self.linepos = 'new'
             elif '\r' in line:
@@ -270,11 +277,10 @@ class OutputBox(object):
             else:
                 self.linepos = 'mid'
             cursor.movePosition(QTextCursor.End)
-            cursor.movePosition(QTextCursor.StartOfBlock)
+            cursor.movePosition(QTextCursor.PreviousCharacter, n=charsprinted)
             cursor.movePosition(QTextCursor.End, mode=QTextCursor.KeepAnchor)
             cursor.setCharFormat(charformats(charformat_repr))
-
-
+            
 if __name__ == '__main__':
     import sys
     app = QApplication(sys.argv)
