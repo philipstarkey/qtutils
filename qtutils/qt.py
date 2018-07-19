@@ -21,6 +21,7 @@ from __future__ import division, unicode_literals, print_function, absolute_impo
 import sys
 
 PYSIDE = 'PySide'
+PYSIDE2 = 'PySide2'
 PYQT4 = 'PyQt4'
 PYQT5 = 'PyQt5'
 QT_ENV = None
@@ -58,7 +59,7 @@ def check_pyqt4_api():
             pass
 
 
-libs = [PYQT5, PYQT4, PYSIDE]
+libs = [PYQT5, PYQT4, PYSIDE, PYSIDE2]
 for lib in libs:
     if lib in sys.modules:
         QT_ENV = lib
@@ -83,6 +84,8 @@ if QT_ENV is None:
 
 if QT_ENV == PYQT5:
     from PyQt5 import QtGui, QtCore, QtWidgets
+elif QT_ENV == PYSIDE2:
+    from PySide2 import QtGui, QtCore, QtWidgets
 else:
     if QT_ENV == PYQT4:
         from PyQt4 import QtGui, QtCore
@@ -117,3 +120,9 @@ else:
 sys.modules['qtutils.qt.QtGui'] = QtGui
 sys.modules['qtutils.qt.QtWidgets'] = QtWidgets
 sys.modules['qtutils.qt.QtCore'] = QtCore
+
+# Make Signal available under both names 'Signal' and 'pyqtSignal':
+if QT_ENV in [PYQT4, PYQT5]:
+    QtCore.Signal = QtCore.pyqtSignal
+else:
+    QtCore.pyqtSignal = QtCore.Signal

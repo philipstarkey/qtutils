@@ -2,6 +2,8 @@ from __future__ import division, unicode_literals, print_function, absolute_impo
 import qtutils.qt
 if qtutils.qt.QT_ENV == qtutils.qt.PYSIDE:
     import qtutils.icons._icons_pyside
+if qtutils.qt.QT_ENV == qtutils.qt.PYSIDE2:
+    import qtutils.icons._icons_pyside2
 elif qtutils.qt.QT_ENV == qtutils.qt.PYQT4:
     import qtutils.icons._icons_pyqt4
 elif qtutils.qt.QT_ENV == qtutils.qt.PYQT5:
