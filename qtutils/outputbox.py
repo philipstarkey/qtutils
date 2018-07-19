@@ -14,7 +14,6 @@
 
 from __future__ import division, unicode_literals, print_function, absolute_import
 import sys
-import re
 PY2 = sys.version_info[0] == 2
 if PY2:
     chr = unichr
@@ -99,6 +98,11 @@ def charformats(charformat_repr):
 
 class OutputBox(object):
 
+    # enum for keeping track of partial lines and carriage returns:
+    LINE_START = 0
+    LINE_MID = 1
+    LINE_NEW = 2
+
     def __init__(self, container, scrollback_lines=1000,
                  zmq_context=None, bind_address='tcp://127.0.0.1'):
         """Instantiate an outputBox and insert into container widget. Set the
@@ -112,15 +116,11 @@ class OutputBox(object):
         palette.setColor(QPalette.Base, QColor(BACKGROUND))
         self.output_textedit.setPalette(palette)
 
-        self.linepos = 'new'
+        self.linepos = self.LINE_NEW
         self.output_textedit.setBackgroundVisible(False)
         self.output_textedit.setWordWrapMode(QTextOption.WrapAnywhere)
         set_auto_scroll_to_end(self.output_textedit.verticalScrollBar())
         self.output_textedit.setMaximumBlockCount(scrollback_lines)
-
-        # Keeping track of whether the output is in the middle of a line
-        # or not:
-        #self.mid_line = False
 
         if zmq_context is None:
             zmq_context = zmq.Context.instance()
@@ -144,9 +144,9 @@ class OutputBox(object):
         # to speak.
         self.local = threading.local()
 
-        self.mainloop = threading.Thread(target=self.mainloop, args=(socket,))
-        self.mainloop.daemon = True
-        self.mainloop.start()
+        self.mainloop_thread = threading.Thread(target=self.mainloop, args=(socket,))
+        self.mainloop_thread.daemon = True
+        self.mainloop_thread.start()
 
     def new_socket(self):
         # One socket per thread, so we don't have to acquire a lock
@@ -230,52 +230,53 @@ class OutputBox(object):
             for charformat_repr, message in messages:
                 text = b''.join(message).decode('utf8')
                 self.add_text(text, charformat_repr.decode('utf8'))
-   
+
     @inmain_decorator(True)
-    # The convoluted logic below is because we want a few things that
-    # conflict slightly. Firstly, we want to take advantage of our
-    # setMaximumBlockCount setting; Qt will automatically remove old
-    # lines, but only if each line is a separate 'block'. So each line has
-    # to be inserted with appendPlainText - this appends a new block.
-    # However, we also want to support partial lines coming in, (and carraige returns! -LDT)
-    # and we want to print that partial line without waiting until we have the
-    # full line. So we keep track (with the instance variable
-    # self.linepos) whether we are at the start (post-CR), middle (no termination of prev chunk) or end (got a '\n')
-    # of a line and if we are we at start or middle we call insertText, which does *not* start a new block.
-    # LDT: Note the handling of '\r' (CR) here is not *quite* what an actual teletype would do, it
-    # returns to the start of the line but overwrites the whole line no matter how much is printed,
-    # rather than only overwriting up to what new is printed. I expect this difference not to matter too much!    
     def add_text(self, text, charformat_repr):
-        # Try to follow the approach of add_text but allow other line separators.
-        # This probably won't work with obscure stuff line form feeds, vertical tabs and so on!
+        # The convoluted logic below is because we want a few things that conflict
+        # slightly. Firstly, we want to take advantage of our setMaximumBlockCount
+        # setting; Qt will automatically remove old lines, but only if each line is a
+        # separate 'block'. So each line has to be inserted with appendPlainText - this
+        # appends a new block. However, we also want to support partial lines coming in,
+        # (and carraige returns! -LDT) and we want to print that partial line without
+        # waiting until we have the full line. So we keep track (with the instance
+        # variable self.linepos) whether we are at the start (post-CR), middle (no
+        # termination of prev chunk) or end (got a '\n') of a line and if we are we at
+        # start or middle we call insertText, which does *not* start a new block. LDT:
+        # Note the handling of '\r' (CR) here is not *quite* what an actual teletype
+        # would do, it returns to the start of the line but overwrites the whole line no
+        # matter how much is printed, rather than only overwriting up to what new is
+        # printed. I expect this difference not to matter too much!
         cursor = self.output_textedit.textCursor()
         lines = text.splitlines(True) # This keeps the line endings in the strings!
         cursor = self.output_textedit.textCursor()
-        self.prevline_len = 0
+        prevline_len = 0
         charsprinted = 0
         for line in lines:
             cursor.movePosition(QTextCursor.End)
             thisline = line.rstrip('\r\n') # Remove any of \r, \n or \r\n
-            if self.linepos == 'start':    # Previous line ended in a carriage return. 
+            if self.linepos == self.LINE_START:    # Previous line ended in a carriage return. 
                 cursor.movePosition(QTextCursor.StartOfBlock, mode=QTextCursor.KeepAnchor) # "Highlight" the text to be overwritten
                 cursor.insertText(thisline)
-                charsprinted -= self.prevline_len # We are replacing the previous line...
-                self.prevline_len = len(thisline) # Reset the line length to this overwriting line
-            elif self.linepos == 'mid':
+                charsprinted -= prevline_len # We are replacing the previous line...
+                prevline_len = len(thisline) # Reset the line length to this overwriting line
+            elif self.linepos == self.LINE_MID:
                 cursor.insertText(thisline)
-                self.prevline_len += len(thisline)
-            else: # it's a new line!
+                prevline_len += len(thisline)
+            elif self.linepos == self.LINE_NEW:
                 self.output_textedit.appendPlainText(thisline)
                 charsprinted += 1  # Account for newline character here
-                self.prevline_len = len(thisline)
+                prevline_len = len(thisline)
+            else:
+                raise ValueError(self.linepos)
             charsprinted += len(thisline)
             # Set the line position for the next line, whenever that arrives
             if '\n' in line:
-                self.linepos = 'new'
+                self.linepos = self.LINE_NEW
             elif '\r' in line:
-                self.linepos = 'start'
+                self.linepos = self.LINE_START
             else:
-                self.linepos = 'mid'
+                self.linepos = self.LINE_MID
             cursor.movePosition(QTextCursor.End)
             cursor.movePosition(QTextCursor.PreviousCharacter, n=charsprinted)
             cursor.movePosition(QTextCursor.End, mode=QTextCursor.KeepAnchor)
