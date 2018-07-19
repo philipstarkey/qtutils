@@ -104,7 +104,8 @@ else:
         QtGui.QFileDialog.getOpenFileName = QtGui.QFileDialog.__dict__["getOpenFileNameAndFilter"]
         QtGui.QFileDialog.getOpenFileNames = QtGui.QFileDialog.__dict__["getOpenFileNamesAndFilter"]
         QtGui.QFileDialog.getSaveFileName = QtGui.QFileDialog.__dict__["getSaveFileNameAndFilter"]
-
+        QtCore.QItemSelectionModel = QtGui.QItemSelectionModel
+        
     QtWidgets = QtGui
     QtCore.QSortFilterProxyModel = QtGui.QSortFilterProxyModel
     QtCore.QItemSelectionModel = QtGui.QItemSelectionModel
