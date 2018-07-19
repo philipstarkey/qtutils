@@ -1,0 +1,15 @@
+Version 2.2.0 released Jul 20 2018
+----------------------------------
+* Added tentative PySide2 (i.e. Qt for Python) support.
+* Added alias QtCore.QItemSelectionModel -> QtGui.QItemSelectionModel on PyQt4.
+* Added support for carriage returns in OutputBox.
+* Bundled Ubuntu monospace font for consistent font in OutputBox across platforms.
+  This font is bundled under the terms of the Ubuntu font license included in this
+  repository.
+* Allow a zmq Context to be passed to OutputBox at instantiation. This allows a custom
+  Context to be used, intended for use with a zprocess.SecureContext for encrypted
+  messages.
+* Allow the binding interface to be specified for OutputBox. This allows the OutputBox
+  to potentially receive messages over the network. Intended for use with zprocess's 
+  in-development remote processes features.
+* Added this changelog file.
