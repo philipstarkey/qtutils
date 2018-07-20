@@ -1,3 +1,7 @@
+Version 2.2.2 released Jul 20 2018
+----------------------------------
+* Fixed packaging issues with previous release that led to fonts not being bundled.
+
 Version 2.2.0 released Jul 20 2018
 ----------------------------------
 * Added tentative PySide2 (i.e. Qt for Python) support.
