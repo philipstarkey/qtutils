@@ -31,7 +31,7 @@ if 'NO_PYQT5' in sys.argv:
     BUILD_PYQT5_ICONS_RESOURCE = False
     sys.argv.remove('NO_PYQT5')
 
-VERSION = '2.2.1'
+VERSION = '2.2.2'
 
 # conditional for readthedocs environment
 on_rtd = os.environ.get('READTHEDOCS') == 'True'
@@ -76,5 +76,7 @@ setup(name='qtutils',
                     ['custom/*',
                      'fugue/*',
                      'icons.qrc',
-                     'README.txt']}
+                     'README.txt'],
+                     'qtutils':
+                    ['fonts/*']}
       )
