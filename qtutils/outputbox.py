@@ -38,18 +38,18 @@ else:
     FONT_SIZE = 11
 
 _fonts_initalised = False
+_fonts_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fonts')
 
 def _add_fonts():
     """Add bundled fonts to the font database from file"""
     global _fonts_initalised
-    this_folder = os.path.dirname(os.path.abspath(__file__))
-    fonts_folder = os.path.join(this_folder, 'fonts')
-    for name in os.listdir(fonts_folder):
+    for name in os.listdir(_fonts_folder):
         if name.endswith('.ttf'):
-            path = os.path.join(fonts_folder, name)
+            path = os.path.join(_fonts_folder, name)
             QFontDatabase.addApplicationFont(path)
     _fonts_initalised = True
 
+FONT = "Ubuntu Mono"
 
 GREY = GRAY = '#75715E' 
 BACKGROUND = '#141411'
@@ -61,8 +61,18 @@ GREEN = '#A6E22E'
 BLUE = '#66D9EF'
 PURPLE = '#AE81FF'
 
+FORMAT_ALIASES =  {
+    'stdout': (WHITE, False, False),
+    'stderr': (RED, False, False),
+    'DEBUG': (GREY, False, False),
+    'INFO': (BLUE, False, False),
+    'WARNING': (YELLOW, True, False),
+    'ERROR': (ORANGE, True, False),
+    'CRITICAL': (RED, True, True)
+}
 
 _charformats = {}
+
 
 def charformats(charformat_repr):
     try:
@@ -70,12 +80,13 @@ def charformats(charformat_repr):
     except KeyError:
         pass
     try:
-        color, bold, italic = ast.literal_eval(charformat_repr)
-    except Exception:
-        if charformat_repr == 'stderr':
-            color, bold, italic = 'red', False, False
-        else:
-            # stdout, or invalid spec. Use plain font:
+        color, bold, italic = FORMAT_ALIASES[charformat_repr]
+    except KeyError:
+        # Not an alias
+        try:
+            color, bold, italic = ast.literal_eval(charformat_repr)
+        except Exception:
+            # Invalid spec. Use plain font:
             color, bold, italic = WHITE, False, False
     try:
         qcolor = QColor(color)
@@ -86,13 +97,13 @@ def charformats(charformat_repr):
     if not _fonts_initalised:
         _add_fonts()
 
-    font = QFont("Ubuntu Mono", FONT_SIZE)
+    font = QFont(FONT, FONT_SIZE)
     font.setBold(bold)
     font.setItalic(italic)
     fmt = QTextCharFormat()
     fmt.setForeground(QBrush(qcolor))
     fmt.setFont(font)
-    _charformats[color, bold, italic] = fmt
+    _charformats[charformat_repr] = fmt
     return fmt
 
 
@@ -154,23 +165,27 @@ class OutputBox(object):
         self.local.push_sock = self.zmq_context.socket(zmq.PUSH)
         self.local.push_sock.connect('tcp://127.0.0.1:%d' % self.port)
 
-    def write(self, text, color=WHITE, bold=False, italic=False):
-        """Write to the output box as if it were a file. Takes a string as
-        does not append newlines or anything else. use OutputBox.print() for
-        an interface more like the Python print() function."""
+    def write(self, text, color=WHITE, bold=False, italic=False, charformat=None):
+        """Write to the output box as if it were a file. Takes a string as does not
+        append newlines or anything else. use OutputBox.print() for an interface more
+        like the Python print() function. If charformat is provided, it will be used
+        directly, otherwise the color, bold, and italic arguments will be used to
+        determine the output format."""
         if not hasattr(self.local, 'push_sock'):
             self.new_socket()
         # Queue the output on the socket:
-        charformat = repr((color, bold, italic)).encode('utf8')
+        if charformat is None:
+            charformat = repr((color, bold, italic)).encode('utf8')
+        elif isinstance(charformat, str):
+            charformat = charformat.encode('utf8')
         self.local.push_sock.send_multipart([charformat, text.encode('utf8')])
 
     def print(self, *values, **kwargs):
-        """Print to the output box. This method accepts the same arguments as
-        the Python print function. If file=sys.stderr, the output will be red
-        and bold. If it is absent or sys.stdout, it will be white. Anything
-        else is an exception. The 'color' and 'bold' keyword arguments if
-        provided will override the settings inferred from the file keyword
-        argument."""
+        """Print to the output box. This method accepts the same arguments as the Python
+        print function. If file=sys.stderr, the output will be red. If it is absent or
+        sys.stdout, it will be white. Anything else is an exception. The 'color' and
+        'bold' keyword arguments if provided will override the settings inferred from
+        the file keyword argument."""
 
         sep = kwargs.pop('sep', None)
         end = kwargs.pop('end', None)
@@ -187,7 +202,7 @@ class OutputBox(object):
             color = WHITE
             bold = False
         elif file is sys.stderr:
-            color = 'red'
+            color = RED
             bold = False
         else:
             msg = 'file argument for OutputBox.print() must be stdout or stderr'
@@ -201,7 +216,7 @@ class OutputBox(object):
         """Wrapper around write() with only option for normal text or bold red
         text, retained for backward compatibility but deprecated."""
         if red:
-            color = 'red'
+            color = RED
             bold = False
         else:
             color = WHITE
@@ -282,6 +297,20 @@ class OutputBox(object):
             cursor.movePosition(QTextCursor.End, mode=QTextCursor.KeepAnchor)
             cursor.setCharFormat(charformats(charformat_repr))
             
+    # Ensure instances can be treated as a file-like object:
+    def close(self):
+        pass
+
+    def fileno(self):
+        return 1
+
+    def isatty(self):
+        return False
+
+    def flush(self):
+        pass
+
+
 if __name__ == '__main__':
     import sys
     app = QApplication(sys.argv)
@@ -328,6 +357,20 @@ if __name__ == '__main__':
 
     output_box.print("This sentence is produced with print and ends in carriage return and should be overwritten and not be visible at all...",end="\r")
     output_box.print("This should overwrite with print and then move on to the next line")
+
+
+    import logging
+    from zprocess import RichStreamHandler, rich_print # Requires zprocess 2.5.1
+    logger = logging.Logger('test')
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(RichStreamHandler(output_box))
+    logger.debug('DEBUG log message')
+    logger.info('INFO log message')
+    logger.warning('WARNING log message')
+    logger.error('ERROR log message')
+    logger.critical('CRITICAL log message')
+    rich_print('green text via rich_print', color=GREEN, file=output_box)
+
 
     def button_pushed(*args, **kwargs):
         import random
