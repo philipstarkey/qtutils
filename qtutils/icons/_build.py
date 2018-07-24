@@ -26,7 +26,12 @@ def make_qrc_file():
 
 
 def find_pyrcc5():
-    import PyQt5
+    try:
+        import PyQt5
+    except ImportError:
+        msg = ("Could not import PyQt5. To build qtutils without PyQt5 " +
+               "support, run setup.py with the NO_PYQT5 command line argument.")
+        raise RuntimeError(msg)
     # If we're on Windows, it's probably in the pyqt4 directory:
     if os.name == 'nt':
         pyqt5_dir = os.path.abspath(os.path.dirname(PyQt5.__file__))
@@ -55,7 +60,12 @@ def find_pyrcc5():
 
 
 def find_pyrcc4():
-    import PyQt4
+    try:
+        import PyQt4
+    except ImportError:
+        msg = ("Could not import PyQt4. To build qtutils without PyQt4 " +
+               "support, run setup.py with the NO_PYQT4 command line argument.")
+        raise RuntimeError(msg)
     # If we're on Windows, it's probably in the pyqt4 directory:
     if os.name == 'nt':
         pyqt4_dir = os.path.abspath(os.path.dirname(PyQt4.__file__))
@@ -84,7 +94,12 @@ def find_pyrcc4():
 
 
 def find_pyside_rcc():
-    import PySide
+    try:
+        import PySide
+    except ImportError:
+        msg = ("Could not import PySide. To build qtutils without PySide " +
+               "support, run setup.py with the NO_PYSIDE command line argument.")
+        raise RuntimeError(msg)
     # If we're on Windows, it's probably in the PySide directory:
     if os.name == 'nt':
         pyside_dir = os.path.abspath(os.path.dirname(PySide.__file__))
@@ -112,7 +127,12 @@ def find_pyside_rcc():
 
 
 def find_pyside2_rcc():
-    import PySide2
+    try:
+        import PySide2
+    except ImportError:
+        msg = ("Could not import PySide2. To build qtutils without PySide2 " +
+               "support, run setup.py with the NO_PYSIDE2 command line argument.")
+        raise RuntimeError(msg)
     # If we're on Windows, it's probably in the PySide2 directory:
     if os.name == 'nt':
         pyside2_dir = os.path.abspath(os.path.dirname(PySide2.__file__))
