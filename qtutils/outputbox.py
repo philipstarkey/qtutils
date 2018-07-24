@@ -114,6 +114,10 @@ class OutputBox(object):
     LINE_MID = 1
     LINE_NEW = 2
 
+    # Declare that our write() method accepts a 'charformat' kwarg for specifying
+    # formatting
+    supports_rich_write = True
+
     def __init__(self, container, scrollback_lines=1000,
                  zmq_context=None, bind_address='tcp://127.0.0.1'):
         """Instantiate an outputBox and insert into container widget. Set the
@@ -359,17 +363,18 @@ if __name__ == '__main__':
     output_box.print("This should overwrite with print and then move on to the next line")
 
 
-    import logging
-    from zprocess import RichStreamHandler, rich_print # Requires zprocess 2.5.1
-    logger = logging.Logger('test')
-    logger.setLevel(logging.DEBUG)
-    logger.addHandler(RichStreamHandler(output_box))
-    logger.debug('DEBUG log message')
-    logger.info('INFO log message')
-    logger.warning('WARNING log message')
-    logger.error('ERROR log message')
-    logger.critical('CRITICAL log message')
-    rich_print('green text via rich_print', color=GREEN, file=output_box)
+    # Uncomment to test this. Requires zprocess:
+    # import logging
+    # from zprocess import RichStreamHandler, rich_print # Requires zprocess 2.5.1
+    # logger = logging.Logger('test')
+    # logger.setLevel(logging.DEBUG)
+    # logger.addHandler(RichStreamHandler(output_box))
+    # logger.debug('DEBUG log message')
+    # logger.info('INFO log message')
+    # logger.warning('WARNING log message')
+    # logger.error('ERROR log message')
+    # logger.critical('CRITICAL log message')
+    # rich_print('green text via rich_print', color=GREEN, file=output_box)
 
 
     def button_pushed(*args, **kwargs):
