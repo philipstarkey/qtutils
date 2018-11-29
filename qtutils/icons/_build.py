@@ -191,23 +191,24 @@ def make_py_file_pyside2():
         raise OSError(stderrdata)
 
 
-def pyqt5():
-    if not os.path.exists(py_filename_pyqt5):
+def pyqt5(rebuild):
+    if rebuild or not os.path.exists(py_filename_pyqt5):
         make_py_file_pyqt5()
 
 
-def pyqt4():
-    if not os.path.exists(py_filename_pyqt4):
+def pyqt4(rebuild):
+    if rebuild or not os.path.exists(py_filename_pyqt4):
         make_py_file_pyqt4()
 
 
-def pyside():
-    if not os.path.exists(py_filename_pyside):
+def pyside(rebuild):
+    if rebuild or not os.path.exists(py_filename_pyside):
         make_py_file_pyside()
 
-def pyside2():
-    if not os.path.exists(py_filename_pyside2):
+def pyside2(rebuild):
+    if rebuild or not os.path.exists(py_filename_pyside2):
         make_py_file_pyside2()
 
-if not os.path.exists(qrc_filename):
-    make_qrc_file()
+def qrc(rebuild):
+    if rebuild or not os.path.exists(qrc_filename):
+        make_qrc_file()

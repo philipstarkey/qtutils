@@ -31,7 +31,14 @@ if 'NO_PYQT5' in sys.argv:
     BUILD_PYQT5_ICONS_RESOURCE = False
     sys.argv.remove('NO_PYQT5')
 
-VERSION = '2.2.2'
+# Set to True to rebuild resource files even if they exist. This may be necessary if
+# adding new icons.
+REBUILD = False
+if 'REBUILD' in sys.argv:
+    sys.argv.remove('REBUILD')
+    REBUILD = True
+
+VERSION = '2.2.3'
 
 # conditional for readthedocs environment
 on_rtd = os.environ.get('READTHEDOCS') == 'True'
@@ -48,14 +55,15 @@ if not on_rtd:
     print('building qt icon resource files ...')
     sys.path.insert(0, 'qtutils/icons')
     import _build
+    _build.qrc(REBUILD)
     if BUILD_PYQT5_ICONS_RESOURCE:
-        _build.pyqt5()
+        _build.pyqt5(REBUILD)
     if BUILD_PYQT4_ICONS_RESOURCE:
-        _build.pyqt4()
+        _build.pyqt4(REBUILD)
     if BUILD_PYSIDE_ICONS_RESOURCE:
-        _build.pyside()
+        _build.pyside(REBUILD)
     if BUILD_PYSIDE2_ICONS_RESOURCE:
-        _build.pyside2()
+        _build.pyside2(REBUILD)
     print('done')
 else:
     print('Skipping icon building on readthedocs...')
