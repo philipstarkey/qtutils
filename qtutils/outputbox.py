@@ -247,8 +247,15 @@ class OutputBox(object):
                     messages.append((current_charformat, current_message))
                 current_message.append(text)
             for charformat_repr, message in messages:
-                text = b''.join(message).decode('utf8')
-                self.add_text(text, charformat_repr.decode('utf8'))
+                # Print non-character data with replacement sequences:
+                text = b''.join(message).decode('utf8', errors='backslashreplace')
+                try:
+                    charformat_repr = charformat_repr.decode('utf8')
+                except UnicodeDecodeError:
+                    print('error')
+                    # Bad charformat repr. Ignore and print unformatted
+                    charformat_repr = 'stdout'
+                self.add_text(text, charformat_repr)
 
     @inmain_decorator(True)
     def add_text(self, text, charformat_repr):
