@@ -252,7 +252,6 @@ class OutputBox(object):
                 try:
                     charformat_repr = charformat_repr.decode('utf8')
                 except UnicodeDecodeError:
-                    print('error')
                     # Bad charformat repr. Ignore and print unformatted
                     charformat_repr = 'stdout'
                 self.add_text(text, charformat_repr)
