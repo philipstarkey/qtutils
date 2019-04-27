@@ -159,6 +159,7 @@ class OutputBox(object):
         # to speak.
         self.local = threading.local()
 
+        self.shutting_down = False
         self.mainloop_thread = threading.Thread(target=self.mainloop, args=(socket,))
         self.mainloop_thread.daemon = True
         self.mainloop_thread.start()
@@ -239,6 +240,9 @@ class OutputBox(object):
             while True:
                 try:
                     charformat_repr, text = socket.recv_multipart(zmq.NOBLOCK)
+                    if text == b'shutdown' and self.shutting_down:
+                        socket.close(linger=0)
+                        return
                 except zmq.Again:
                     break
                 if charformat_repr != current_charformat:
@@ -307,6 +311,15 @@ class OutputBox(object):
             cursor.movePosition(QTextCursor.End, mode=QTextCursor.KeepAnchor)
             cursor.setCharFormat(charformats(charformat_repr))
             
+    def shutdown(self):
+        """Stop the mainloop. Further writing to the OutputBox will be ignored. It is
+        necessary to call this when done to prevent memory leaks, otherwise the mainloop
+        thread will prevent the OutputBox from being garbage collected"""
+        self.shutting_down = True
+        self.write("shutdown")
+        self.mainloop_thread.join()
+        self.shutting_down = False
+
     # Ensure instances can be treated as a file-like object:
     def close(self):
         pass
@@ -400,6 +413,11 @@ if __name__ == '__main__':
     button = QPushButton("push me to output random text")
     button.clicked.connect(button_pushed)
     layout.addWidget(button)
+
+    button2 = QPushButton("shutdown output box")
+    button2.clicked.connect(output_box.shutdown)
+    layout.addWidget(button2)
+
 
     window.show()
     window.resize(500, 500)
