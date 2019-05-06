@@ -38,7 +38,7 @@ if 'REBUILD' in sys.argv:
     sys.argv.remove('REBUILD')
     REBUILD = True
 
-VERSION = '2.2.3'
+VERSION = '2.3.0'
 
 # conditional for readthedocs environment
 on_rtd = os.environ.get('READTHEDOCS') == 'True'
