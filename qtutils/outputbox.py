@@ -114,6 +114,10 @@ class OutputBox(object):
     LINE_MID = 1
     LINE_NEW = 2
 
+    # Max number of lines to batch before printing to the GUI, to keep the GUI
+    # responsive when lots of data comes in
+    MAX_LINES_BATCH = 10
+
     # Declare that our write() method accepts a 'charformat' kwarg for specifying
     # formatting
     supports_rich_write = True
@@ -237,6 +241,7 @@ class OutputBox(object):
             # Get all messages waiting in the pipe, concatenate strings to
             # reduce the number of times we call add_text (which requires posting
             # to the qt main thread, which can be a bottleneck when there is a lot of output)
+            n_lines = 0
             while True:
                 try:
                     charformat_repr, text = socket.recv_multipart(zmq.NOBLOCK)
@@ -250,6 +255,9 @@ class OutputBox(object):
                     current_message = []
                     messages.append((current_charformat, current_message))
                 current_message.append(text)
+                n_lines += text.count(b'\n')
+                if n_lines >= self.MAX_LINES_BATCH:
+                    break
             for charformat_repr, message in messages:
                 # Print non-character data with replacement sequences:
                 text = b''.join(message).decode('utf8', errors='backslashreplace')
@@ -260,7 +268,7 @@ class OutputBox(object):
                     charformat_repr = 'stdout'
                 self.add_text(text, charformat_repr)
 
-    @inmain_decorator(True)
+    @inmain_decorator(False)
     def add_text(self, text, charformat_repr):
         # The convoluted logic below is because we want a few things that conflict
         # slightly. Firstly, we want to take advantage of our setMaximumBlockCount
@@ -310,7 +318,7 @@ class OutputBox(object):
             cursor.movePosition(QTextCursor.PreviousCharacter, n=charsprinted)
             cursor.movePosition(QTextCursor.End, mode=QTextCursor.KeepAnchor)
             cursor.setCharFormat(charformats(charformat_repr))
-            
+        
     def shutdown(self):
         """Stop the mainloop. Further writing to the OutputBox will be ignored. It is
         necessary to call this when done to prevent memory leaks, otherwise the mainloop
