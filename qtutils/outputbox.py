@@ -17,6 +17,9 @@ import sys
 PY2 = sys.version_info[0] == 2
 if PY2:
     chr = unichr
+    import Queue as queue
+else:
+    import queue
 
 import os
 import threading
@@ -163,6 +166,12 @@ class OutputBox(object):
         # to speak.
         self.local = threading.local()
 
+        # A queue for text queued to be added to the box. The reason this is not passed
+        # as an argument directly to self.add_text() is so that self.shutdown() can call
+        # self.add_text repeatedly to synchronously finish adding pending text to the
+        # box. Otherwise, one cannot shutdown in a race-free way that does not deadlock.
+        self._text_queue = queue.Queue()
+
         self.shutting_down = False
         self.mainloop_thread = threading.Thread(target=self.mainloop, args=(socket,))
         self.mainloop_thread.daemon = True
@@ -266,10 +275,21 @@ class OutputBox(object):
                 except UnicodeDecodeError:
                     # Bad charformat repr. Ignore and print unformatted
                     charformat_repr = 'stdout'
-                self.add_text(text, charformat_repr)
+                # Queue a call to self.add_text, and put the pending text in the queue
+                # for it to consume. A separate queue is used so that a call to
+                # self.shutdown() can call _add_text to add the remaining text
+                # synchronously in order to make shutdown synchronous.
+                self._text_queue.put((text, charformat_repr))
+                self.add_text()
 
     @inmain_decorator(False)
-    def add_text(self, text, charformat_repr):
+    def add_text(self):
+        try:
+            text, charformat_repr = self._text_queue.get()
+        except queue.Empty:
+            # self.shutdown(), or some other additional calls to this method, have
+            # beaten us to the punch. Nothing for us to do.
+            return
         # The convoluted logic below is because we want a few things that conflict
         # slightly. Firstly, we want to take advantage of our setMaximumBlockCount
         # setting; Qt will automatically remove old lines, but only if each line is a
@@ -326,6 +346,12 @@ class OutputBox(object):
         self.shutting_down = True
         self.write("shutdown")
         self.mainloop_thread.join()
+        # Print queued text to the box until there is none left:
+        while True:
+            try:
+                self.add_text()
+            except queue.Empty:
+                break
         self.shutting_down = False
 
     # Ensure instances can be treated as a file-like object:
