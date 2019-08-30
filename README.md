@@ -1,17 +1,22 @@
 # QtUtils
 
+[![PyPi Version](https://img.shields.io/pypi/v/qtutils.svg)](https://pypi.python.org/pypi/qtutils/) 
+[![Documentation Status](https://readthedocs.org/projects/qtutils/badge/?version=stable)](https://qtutils.readthedocs.io/en/stable/?badge=stable)
+![GitHub release](https://img.shields.io/github/last-commit/philipstarkey/qtutils.svg)
+[![PyPi License](https://img.shields.io/pypi/l/qtutils.svg)](https://github.com/philipstarkey/qtutils/blob/master/LICENSE.txt) 
+
 Utilities for providing concurrent access to Qt objects, simplified QSettings storage, and dynamic widget promotion when loading UI files, in Python Qt applications.
 Includes the Fugue icon set, free to use with attribution to Yusuke Kamiyamane.
 
-[Documentation](https://qtutils.readthedocs.io), 
-[view on pypi](https://pypi.python.org/pypi/qtutils/), 
-[view on Bitbucket](https://bitbucket.org/philipstarkey/qtutils)
+* [Documentation](https://qtutils.readthedocs.io)
+* [PyPI](https://pypi.python.org/pypi/qtutils/)
+* [Source code (GitHub)](https://github.com/philipstarkey/qtutils)
 
 
 ## Installation
 
    * Install the latest release version using `pip install qtutils` or `easy_install qtutils`
-   * Install the latest development version by cloning the bitbucket repository and running `python setup.py install` 
+   * Install the latest development version by cloning the GitHub repository and running `python setup.py install` 
    
    
 ## Summary
