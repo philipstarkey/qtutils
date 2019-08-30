@@ -1,9 +1,0 @@
-syntax: glob
-*.pyc
-build/*
-qtutils/icons/icons.qrc
-MANIFEST
-qtutils/__version__.py
-qtutils/icons/_icons.py
-docs/_build/*
-dist/*
