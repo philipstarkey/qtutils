@@ -1,17 +1,13 @@
-#!/usr/bin/env python
-
-# To upload a version to PyPI, run:
-#
-#    python setup.py sdist upload
-#
-# If the package is not registered with PyPI yet, do so with:
-#
-# python setup.py register
-
 from __future__ import absolute_import, print_function
-from distutils.core import setup
+from setuptools import setup
 import sys
 import os
+
+try:
+    from setuptools_conda import conda_dist
+except ImportError:
+    conda_dist = None
+
 
 BUILD_PYQT5_ICONS_RESOURCE = True
 BUILD_PYQT4_ICONS_RESOURCE = True
@@ -72,19 +68,30 @@ else:
 with open(os.path.join('qtutils', '__version__.py'), 'w') as f:
     f.write("__version__ = '%s'\n" % VERSION)
 
-setup(name='qtutils',
-      version=VERSION,
-      description='Utilities for providing concurrent access to Qt objects, simplified QSettings storage, and dynamic widget promotion when loading UI files, in Python Qt applications. Also includes the Fugue icon set, by Yusuke Kamiyamane',
-      author='Philip Starkey',
-      author_email='threepineapples@gmail.com',
-      url='https://bitbucket.org/philipstarkey/qtutils',
-      license="2-clause BSD, 3-clause BSD (see LICENSE.TXT for full conditions)",
-      packages=['qtutils', 'qtutils.icons'],
-      package_data={'qtutils.icons':
-                    ['custom/*',
-                     'fugue/*',
-                     'icons.qrc',
-                     'README.txt'],
-                     'qtutils':
-                    ['fonts/*']}
-      )
+# Empty right now. We don't depend on any particular Qt binding, since the user may use
+# whichever they like
+INSTALL_REQUIRES = []
+
+setup(
+    name='qtutils',
+    version=VERSION,
+    description='Utilities for providing concurrent access to Qt objects, simplified QSettings storage, and dynamic widget promotion when loading UI files, in Python Qt applications. Also includes the Fugue icon set, by Yusuke Kamiyamane',
+    long_description=open('README.md').read(),
+    author='Philip Starkey',
+    author_email='threepineapples@gmail.com',
+    url='https://github.com/philipstarkey/qtutils',
+    license="BSD, CC Attribution, UBUNTU FONT LICENCE",
+    packages=['qtutils', 'qtutils.icons'],
+    zip_safe=False,
+    setup_requires=['setuptools', 'setuptools_scm'],
+    include_package_data=True,
+    python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5",
+    install_requires=INSTALL_REQUIRES if 'CONDA_BUILD' not in os.environ else [],
+    cmdclass={'conda_dist': conda_dist} if conda_dist is not None else {},
+    command_options={
+        'conda_dist': {
+            'pythons': (__file__, ['2.7', '3.6', '3.7']),
+            'platforms': (__file__, 'all'),
+        },
+    },
+)

@@ -27,7 +27,7 @@ QtUtils contains the following components:
 
 * invoke_in_main: This provides some helper functions to interact with Qt from threads. 
 
-* UiLoader: This provides a simplified means of promoting widgets in *.ui files to a custom widget of your choice.
+* UiLoader: This provides a simplified means of promoting widgets in `*.ui` files to a custom widget of your choice.
 
 * qsettings_wrapper: A wrapper around QSettings which allows you to access keys of QSettings as instance attributes. It also performs automatic type conversions.
 
