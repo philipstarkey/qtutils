@@ -1,10 +1,8 @@
 #
 # Qt Utils specific ignore rules
 #
-qtutils/icons/icons.qrc
-MANIFEST
 qtutils/__version__.py
-qtutils/icons/_icons.py
+qtutils/icons/_icons_*.py
 
 #
 # General puprose ignore rules
@@ -20,7 +18,7 @@ __pycache__/
 
 # Distribution / packaging
 conda_build/*
-conda_dist/*
+conda_packages/*
 .Python
 build/
 develop-eggs/

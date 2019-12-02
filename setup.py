@@ -1,76 +1,127 @@
 from __future__ import absolute_import, print_function
-from setuptools import setup
+
 import sys
 import os
+import shutil
+import py_compile
+from setuptools import setup, Command
 
 try:
-    from setuptools_conda import conda_dist
+    from setuptools_conda import dist_conda
 except ImportError:
-    conda_dist = None
+    dist_conda = None
 
 
-BUILD_PYQT5_ICONS_RESOURCE = True
-BUILD_PYQT4_ICONS_RESOURCE = True
-BUILD_PYSIDE_ICONS_RESOURCE = True
-BUILD_PYSIDE2_ICONS_RESOURCE = True
+class build_icons(Command):
+    # Do the build process for icon resource files. The idea is that someone like me
+    # will run this before running sdist, so that the icon resources are included and
+    # users do not need  pyrcc5/pyrcc5/pyside-rcc/pyside2-rcc on their systems in order
+    # to install the package with icon support from pip or conda. Those installing from
+    # a git clone however will have to have these tools and build the icon support they
+    # want by running `python setup.py build._icons`.
+    description = "Generate Qt icon resource files"
+    user_options = [
+        ('no-pyqt5', None, "Skip building the icon resource file for PyQt5"),
+        ('no-pyqt4', None, "Skip building the icon resource file for PyQt4"),
+        ('no-pyside', None, "Skip building the icon resource file for PySide"),
+        ('no-pyside2', None, "Skip building the icon resource file for PySide2"),
+        ('rebuild', None, "Rebuild the icons resources even if they already exist"),
+    ]
 
-if 'NO_PYSIDE' in sys.argv:
-    sys.argv.remove('NO_PYSIDE')
-    BUILD_PYSIDE_ICONS_RESOURCE = False
-if 'NO_PYSIDE2' in sys.argv:
-    sys.argv.remove('NO_PYSIDE2')
-    BUILD_PYSIDE2_ICONS_RESOURCE = False
-if 'NO_PYQT4' in sys.argv:
-    BUILD_PYQT4_ICONS_RESOURCE = False
-    sys.argv.remove('NO_PYQT4')
-if 'NO_PYQT5' in sys.argv:
-    BUILD_PYQT5_ICONS_RESOURCE = False
-    sys.argv.remove('NO_PYQT5')
+    def initialize_options(self):
+        self.no_pyqt5 = False
+        self.no_pyqt4 = False
+        self.no_pyside = False
+        self.no_pyside2 = False
+        self.rebuild = False
 
-# Set to True to rebuild resource files even if they exist. This may be necessary if
-# adding new icons.
-REBUILD = False
-if 'REBUILD' in sys.argv:
-    sys.argv.remove('REBUILD')
-    REBUILD = True
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        print('building qt icon resource files ...')
+        sys.path.insert(0, 'qtutils/icons')
+        try:
+            import _build
+
+            _build.qrc(self.rebuild)
+            if not self.no_pyqt5:
+                _build.pyqt5(self.rebuild)
+            if not self.no_pyqt4:
+                _build.pyqt4(self.rebuild)
+            if not self.no_pyside:
+                _build.pyside(self.rebuild)
+            if not self.no_pyside2:
+                _build.pyside2(self.rebuild)
+            print('done')
+        finally:
+            del sys.path[0]
+
+
+package_data = {}
+if 'CONDA_BUILD' in os.environ:
+    # Make the conda packages a bit slimmer.
+
+    # Don't include the raw icons or qrc file
+    shutil.rmtree(os.path.join('qtutils', 'icons', 'fugue'))
+    shutil.rmtree(os.path.join('qtutils', 'icons', 'custom'))
+    os.unlink(os.path.join('qtutils', 'icons', 'icons.qrc'))
+    os.unlink(os.path.join('qtutils', 'icons', '_build.py'))
+
+    PY2 = sys.version_info.major == 2
+    if PY2:
+        # Pyside2 not supported on Python 2 so don't include it
+        os.unlink(os.path.join('qtutils', 'icons', '_icons_pyside2.py'))
+    else:
+        # PySide not supported on Python 3 so don't include it
+        os.unlink(os.path.join('qtutils', 'icons', '_icons_pyside.py'))
+
+
+    # Include only compiled bytecode instead of source for the icon resources:
+    package_data['qtutils.icons'] = []
+    for file in [
+        '_icons_pyqt5.py',
+        '_icons_pyqt4.py',
+        '_icons_pyside.py',
+        '_icons_pyside2.py',
+    ]:
+        file = os.path.join('qtutils', 'icons', file)
+        pycfile = file + 'c'
+        if os.path.exists(file):
+            kwargs = {} if PY2 else {'optimize': 2}
+            py_compile.compile(file, pycfile, dfile=os.path.relpath(file), ** kwargs)
+            os.unlink(file)
+            package_data['qtutils.icons'].append(os.path.basename(pycfile))
+
+    # Add an explanatory note for why the source is not here:
+    with open(os.path.join('qtutils', 'icons', 'why_no_source.txt'), 'w') as f:
+        f.write(
+            ' '.join(
+                """The Python source files containing Qt icon resources, and the PNG
+                icons themselves, are exluded from conda packages in order to decrease
+                package size. If you want to develop using Qt Designer and these icons,
+                clone qtutils from github and use that instead.""".split()
+            )
+        )
+    package_data['qtutils.icons'].append('why_no_source.txt')
+
+
 
 VERSION = '2.3.1'
-
-# conditional for readthedocs environment
-on_rtd = os.environ.get('READTHEDOCS') == 'True'
-if not on_rtd:
-    # Do the build process for icon resource files, this will only do anything
-    # if the files are not already present.  The idea is that someone like me
-    # will run this during sdist, upload the results to PyPI, and then the
-    # files should already be there for those installing via easy_install
-    # or pip. So those people will not require pyside-rcc or pyrcc4 on
-    # their systems in order to install icon support for both PyQt4 and
-    # Pyside. Those installing from an hg clone however will have to have
-    # pyside-rcc and pyrcc4 installed for the following to work, or they
-    # can disable one of the via the boolean flags at the top of this file.
-    print('building qt icon resource files ...')
-    sys.path.insert(0, 'qtutils/icons')
-    import _build
-    _build.qrc(REBUILD)
-    if BUILD_PYQT5_ICONS_RESOURCE:
-        _build.pyqt5(REBUILD)
-    if BUILD_PYQT4_ICONS_RESOURCE:
-        _build.pyqt4(REBUILD)
-    if BUILD_PYSIDE_ICONS_RESOURCE:
-        _build.pyside(REBUILD)
-    if BUILD_PYSIDE2_ICONS_RESOURCE:
-        _build.pyside2(REBUILD)
-    print('done')
-else:
-    print('Skipping icon building on readthedocs...')
 
 # Auto generate a __version__ package for the package to import
 with open(os.path.join('qtutils', '__version__.py'), 'w') as f:
     f.write("__version__ = '%s'\n" % VERSION)
 
+
 # Empty right now. We don't depend on any particular Qt binding, since the user may use
 # whichever they like
 INSTALL_REQUIRES = []
+
+
+cmdclass = {'build_icons': build_icons}
+if dist_conda is not None:
+    cmdclass['dist_conda'] = dist_conda
 
 setup(
     name='qtutils',
@@ -82,16 +133,17 @@ setup(
     url='https://github.com/philipstarkey/qtutils',
     license="BSD, CC Attribution, UBUNTU FONT LICENCE",
     packages=['qtutils', 'qtutils.icons'],
+    package_data=package_data,
     zip_safe=False,
     setup_requires=['setuptools', 'setuptools_scm'],
     include_package_data=True,
-    python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5",
+    python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*",
     install_requires=INSTALL_REQUIRES if 'CONDA_BUILD' not in os.environ else [],
-    cmdclass={'conda_dist': conda_dist} if conda_dist is not None else {},
+    cmdclass=cmdclass,
     command_options={
-        'conda_dist': {
-            'pythons': (__file__, ['2.7', '3.6', '3.7']),
-            'platforms': (__file__, 'all'),
+        'dist_conda': {
+            'pythons': (__file__, ['3.6', '3.7', '3.8']),
+            'platforms': (__file__, ['linux-64', 'win-32', 'win-64', 'osx-64']),
         },
     },
 )

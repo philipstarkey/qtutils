@@ -2,6 +2,7 @@ from __future__ import division, unicode_literals, print_function, absolute_impo
 
 import os
 import subprocess
+import textwrap
 
 this_folder = os.path.dirname(os.path.realpath(__file__))
 qrc_filename = os.path.join(this_folder, 'icons.qrc')
@@ -29,9 +30,10 @@ def find_pyrcc5():
     try:
         import PyQt5
     except ImportError:
-        msg = ("Could not import PyQt5. To build qtutils without PyQt5 " +
-               "support, run setup.py with the NO_PYQT5 command line argument.")
-        raise RuntimeError(msg)
+        msg = """
+              Could not import PyQt5. If you want to skip building PyQt5 icons
+              support, run: python setup.py build_icons with --no-pyqt5."""
+        raise RuntimeError(textwrap.dedent(msg).strip())
     # If we're on Windows, it's probably in the pyqt4 directory:
     if os.name == 'nt':
         pyqt5_dir = os.path.abspath(os.path.dirname(PyQt5.__file__))
@@ -52,10 +54,9 @@ def find_pyrcc5():
                 Python distribution. This module should also find pyrcc5 if it
                 in in the PATH, on any OS. Please find pyrcc5 and put it in your
                 PATH. On Debian based systems it is available in the pyqt5-dev-
-                tools package. If you want to install qtutils without PyQt5
-                support, simply run:
-                python setup.py install NO_PYQT5"""
-        import textwrap
+                tools package. If you want to
+                skip building PyQt5 icons support, run:
+                python setup.py build_icons with --no-pyqt5"""
         raise OSError(textwrap.dedent(msg).strip())
 
 
@@ -63,9 +64,10 @@ def find_pyrcc4():
     try:
         import PyQt4
     except ImportError:
-        msg = ("Could not import PyQt4. To build qtutils without PyQt4 " +
-               "support, run setup.py with the NO_PYQT4 command line argument.")
-        raise RuntimeError(msg)
+        msg = """
+              Could not import PyQt4. If you want to skip building PyQt4 icons
+              support, run: python setup.py build_icons with --no-pyqt4."""
+        raise RuntimeError(textwrap.dedent(msg).strip())
     # If we're on Windows, it's probably in the pyqt4 directory:
     if os.name == 'nt':
         pyqt4_dir = os.path.abspath(os.path.dirname(PyQt4.__file__))
@@ -86,10 +88,9 @@ def find_pyrcc4():
               Python distribution. This module should also find pyrcc4 if it
               in in the PATH, on any OS. Please find pyrcc4 and put it in your
               PATH. On Debian based systems it is available in the pyqt4-dev-
-              tools package. If you want to install qtutils without PyQt4
-              support, simply run:
-              python setup.py install NO_PYQT4"""
-        import textwrap
+              tools package.  If you want to
+              skip building PyQt4 icons support, run:
+              python setup.py build_icons with --no-pyqt4"""
         raise OSError(textwrap.dedent(msg).strip())
 
 
@@ -97,9 +98,10 @@ def find_pyside_rcc():
     try:
         import PySide
     except ImportError:
-        msg = ("Could not import PySide. To build qtutils without PySide " +
-               "support, run setup.py with the NO_PYSIDE command line argument.")
-        raise RuntimeError(msg)
+        msg = """
+            Could not import PySide. If you want to skip building PySide icons support,
+            run: python setup.py build_icons with --no-pyside."""
+        raise RuntimeError(textwrap.dedent(msg).strip())
     # If we're on Windows, it's probably in the PySide directory:
     if os.name == 'nt':
         pyside_dir = os.path.abspath(os.path.dirname(PySide.__file__))
@@ -120,8 +122,8 @@ def find_pyside_rcc():
               Anaconda Python distribution. This module should also find
               pyside-rcc if it in in the PATH, on any OS. Please find pyside-
               rcc and put it in your PATH. If you want to
-              install qtutils without PySide support, simply run:
-              python setup.py install NO_PYSIDE"""
+              skip building PySide icons support, run:
+              python setup.py build_icons with --no-pyside"""
         import textwrap
         raise OSError(textwrap.dedent(msg).strip())
 
@@ -130,9 +132,9 @@ def find_pyside2_rcc():
     try:
         import PySide2
     except ImportError:
-        msg = ("Could not import PySide2. To build qtutils without PySide2 " +
-               "support, run setup.py with the NO_PYSIDE2 command line argument.")
-        raise RuntimeError(msg)
+        msg = """Could not import PySide2. If you want to skip building PySide2 icons
+              support, run: python setup.py build_icons with --no-pyside2."""
+        raise RuntimeError(textwrap.dedent(msg).strip())
     # If we're on Windows, it's probably in the PySide2 directory:
     if os.name == 'nt':
         pyside2_dir = os.path.abspath(os.path.dirname(PySide2.__file__))
@@ -153,9 +155,8 @@ def find_pyside2_rcc():
               Anaconda Python distribution. This module should also find
               pyside2-rcc if it in in the PATH, on any OS. Please find pyside2-
               rcc and put it in your PATH. If you want to
-              install qtutils without PySide support, simply run:
-              python setup.py install NO_PYSIDE2"""
-        import textwrap
+              skip building PySide2 icons support, run:
+              python setup.py build_icons with --no-pyside2"""
         raise OSError(textwrap.dedent(msg).strip())
 
 
