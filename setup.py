@@ -5,6 +5,7 @@ import os
 import shutil
 import py_compile
 from setuptools import setup, Command
+from runpy import run_path
 
 try:
     from setuptools_conda import dist_conda
@@ -106,14 +107,6 @@ if 'CONDA_BUILD' in os.environ:
     package_data['qtutils.icons'].append('why_no_source.txt')
 
 
-
-VERSION = '2.3.1'
-
-# Auto generate a __version__ package for the package to import
-with open(os.path.join('qtutils', '__version__.py'), 'w') as f:
-    f.write("__version__ = '%s'\n" % VERSION)
-
-
 # Empty right now. We don't depend on any particular Qt binding, since the user may use
 # whichever they like
 INSTALL_REQUIRES = []
@@ -125,7 +118,7 @@ if dist_conda is not None:
 
 setup(
     name='qtutils',
-    version=VERSION,
+    version=run_path(os.path.join('qtutils', '__version__.py'))['__version__'],
     description='Utilities for providing concurrent access to Qt objects, simplified QSettings storage, and dynamic widget promotion when loading UI files, in Python Qt applications. Also includes the Fugue icon set, by Yusuke Kamiyamane',
     long_description=open('README.md').read(),
     author='Philip Starkey',

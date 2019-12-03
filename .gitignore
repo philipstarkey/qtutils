@@ -1,7 +1,6 @@
 #
 # Qt Utils specific ignore rules
 #
-qtutils/__version__.py
 qtutils/icons/_icons_*.py
 
 #
