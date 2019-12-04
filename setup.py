@@ -77,6 +77,8 @@ if 'CONDA_BUILD' in os.environ:
         # PySide not supported on Python 3 so don't include it
         os.unlink(os.path.join('qtutils', 'icons', '_icons_pyside.py'))
 
+    # PyQt4 not available on conda, so don't include it:
+    os.unlink(os.path.join('qtutils', 'icons', '_icons_pyqt4.py'))
 
     # Include only compiled bytecode instead of source for the icon resources:
     package_data['qtutils.icons'] = []
