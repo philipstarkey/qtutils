@@ -347,11 +347,8 @@ class OutputBox(object):
         self.write("shutdown")
         self.mainloop_thread.join()
         # Print queued text to the box until there is none left:
-        while True:
-            try:
-                self.add_text()
-            except queue.Empty:
-                break
+        while not self._text_queue.empty():
+            self.add_text()
         self.shutting_down = False
 
     # Ensure instances can be treated as a file-like object:
