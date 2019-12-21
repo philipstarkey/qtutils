@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+"""Utilities for providing concurrent access to Qt objects, simplified 
+QSettings storage, and dynamic widget promotion when loading UI files,
+in Python Qt applications
+"""
 
 # To upload a version to PyPI, run:
 #
@@ -77,7 +81,7 @@ setup(name='qtutils',
       description='Utilities for providing concurrent access to Qt objects, simplified QSettings storage, and dynamic widget promotion when loading UI files, in Python Qt applications. Also includes the Fugue icon set, by Yusuke Kamiyamane',
       author='Philip Starkey',
       author_email='threepineapples@gmail.com',
-      url='https://bitbucket.org/philipstarkey/qtutils',
+      url='https://github.com/philipstarkey/qtutils',
       license="2-clause BSD, 3-clause BSD (see LICENSE.TXT for full conditions)",
       packages=['qtutils', 'qtutils.icons'],
       package_data={'qtutils.icons':
