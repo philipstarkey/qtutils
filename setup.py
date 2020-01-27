@@ -123,6 +123,7 @@ setup(
     version=run_path(os.path.join('qtutils', '__version__.py'))['__version__'],
     description='Utilities for providing concurrent access to Qt objects, simplified QSettings storage, and dynamic widget promotion when loading UI files, in Python Qt applications. Also includes the Fugue icon set, by Yusuke Kamiyamane',
     long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
     author='Philip Starkey',
     author_email='threepineapples@gmail.com',
     url='https://github.com/philipstarkey/qtutils',
