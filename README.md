@@ -17,17 +17,12 @@ Includes the Fugue icon set, free to use with attribution to Yusuke Kamiyamane.
 
 * To install the latest release version, run `pip install qtutils`.
 
-* To install latest development version, clone the GitHub repository and:
-    1. run `python setup.py build_icons` to build qt icon resource files. This will require
-     `pyrcc5`/`pyrcc4`/`pyside-rcc`/`pyside2-rcc` to build for the different Qt wrappers.
-     To only build for some Qt wrappers, you may skip some with `python setup.py build_icons
-     --no-pyqt4` etc. See `python setup.py build_icons -h` for details.
-    2. run `python setup.py install`
+* To install latest development version, clone the GitHub repository and run `pip install .` to install, or `pip install -e .` to install in 'editable' mode.
    
    
 ## Summary
 
-QtUtils is a Python library that provides some convenient features to Python applications using the PyQt/PySide widget library.
+QtUtils is a Python library that provides some convenient features to Python applications using the PyQt5/PySide2 widget library.
 
 QtUtils contains the following components:
 
@@ -39,6 +34,16 @@ QtUtils contains the following components:
 
 * `icons`: An icon set as a `QResource` file and corresponding Python module. The resulting resource file can be used by Qt designer, and the python module imported by applications to make the icons available to them. The Fugue icon set was made by Yusuke Kamiyamane, and is licensed under a Creative Commons Attribution 3.0 License. If you can't or don't want to provide attribution, please purchase a royalty-free license from http://p.yusukekamiyamane.com/
 
-* `Qt`: a PyQt/PySide agnostic interface to Qt that allows you to write software using the PyQt5 API but have it run on either PyQt5, PyQt4 or PySide v1.
+* `Qt`: a PyQt5/PySide2 agnostic interface to Qt that allows you to write software using the PyQt5 API but have it run on either PyQt5or PySide2 v1.
 
 * `outputbox`: a `QTextEdit` widget for displaying log/output text of an application, either by calling methods or by sending data to it over `zeromq`.
+
+## Using icons with Qt designer
+
+To use the icons from Qt designer, clone this repository, and point Qt designer to the
+`.qrc` file for the icons set: `icons/icons.qrc`. Unfortunately Qt desginer saves the
+absolute path to this file in the resulting `.ui` file, so if the `.ui` file is later
+edited by someone on another system, they will see an error at startup saying the `.qrc`
+file cannot be found. This can be ignored and the `.ui` file will still function
+correctly, but Qt designer will need to be told the local path to the `.qrc` file before
+it can display the icons within its interface.
