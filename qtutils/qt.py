@@ -16,62 +16,19 @@
 # addition in some cases.                                           #
 #####################################################################
 
-from __future__ import division, unicode_literals, print_function, absolute_import
-
 import sys
 
-PYSIDE = 'PySide'
 PYSIDE2 = 'PySide2'
-PYQT4 = 'PyQt4'
 PYQT5 = 'PyQt5'
 QT_ENV = None
 
-
-def set_pyqt4_api():
-    import sip
-    # This must be done before importing PyQt4:
-    API_NAMES = ["QDate", "QDateTime", "QString", "QTextStream", "QTime", "QUrl", "QVariant"]
-    API_VERSION = 2
-    for name in API_NAMES:
-        try:
-            sip.setapi(name, API_VERSION)
-        except ValueError:
-            pass
-
-
-def check_pyqt4_api():
-    """If PyQt4 was already imported before we got a chance to set API version
-    2, ensure the API versions are either not set, or set to version 2.
-    Otherwise confusing errors may occur later - better to catch this now"""
-    import sip
-    API_NAMES = ["QDate", "QDateTime", "QString", "QTextStream", "QTime", "QUrl", "QVariant"]
-    API_VERSION = 2
-    for name in API_NAMES:
-        try:
-            if sip.getapi(name) != API_VERSION:
-                msg = ("qtutils is only compatible with version 2 of the  PyQt4 API." +
-                       "Whilst you can import PyQt4 prior to importing qtutils (in order to tell qtutils " +
-                       "to use PyQt4), either set the API version to 2 yourself, or import qtutils " +
-                       "(which will set it for you) prior to importing QtGui or QtCore.")
-                raise RuntimeError(msg)
-        except ValueError:
-            # API version not set yet.
-            pass
-
-
-libs = [PYQT5, PYQT4, PYSIDE, PYSIDE2]
+libs = [PYQT5, PYSIDE2]
 for lib in libs:
     if lib in sys.modules:
         QT_ENV = lib
-        if lib == PYQT4:
-            check_pyqt4_api()
-            set_pyqt4_api()
         break
 else:
     for lib in libs:
-        if lib == PYQT4:
-            # Have to set pyqt API v2 before importing PyQt4:
-            set_pyqt4_api()
         try:
             __import__(lib)
             QT_ENV = lib
@@ -86,43 +43,13 @@ if QT_ENV == PYQT5:
     from PyQt5 import QtGui, QtCore, QtWidgets
 elif QT_ENV == PYSIDE2:
     from PySide2 import QtGui, QtCore, QtWidgets
-else:
-    if QT_ENV == PYQT4:
-        from PyQt4 import QtGui, QtCore
-
-    elif QT_ENV == PYSIDE:
-        from PySide import QtGui, QtCore
-        import PySide
-        QtCore.QT_VERSION_STR = PySide.QtCore.__version__
-        QtCore.PYQT_VERSION_STR = PySide.__version__
-
-    # Allow the methods that have been renamed in Qt5 to be accessed by their
-    # Qt5 names:
-    QtGui.QHeaderView.setSectionsMovable = QtGui.QHeaderView.__dict__["setMovable"]
-    QtGui.QHeaderView.setSectionsClickable = QtGui.QHeaderView.__dict__["setClickable"]
-    QtGui.QHeaderView.setSectionResizeMode = QtGui.QHeaderView.__dict__["setResizeMode"]
-
-    if QT_ENV == PYQT4:
-        # Pyside does not have the methods ending in "-AndFilter":
-        QtGui.QFileDialog.getOpenFileName = QtGui.QFileDialog.__dict__["getOpenFileNameAndFilter"]
-        QtGui.QFileDialog.getOpenFileNames = QtGui.QFileDialog.__dict__["getOpenFileNamesAndFilter"]
-        QtGui.QFileDialog.getSaveFileName = QtGui.QFileDialog.__dict__["getSaveFileNameAndFilter"]
-        QtCore.QItemSelectionModel = QtGui.QItemSelectionModel
-        
-    QtWidgets = QtGui
-    QtCore.QSortFilterProxyModel = QtGui.QSortFilterProxyModel
-    QtCore.QItemSelectionModel = QtGui.QItemSelectionModel
-    QtWidgets.QStyleOptionProgressBar = QtGui.QStyleOptionProgressBarV2
-    QtWidgets.QStyleOptionTab = QtGui.QStyleOptionTabV3
-    QtWidgets.QStyleOptionViewItem = QtGui.QStyleOptionViewItemV4
-    QtCore.qInstallMessageHandler = QtCore.qInstallMsgHandler
 
 sys.modules['qtutils.qt.QtGui'] = QtGui
 sys.modules['qtutils.qt.QtWidgets'] = QtWidgets
 sys.modules['qtutils.qt.QtCore'] = QtCore
 
 # Make Signal available under both names 'Signal' and 'pyqtSignal':
-if QT_ENV in [PYQT4, PYQT5]:
+if QT_ENV ==  PYQT5:
     QtCore.Signal = QtCore.pyqtSignal
 else:
     QtCore.pyqtSignal = QtCore.Signal
