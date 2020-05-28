@@ -12,9 +12,7 @@
 #                                                                   #
 #####################################################################
 
-from __future__ import division, unicode_literals, print_function, absolute_import
 import sys
-PY2 = sys.version_info[0] == 2
 
 import qtutils.qt
 
@@ -27,11 +25,8 @@ class UiLoaderUnknownWidgetException(Exception):
     pass
 
 
-if qtutils.qt.QT_ENV in [qtutils.qt.PYSIDE, qtutils.qt.PYSIDE2]:
-    if qtutils.qt.QT_ENV == qtutils.qt.PYSIDE:
-        from PySide.QtUiTools import QUiLoader
-    else:
-        from PySide2.QtUiTools import QUiLoader
+if qtutils.qt.QT_ENV in [qtutils.qt.PYSIDE2]:
+    from PySide2.QtUiTools import QUiLoader
 
     class UiLoader(QUiLoader):
         """
@@ -101,15 +96,12 @@ if qtutils.qt.QT_ENV in [qtutils.qt.PYSIDE, qtutils.qt.PYSIDE2]:
 
 else:
     from types import ModuleType
-    if qtutils.qt.QT_ENV == qtutils.qt.PYQT4:
-        from PyQt4 import uic
-    elif qtutils.qt.QT_ENV == qtutils.qt.PYQT5:
-        from PyQt5 import uic
+    from PyQt5 import uic
 
     class UiLoader(object):
         def __init__(self):
             # dummy module
-            self.module = sys.modules['qtutils.widgets'] = ModuleType(b'widgets' if PY2 else 'widgets')
+            self.module = sys.modules['qtutils.widgets'] = ModuleType('widgets')
 
         def registerCustomWidget(self, class_):
             self.registerCustomPromotion(class_.__name__, class_)

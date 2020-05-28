@@ -12,8 +12,6 @@
 #                                                                   #
 #####################################################################
 
-from __future__ import division, unicode_literals, print_function, absolute_import
-
 from qtutils.qt.QtCore import QSettings
 
 import ast

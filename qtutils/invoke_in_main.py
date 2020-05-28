@@ -12,28 +12,13 @@
 #                                                                   #
 #####################################################################
 
-from __future__ import division, unicode_literals, print_function, absolute_import
 import sys
-PY2 = sys.version_info[0] == 2
-if PY2:
-    str = unicode
-    from Queue import Queue
-else:
-    from queue import Queue
+from queue import Queue
 
 import threading
 import functools
 
 from qtutils.qt.QtCore import QEvent, QObject, QCoreApplication, QTimer, QThread
-
-
-def _reraise(exc_info):
-    type, value, traceback = exc_info
-    # handle python2/3 difference in raising exception        
-    if PY2:
-        exec('raise type, value, traceback', globals(), locals())
-    else:
-        raise value.with_traceback(traceback)
 
 
 class CallEvent(QEvent):
@@ -161,7 +146,8 @@ def get_inmain_result(queue):
     """
     result, exception = queue.get()
     if exception is not None:
-        _reraise(exception)
+        type, value, traceback = exception
+        raise value.with_traceback(traceback)
     return result
 
 

@@ -14,12 +14,7 @@
 
 from __future__ import division, unicode_literals, print_function, absolute_import
 import sys
-PY2 = sys.version_info[0] == 2
-if PY2:
-    chr = unichr
-    import Queue as queue
-else:
-    import queue
+import queue
 
 import os
 import threading
