@@ -1,10 +1,8 @@
 #
 # Qt Utils specific ignore rules
 #
-qtutils/icons/icons.qrc
-MANIFEST
-qtutils/__version__.py
-qtutils/icons/_icons.py
+qtutils/icons/_icons_pyqt5.py
+qtutils/icons/_icons_pyside2.py
 
 #
 # General puprose ignore rules
