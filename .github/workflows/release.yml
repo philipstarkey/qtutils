@@ -3,9 +3,8 @@ name: Build and Release
 on:
   push:
     branches:
-      - restructuring
-      # - master
-      # - maintenance/*
+      - master
+      - maintenance/*
   create:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+*'
@@ -59,7 +58,7 @@ jobs:
           # - { os: windows-latest,  python: 3.7,  arch: x86 }
           # - { os: windows-latest,  python: 3.6,  arch: x86 }
 
-    if: github.repository == 'chrisjbillington/qtutils' && (github.event_name != 'create' || github.event.ref_type != 'branch')
+    if: github.repository == 'philipstarkey/qtutils' && (github.event_name != 'create' || github.event.ref_type != 'branch')
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -158,7 +157,7 @@ jobs:
         include:
           - { python: 'cp36-cp36m cp37-cp37m cp38-cp38' }
 
-    if: github.repository == 'chrisjbillington/qtutils' && (github.event_name != 'create' || github.event.ref_type != 'branch')
+    if: github.repository == 'philipstarkey/qtutils' && (github.event_name != 'create' || github.event.ref_type != 'branch')
     steps:
       - name: Checkout
         if: env.PURE == 'false'
@@ -201,12 +200,12 @@ jobs:
           name: conda_packages
           path: ./conda_packages
 
-      # - name: Publish on TestPyPI
-      #   uses: pypa/gh-action-pypi-publish@master
-      #   with:
-      #     user: __token__
-      #     password: ${{ secrets.testpypi }}
-      #     repository_url: https://test.pypi.org/legacy/
+      - name: Publish on TestPyPI
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.testpypi }}
+          repository_url: https://test.pypi.org/legacy/
 
       - name: Get Version Number
         if: github.event.ref_type == 'tag'
@@ -237,12 +236,12 @@ jobs:
           asset_name: ${{ env.PACKAGE_NAME }}-${{ env.VERSION }}.tar.gz
           asset_content_type: application/gzip
 
-      # - name: Publish on PyPI
-      #   if: github.event.ref_type == 'tag'
-      #   uses: pypa/gh-action-pypi-publish@master
-      #   with:
-      #     user: __token__
-      #     password: ${{ secrets.pypi }}
+      - name: Publish on PyPI
+        if: github.event.ref_type == 'tag'
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.pypi }}
 
       - name: Install Miniconda and cloud client
         run: |
@@ -252,25 +251,25 @@ jobs:
           conda activate
           conda install anaconda-client
 
-      # - name: Publish to Anaconda test label
-      #   if: github.event.ref_type != 'tag'
-      #   run: |
-      #     source .miniconda/etc/profile.d/conda.sh
-      #     conda activate
-      #     anaconda \
-      #       --token ${{ secrets.ANACONDA_API_TOKEN }} \
-      #       upload \
-      #       --user $ANACONDA_USER \
-      #       --label test \
-      #       conda_packages/*/*
+      - name: Publish to Anaconda test label
+        if: github.event.ref_type != 'tag'
+        run: |
+          source .miniconda/etc/profile.d/conda.sh
+          conda activate
+          anaconda \
+            --token ${{ secrets.ANACONDA_API_TOKEN }} \
+            upload \
+            --user $ANACONDA_USER \
+            --label test \
+            conda_packages/*/*
 
-      # - name: Publish to Anaconda main label
-      #   if: github.event.ref_type == 'tag'
-      #   run: |
-      #     source .miniconda/etc/profile.d/conda.sh
-      #     conda activate
-      #     anaconda \
-      #       --token ${{ secrets.ANACONDA_API_TOKEN }} \
-      #       upload \
-      #       --user $ANACONDA_USER \
-      #       conda_packages/*/*
+      - name: Publish to Anaconda main label
+        if: github.event.ref_type == 'tag'
+        run: |
+          source .miniconda/etc/profile.d/conda.sh
+          conda activate
+          anaconda \
+            --token ${{ secrets.ANACONDA_API_TOKEN }} \
+            upload \
+            --user $ANACONDA_USER \
+            conda_packages/*/*
