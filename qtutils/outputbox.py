@@ -5,7 +5,7 @@
 # Copyright 2013, Christopher Billington, Philip Starkey            #
 #                                                                   #
 # This file is part of the qtutils project                          #
-# (see https://bitbucket.org/philipstarkey/qtutils )                #
+# (see https://github.com/philipstarkey/qtutils )                   #
 # and is licensed under the 2-clause, or 3-clause, BSD License.     #
 # See the license.txt file in the root of the project               #
 # for the full license.                                             #
@@ -14,12 +14,7 @@
 
 from __future__ import division, unicode_literals, print_function, absolute_import
 import sys
-PY2 = sys.version_info[0] == 2
-if PY2:
-    chr = unichr
-    import Queue as queue
-else:
-    import queue
+import queue
 
 import os
 import threading
