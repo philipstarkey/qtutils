@@ -7,7 +7,12 @@ QtUtils
 =======
 QtUtils is a Python library that provides convenient tools for Python Developers creating applications using the PyQt/PySide widget library.
 
-Utilities include those providing thread-safe access to Qt objects, a PySide/PyQt4 abstraction layer that matches the PyQt5 API, simplified QSettings storage, and dynamic widget promotion when loading UI files. QtUtils also includes the Fugue icon set, free to use with attribution to `Yusuke Kamiyamane`_.
+Utilities include those providing thread-safe access to Qt objects, simplified QSettings storage, and dynamic widget promotion when loading UI files. 
+QtUtils also includes the Fugue icon set, free to use with attribution to `Yusuke Kamiyamane`_.
+
+.. note::
+   `qtutils` 3.0 dropped support for Python 2.7, PyQt4 and PySide. If you need to use these platforms, you may use `qtutils` 2.3.2 or earlier. 
+   `qtutils` 2.3.2 provides an abstraction layer for PySide/PyQt4 that matches the PyQt5 API.
 
 .. _`Yusuke Kamiyamane`: http://p.yusukekamiyamane.com/
 

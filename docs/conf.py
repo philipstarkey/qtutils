@@ -21,9 +21,9 @@ import sys
 sys.path.insert(0, os.path.abspath('..'))
 
 # Mock Qt Library
-import mock 
-MOCK_MODULES = ['sip', 'PyQt5', 'PyQt5.QtGui', 'PyQt5.QtCore', 'PyQt5.QtWidgets', 'PyQt5.uic']
-sys.modules.update((mod_name, mock.MagicMock()) for mod_name in MOCK_MODULES)
+# import unittest.mock as mock 
+# MOCK_MODULES = ['sip', 'PyQt5', 'PyQt5.QtGui', 'PyQt5.QtCore', 'PyQt5.QtWidgets', 'PyQt5.uic']
+# sys.modules.update((mod_name, mock.MagicMock()) for mod_name in MOCK_MODULES)
 
 # import qtutils version
 from qtutils import __version__
