@@ -1,2 +1,4 @@
 PyQt5
 PySide2
+importlib_metadata
+setuptools_scm
