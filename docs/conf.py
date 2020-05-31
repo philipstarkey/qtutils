@@ -20,10 +20,17 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
 
-# Mock Qt Library
-# import unittest.mock as mock 
-# MOCK_MODULES = ['sip', 'PyQt5', 'PyQt5.QtGui', 'PyQt5.QtCore', 'PyQt5.QtWidgets', 'PyQt5.uic']
-# sys.modules.update((mod_name, mock.MagicMock()) for mod_name in MOCK_MODULES)
+# Mock qt Library if necessary
+# this is not really needed for RTD anymore, but seems to be useful for the
+# restructured text preview extension in VS Code which doesn't seem to activate 
+# the conda env properly and thus can't find the Qt DLL...
+try:
+    from qtutils.qt import QtGui, QtCore, QtWidgets
+except Exception:
+    print('Qt import failed, mocking PyQt5 and PySide2')
+    import unittest.mock as mock 
+    MOCK_MODULES = ['sip', 'PyQt5', 'PyQt5.QtGui', 'PyQt5.QtCore', 'PyQt5.QtWidgets', 'PyQt5.uic', 'PySide2', 'PySide2.QtGui', 'PySide2.QtCore', 'PySide2.QtWidgets', 'PySide2.QtUiTools']
+    sys.modules.update((mod_name, mock.MagicMock()) for mod_name in MOCK_MODULES)
 
 # import qtutils version
 from qtutils import __version__
