@@ -1,9 +1,8 @@
 #
 # Qt Utils specific ignore rules
 #
-qtutils/icons/_icons_pyqt5.py
-qtutils/icons/_icons_pyside2.py
-
+conda_build
+conda_packages
 #
 # General puprose ignore rules
 #
