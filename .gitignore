@@ -3,7 +3,8 @@
 #
 qtutils/icons/_icons_pyqt5.py
 qtutils/icons/_icons_pyside2.py
-
+conda_packages/
+conda_build/
 #
 # General puprose ignore rules
 #
