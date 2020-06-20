@@ -1,8 +1,11 @@
 # qtutils
 
-[![PyPi Version](https://img.shields.io/pypi/v/qtutils.svg)](https://pypi.python.org/pypi/qtutils/) 
-[![Documentation Status](https://readthedocs.org/projects/qtutils/badge/?version=stable)](https://qtutils.readthedocs.io/en/stable/?badge=stable)
+[![Actions Status](https://github.com/philipstarkey/qtutils/workflows/Build%20and%20Release/badge.svg)](https://github.com/philipstarkey/qtutils/actions)
 ![GitHub release](https://img.shields.io/github/last-commit/philipstarkey/qtutils.svg)
+[![Python Version](https://img.shields.io/pypi/pyversions/qtutils.svg)](https://python.org)
+[![Documentation Status](https://readthedocs.org/projects/qtutils/badge/?version=stable)](https://qtutils.readthedocs.io/en/stable/?badge=stable)
+[![PyPi Version](https://img.shields.io/pypi/v/qtutils.svg)](https://pypi.python.org/pypi/qtutils/) 
+[![Conda Version](https://img.shields.io/conda/v/labscript-suite/qtutils)](https://anaconda.org/labscript-suite/qtutils)
 [![PyPi License](https://img.shields.io/pypi/l/qtutils.svg)](https://github.com/philipstarkey/qtutils/blob/master/LICENSE.txt) 
 
 Utilities for providing concurrent access to Qt objects, simplified QSettings storage,
