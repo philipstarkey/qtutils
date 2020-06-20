@@ -1,11 +1,4 @@
 #
-# Qt Utils specific ignore rules
-#
-qtutils/icons/_icons_pyqt5.py
-qtutils/icons/_icons_pyside2.py
-conda_packages/
-conda_build/
-#
 # General puprose ignore rules
 #
 
@@ -113,6 +106,16 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+#
+# Qt Utils specific ignore rules
+#
+qtutils/icons/_icons_pyqt5.py
+qtutils/icons/_icons_pyside2.py
+
+# conda build results
+conda_build/
+conda_packages/
 
 # vscode
 .vscode/
