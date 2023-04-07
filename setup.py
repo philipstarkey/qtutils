@@ -18,6 +18,7 @@ class custom_build_py(build_py):
     def run(self):
         if not self.dry_run:
             target_dir = Path(self.build_lib) / 'qtutils' / 'icons'
+            target_dir.mkdir(parents=True, exist_ok=True)
             build_icons(target_dir)
         super().run()
 
