@@ -27,9 +27,9 @@ sys.path.insert(0, os.path.abspath('..'))
 try:
     from qtutils.qt import QtGui, QtCore, QtWidgets
 except Exception:
-    print('Qt import failed, mocking PyQt5 and PySide2')
+    print('Qt import failed, mocking PyQt5 and PySide6')
     import unittest.mock as mock 
-    MOCK_MODULES = ['sip', 'PyQt5', 'PyQt5.QtGui', 'PyQt5.QtCore', 'PyQt5.QtWidgets', 'PyQt5.uic', 'PySide2', 'PySide2.QtGui', 'PySide2.QtCore', 'PySide2.QtWidgets', 'PySide2.QtUiTools']
+    MOCK_MODULES = ['sip', 'PyQt5', 'PyQt5.QtGui', 'PyQt5.QtCore', 'PyQt5.QtWidgets', 'PyQt5.uic', 'PySide6', 'PySide6.QtGui', 'PySide6.QtCore', 'PySide6.QtWidgets', 'PySide6.QtUiTools']
     sys.modules.update((mod_name, mock.MagicMock()) for mod_name in MOCK_MODULES)
 
 # import qtutils version
