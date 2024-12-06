@@ -28,10 +28,10 @@ the Fugue icon set, free to use with attribution to Yusuke Kamiyamane.
 ## Summary
 
 `qtutils` is a Python library that provides some convenient features to Python
-applications using the PyQt5/PySide2 widget library.
+applications using the PyQt5/PySide6 widget library.
 
-`qtutils` 3.0 dropped support for Python 2.7, PyQt4 and PySide. If you need to use these
-platforms, you may use `qtutils` 2.3.2 or earlier.
+`qtutils` 4.0 dropped support for PySide2. If you need to use PySide2, you may use
+`qtutils` 3.1.0 or earlier.
 
 `qtutils` contains the following components:
 
@@ -51,8 +51,8 @@ platforms, you may use `qtutils` 2.3.2 or earlier.
   If you can't or don't want to provide attribution, please purchase a royalty-free
   license from http://p.yusukekamiyamane.com/
 
-* `Qt`: a PyQt5/PySide2 agnostic interface to Qt that allows you to write software using
-  the PyQt5 API but have it run on either PyQt5 or PySide2.
+* `Qt`: a PyQt5/PySide6 agnostic interface to Qt that allows you to write software using
+  the PyQt5 API but have it run on either PyQt5 or PySide6.
 
 * `outputbox`: a `QTextEdit` widget for displaying log/output text of an application,
   either by calling methods or by sending data to it over `zeromq`.

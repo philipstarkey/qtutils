@@ -25,8 +25,8 @@ class UiLoaderUnknownWidgetException(Exception):
     pass
 
 
-if qtutils.qt.QT_ENV in [qtutils.qt.PYSIDE2]:
-    from PySide2.QtUiTools import QUiLoader
+if qtutils.qt.QT_ENV in [qtutils.qt.PYSIDE6]:
+    from PySide6.QtUiTools import QUiLoader
 
     class UiLoader(QUiLoader):
         """
