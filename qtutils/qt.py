@@ -53,3 +53,9 @@ if QT_ENV ==  PYQT5:
     QtCore.Signal = QtCore.pyqtSignal
 else:
     QtCore.pyqtSignal = QtCore.Signal
+
+# Make QAction available in both QtWidgets and QtGui:
+if QT_ENV ==  PYQT5:
+    QtGui.QAction = QtWidgets.QAction
+else:
+    QtWidgets.QAction = QtGui.QAction
