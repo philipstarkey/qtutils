@@ -27,6 +27,14 @@ class UiLoaderUnknownWidgetException(Exception):
 
 if qtutils.qt.QT_ENV in [qtutils.qt.PYSIDE6]:
     from PySide6.QtUiTools import QUiLoader
+    from PySide6.QtWidgets import QApplication
+    from PySide6.QtCore import Qt
+
+    # QUiLoader sets this attribute, but it must be set before instantiating a
+    # QApplication to have any effect - otherwise only a warning is printed. On the
+    # other hand, We can't actually load UI files until after instantiating a
+    # QApplication. Therefore we set this now, before instantiating a QApplication.
+    QApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
 
     class UiLoader(QUiLoader):
         """
@@ -44,20 +52,9 @@ if qtutils.qt.QT_ENV in [qtutils.qt.PYSIDE6]:
 
         def __init__(self, parent=None):
             QUiLoader.__init__(self, parent)
-            self._store = []
-            if parent is not None:
-                self._store.append(parent)
-            self._custom_widgets = {}
             self._promotions = {}
+            self._store = []
             self.toplevel_instance = None
-
-        def registerCustomWidget(self, class_):
-            """
-            Register a class with the UiLoader that has been used with Qt Designers
-            "promote to" functionality.
-            """
-            self._custom_widgets[class_.__name__] = class_
-            QUiLoader.registerCustomWidget(self, class_)
 
         def registerCustomPromotion(self, name, class_):
             """
@@ -69,22 +66,14 @@ if qtutils.qt.QT_ENV in [qtutils.qt.PYSIDE6]:
             self._promotions[name] = class_
 
         def createWidget(self, class_name, parent=None, name=""):
-            if self.toplevel_instance is not None and parent is None:
-                widget = self.toplevel_instance
-            elif name in self._promotions:
+            if name in self._promotions:
                 widget = self._promotions[name](parent)
                 if parent is None:
-                    # widgets with no parents must be saved or else Python crashes
-                    self._store.append(widget)
-            elif class_name in self._custom_widgets:
-                widget = self._custom_widgets[class_name](parent)
-            else:
-                if class_name in self.availableWidgets():
-                    widget = QUiLoader.createWidget(self, class_name, parent, name)
-                else:
-                    raise UiLoaderUnknownWidgetException("Widget '%s' has unknown class '%s'" % (name, class_name))
-
-            return widget
+                    self._store.append(widget) # hold a reference until loading complete
+                return widget
+            if parent is None and self.toplevel_instance is not None:
+                return self.toplevel_instance
+            return super().createWidget(class_name, parent, name)
 
         def load(self, uifile, toplevel_instance=None):
             """
@@ -92,7 +81,7 @@ if qtutils.qt.QT_ENV in [qtutils.qt.PYSIDE6]:
             If toplevel_instance is specified, it will be returned as the toplevel widget instead of letting the QUiLoader creating a new one
             """
             self.toplevel_instance = toplevel_instance
-            return QUiLoader.load(self, uifile)
+            return super().load(uifile)
 
 else:
     from types import ModuleType
