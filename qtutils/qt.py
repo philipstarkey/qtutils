@@ -54,8 +54,11 @@ if QT_ENV ==  PYQT5:
 else:
     QtCore.pyqtSignal = QtCore.Signal
 
-# Make QAction available in both QtWidgets and QtGui:
+# Make some names that moved from QtWidgets to QtGui available in both modules:
 if QT_ENV ==  PYQT5:
     QtGui.QAction = QtWidgets.QAction
+    QtGui.QShortcut = QtWidgets.QShortcut
 else:
     QtWidgets.QAction = QtGui.QAction
+    QtWidgets.QDesktopWidget = QtGui.QScreen
+    QtWidgets.QShortcut = QtGui.QShortcut
