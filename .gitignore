@@ -112,6 +112,7 @@ venv.bak/
 #
 qtutils/icons/_icons_pyqt5.py
 qtutils/icons/_icons_pyside2.py
+qtutils/icons/_icons_pyside6.py
 
 # conda build results
 conda_build/

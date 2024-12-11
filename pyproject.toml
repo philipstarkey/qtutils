@@ -6,12 +6,8 @@ build-backend = "setuptools.build_meta"
 version_scheme = "release-branch-semver"
 local_scheme = "no-local-version"
 
-[tool.setuptools]
-packages = [
-  "qtutils",
-  "qtutils.fonts",
-  "qtutils.icons",
-]
+[tool.setuptools.packages.find]
+include = ["qtutils", "qtutils.*"]
 
 [project]
 name = "qtutils"
