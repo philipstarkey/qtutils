@@ -308,7 +308,7 @@ class OutputBox(object):
             cursor.movePosition(QTextCursor.End)
             thisline = line.rstrip('\r\n') # Remove any of \r, \n or \r\n
             if self.linepos == self.LINE_START:    # Previous line ended in a carriage return. 
-                cursor.movePosition(QTextCursor.StartOfBlock, mode=QTextCursor.KeepAnchor) # "Highlight" the text to be overwritten
+                cursor.movePosition(QTextCursor.StartOfBlock, QTextCursor.KeepAnchor) # "Highlight" the text to be overwritten
                 cursor.insertText(thisline)
                 charsprinted -= prevline_len # We are replacing the previous line...
                 prevline_len = len(thisline) # Reset the line length to this overwriting line
@@ -331,7 +331,7 @@ class OutputBox(object):
                 self.linepos = self.LINE_MID
             cursor.movePosition(QTextCursor.End)
             cursor.movePosition(QTextCursor.PreviousCharacter, n=charsprinted)
-            cursor.movePosition(QTextCursor.End, mode=QTextCursor.KeepAnchor)
+            cursor.movePosition(QTextCursor.End, QTextCursor.KeepAnchor)
             cursor.setCharFormat(charformats(charformat_repr))
         
     def shutdown(self):
@@ -449,6 +449,6 @@ if __name__ == '__main__':
     window.resize(500, 500)
 
     def run():
-        app.exec_()
+        app.exec()
 
     sys.exit(run())
