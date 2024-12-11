@@ -26,6 +26,7 @@ class custom_develop(develop):
     def run(self):
         if not self.dry_run:
             target_dir = Path('.') / 'qtutils' / 'icons'
+            print(target_dir)
             self.mkpath(str(target_dir))
             build_icons(target_dir)
         super().run()
