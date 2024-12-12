@@ -12,11 +12,9 @@
 #                                                                   #
 #####################################################################
 
-from __future__ import division, unicode_literals, print_function, absolute_import
 import sys
 import queue
 
-import os
 import threading
 
 from qtutils.qt.QtCore import *
@@ -26,6 +24,7 @@ from qtutils.qt.QtWidgets import *
 import zmq
 from qtutils.auto_scroll_to_end import set_auto_scroll_to_end
 from qtutils import *
+import qtutils.fonts
 import ast
 
 
@@ -35,17 +34,7 @@ if sys.platform == 'darwin':
 else:
     FONT_SIZE = 11
 
-_fonts_initalised = False
-_fonts_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fonts')
 
-def _add_fonts():
-    """Add bundled fonts to the font database from file"""
-    global _fonts_initalised
-    for name in os.listdir(_fonts_folder):
-        if name.endswith('.ttf'):
-            path = os.path.join(_fonts_folder, name)
-            QFontDatabase.addApplicationFont(path)
-    _fonts_initalised = True
 
 FONT = "Ubuntu Mono"
 
@@ -92,8 +81,8 @@ def charformats(charformat_repr):
         # invalid color, use white:
         qcolor = QColor(WHITE)
 
-    if not _fonts_initalised:
-        _add_fonts()
+    if not qtutils.fonts.fonts_loaded:
+        qtutils.fonts.load_fonts()
 
     font = QFont(FONT, FONT_SIZE)
     font.setBold(bold)

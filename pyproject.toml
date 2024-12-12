@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=64", "setuptools_scm>=8", "PyQt5", "PySide6"]
+requires = ["setuptools>=64", "setuptools_scm>=8", "PyQt5", "PySide6", "requests"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]

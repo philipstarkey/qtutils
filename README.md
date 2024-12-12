@@ -10,7 +10,9 @@
 
 Utilities for providing concurrent access to Qt objects, simplified QSettings storage,
 and dynamic widget promotion when loading UI files, in Python Qt applications. Includes
-the Fugue icon set, free to use with attribution to Yusuke Kamiyamane.
+the Fugue icon set, free to use with attribution to Yusuke Kamiyamane, and the Ubuntu
+font family (available under the [Ubuntu font
+license](https://ubuntu.com/legal/font-licence)).
 
 * [Documentation](https://qtutils.readthedocs.io)
 * [PyPI](https://pypi.python.org/pypi/qtutils/)
@@ -23,8 +25,8 @@ the Fugue icon set, free to use with attribution to Yusuke Kamiyamane.
 
 * To install latest development version, clone the GitHub repository and run `pip
   install .` to install, or `pip install -e .` to install in 'editable' mode.
-   
-   
+
+
 ## Summary
 
 `qtutils` is a Python library that provides some convenient features to Python
@@ -51,11 +53,19 @@ applications using the PyQt5/PySide6 widget library.
   If you can't or don't want to provide attribution, please purchase a royalty-free
   license from http://p.yusukekamiyamane.com/
 
-* `Qt`: a PyQt5/PySide6 agnostic interface to Qt that allows you to write software using
-  the PyQt5 API but have it run on either PyQt5 or PySide6.
+* `Qt`: a PyQt5/PySide6 agnostic interface to Qt that allows you to import qtutils.qt
+  instead of PySide6 or PyQt5, and have your code run on both, with some convenience
+  aliases to make it easier to write code that works with both libraries. Note that this
+  is not a comprehensive abstraction layer like [QtPy](https://pypi.org/project/QtPy/)
+  and your code will still need to be written in a way generally compatible with both
+  libraries if you want to support both.
 
 * `outputbox`: a `QTextEdit` widget for displaying log/output text of an application,
   either by calling methods or by sending data to it over `zeromq`.
+
+* `fonts`: bundled fonts from the Ubuntu font family - call `qtutils.fonts.load_fonts()`
+  after instantiating a `QApplication` to add them to the `Qt` font database and make
+  them available to your application.
 
 
 ## Using icons with Qt designer
