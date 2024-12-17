@@ -11,8 +11,7 @@ Utilities include those providing thread-safe access to Qt objects, simplified Q
 QtUtils also includes the Fugue icon set, free to use with attribution to `Yusuke Kamiyamane`_.
 
 .. note::
-   `qtutils` 3.0 dropped support for Python 2.7, PyQt4 and PySide. If you need to use these platforms, you may use `qtutils` 2.3.2 or earlier. 
-   `qtutils` 2.3.2 provides an abstraction layer for PySide/PyQt4 that matches the PyQt5 API.
+   `qtutils` 4.0 dropped support for PySide2. If you need to use PySide2, use `qtutils` 3.1.0 or earlier. 
 
 .. _`Yusuke Kamiyamane`: http://p.yusukekamiyamane.com/
 
