@@ -1,3 +1,16 @@
+Version 4.0 released xxxx 2024
+------------------------------
+* Added PySide6 support, dropped PySide2 support
+* Bundled the entire Ubuntu font family rather than only monospaced fonts
+
+Version 3.1 released Apr 7 2023
+-------------------------------
+* Added 2× resolution icons appropriate for high DPI displays
+
+Version 3.0 released Jun 20 2020
+-------------------------------
+* Packaging changes after moving project to GitHub
+
 Version 2.2.2 released Jul 20 2018
 ----------------------------------
 * Fixed packaging issues with previous release that led to fonts not being bundled.

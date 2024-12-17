@@ -12,11 +12,9 @@
 #                                                                   #
 #####################################################################
 
-from __future__ import division, unicode_literals, print_function, absolute_import
 import sys
 import queue
 
-import os
 import threading
 
 from qtutils.qt.QtCore import *
@@ -26,6 +24,7 @@ from qtutils.qt.QtWidgets import *
 import zmq
 from qtutils.auto_scroll_to_end import set_auto_scroll_to_end
 from qtutils import *
+import qtutils.fonts
 import ast
 
 
@@ -35,17 +34,7 @@ if sys.platform == 'darwin':
 else:
     FONT_SIZE = 11
 
-_fonts_initalised = False
-_fonts_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fonts')
 
-def _add_fonts():
-    """Add bundled fonts to the font database from file"""
-    global _fonts_initalised
-    for name in os.listdir(_fonts_folder):
-        if name.endswith('.ttf'):
-            path = os.path.join(_fonts_folder, name)
-            QFontDatabase.addApplicationFont(path)
-    _fonts_initalised = True
 
 FONT = "Ubuntu Mono"
 
@@ -92,8 +81,8 @@ def charformats(charformat_repr):
         # invalid color, use white:
         qcolor = QColor(WHITE)
 
-    if not _fonts_initalised:
-        _add_fonts()
+    if not qtutils.fonts.fonts_loaded:
+        qtutils.fonts.load_fonts()
 
     font = QFont(FONT, FONT_SIZE)
     font.setBold(bold)
@@ -308,7 +297,7 @@ class OutputBox(object):
             cursor.movePosition(QTextCursor.End)
             thisline = line.rstrip('\r\n') # Remove any of \r, \n or \r\n
             if self.linepos == self.LINE_START:    # Previous line ended in a carriage return. 
-                cursor.movePosition(QTextCursor.StartOfBlock, mode=QTextCursor.KeepAnchor) # "Highlight" the text to be overwritten
+                cursor.movePosition(QTextCursor.StartOfBlock, QTextCursor.KeepAnchor) # "Highlight" the text to be overwritten
                 cursor.insertText(thisline)
                 charsprinted -= prevline_len # We are replacing the previous line...
                 prevline_len = len(thisline) # Reset the line length to this overwriting line
@@ -331,7 +320,7 @@ class OutputBox(object):
                 self.linepos = self.LINE_MID
             cursor.movePosition(QTextCursor.End)
             cursor.movePosition(QTextCursor.PreviousCharacter, n=charsprinted)
-            cursor.movePosition(QTextCursor.End, mode=QTextCursor.KeepAnchor)
+            cursor.movePosition(QTextCursor.End, QTextCursor.KeepAnchor)
             cursor.setCharFormat(charformats(charformat_repr))
         
     def shutdown(self):
@@ -449,6 +438,6 @@ if __name__ == '__main__':
     window.resize(500, 500)
 
     def run():
-        app.exec_()
+        app.exec()
 
     sys.exit(run())
