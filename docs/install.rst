@@ -1,9 +1,8 @@
 ************
 Installation
 ************
-These installation instructions assume you already have Python installed. If you do not already have a copy of Python, we recommend you install `Anaconda Python`_. 
+These installation instructions assume you already have Python installed.
 
-.. _`Anaconda Python`: https://www.continuum.io/downloads
 
 ====
 PyPi
@@ -26,9 +25,9 @@ To upgrade to a specific version of qtutils (or, alternatively, if you wish to d
     
 where :code:`<version>` is replaced by the version you wish (for example :code:`pip install -U qtutils==2.3.2`).
     
-========
-Anaconda
-========
+=====
+conda
+=====
 To install qtutils using `conda` run::
 
     conda install -c labscript-suite qtutils
