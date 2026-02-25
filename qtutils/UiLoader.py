@@ -85,7 +85,11 @@ if qtutils.qt.QT_ENV in [qtutils.qt.PYSIDE6]:
 
 else:
     from types import ModuleType
-    from PyQt5 import uic
+    try:
+        from PyQt5 import uic
+    except ImportError:
+        from PyQt6 import uic
+
 
     class UiLoader(object):
         def __init__(self):
