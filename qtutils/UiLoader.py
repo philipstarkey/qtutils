@@ -83,11 +83,12 @@ if qtutils.qt.QT_ENV in [qtutils.qt.PYSIDE6]:
             self.toplevel_instance = toplevel_instance
             return super().load(uifile)
 
-else:
+elif qtutils.qt.QT_ENV in [qtutils.qt.PYQT5, qtutils.qt.PYQT6]:
     from types import ModuleType
-    try:
+    
+    if qtutils.qt.QT_ENV == qtutils.qt.PYQT5:
         from PyQt5 import uic
-    except ImportError:
+    else:
         from PyQt6 import uic
 
 
@@ -107,6 +108,8 @@ else:
         def load(self, *args, **kwargs):
             return uic.loadUi(*args, **kwargs)
 
+else:
+    raise ValueError(qtutils.qt.QT_ENV)
 
 if __name__ == "__main__":
     loader = UiLoader()
