@@ -4,9 +4,9 @@
 ![GitHub release](https://img.shields.io/github/last-commit/philipstarkey/qtutils.svg)
 [![Python Version](https://img.shields.io/pypi/pyversions/qtutils.svg)](https://python.org)
 [![Documentation Status](https://readthedocs.org/projects/qtutils/badge/?version=stable)](https://qtutils.readthedocs.io/en/stable/?badge=stable)
-[![PyPi Version](https://img.shields.io/pypi/v/qtutils.svg)](https://pypi.python.org/pypi/qtutils/) 
+[![PyPi Version](https://img.shields.io/pypi/v/qtutils.svg)](https://pypi.python.org/pypi/qtutils/)
 [![Conda Version](https://img.shields.io/conda/v/labscript-suite/qtutils)](https://anaconda.org/labscript-suite/qtutils)
-[![PyPi License](https://img.shields.io/pypi/l/qtutils.svg)](https://github.com/philipstarkey/qtutils/blob/master/LICENSE.txt) 
+[![PyPi License](https://img.shields.io/pypi/l/qtutils.svg)](https://github.com/philipstarkey/qtutils/blob/master/LICENSE.txt)
 
 Utilities for providing concurrent access to Qt objects, simplified QSettings storage,
 and dynamic widget promotion when loading UI files, in Python Qt applications. Includes
@@ -30,7 +30,7 @@ license](https://ubuntu.com/legal/font-licence)).
 ## Summary
 
 `qtutils` is a Python library that provides some convenient features to Python
-applications using the PyQt5/PySide6 widget library.
+applications using the PyQt5/PyQt6/PySide6 widget library.
 
 `qtutils` 4.0 dropped support for PySide2. If you need to use PySide2, you may use
 `qtutils` 3.1.0 or earlier.
@@ -53,8 +53,8 @@ applications using the PyQt5/PySide6 widget library.
   If you can't or don't want to provide attribution, please purchase a royalty-free
   license from http://p.yusukekamiyamane.com/
 
-* `Qt`: a PyQt5/PySide6 agnostic interface to Qt that allows you to import qtutils.qt
-  instead of PySide6 or PyQt5, and have your code run on both, with some convenience
+* `Qt`: a PyQt5/PyQt6/PySide6 agnostic interface to Qt that allows you to import qtutils.qt
+  instead of PySide6 or PyQt5/6, and have your code run on both, with some convenience
   aliases to make it easier to write code that works with both libraries. Note that this
   is not a comprehensive abstraction layer like [QtPy](https://pypi.org/project/QtPy/)
   and your code will still need to be written in a way generally compatible with both

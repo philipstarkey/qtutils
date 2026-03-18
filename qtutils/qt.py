@@ -20,9 +20,10 @@ import sys
 
 PYSIDE6 = 'PySide6'
 PYQT5 = 'PyQt5'
+PYQT6 = 'PyQt6'
 QT_ENV = None
 
-libs = [PYQT5, PYSIDE6]
+libs = [PYQT5, PYSIDE6, PYQT6]
 for lib in libs:
     if lib in sys.modules:
         QT_ENV = lib
@@ -41,6 +42,8 @@ if QT_ENV is None:
 
 if QT_ENV == PYQT5:
     from PyQt5 import QtGui, QtCore, QtWidgets
+elif QT_ENV == PYQT6:
+    from PyQt6 import QtGui, QtCore, QtWidgets
 elif QT_ENV == PYSIDE6:
     from PySide6 import QtGui, QtCore, QtWidgets
 
@@ -49,13 +52,13 @@ sys.modules['qtutils.qt.QtWidgets'] = QtWidgets
 sys.modules['qtutils.qt.QtCore'] = QtCore
 
 # Make Signal available under both names 'Signal' and 'pyqtSignal':
-if QT_ENV ==  PYQT5:
+if QT_ENV in (PYQT5, PYQT6):
     QtCore.Signal = QtCore.pyqtSignal
 else:
     QtCore.pyqtSignal = QtCore.Signal
 
 # Make some names that moved from QtWidgets to QtGui available in both modules:
-if QT_ENV ==  PYQT5:
+if QT_ENV == PYQT5:
     QtGui.QAction = QtWidgets.QAction
     QtGui.QShortcut = QtWidgets.QShortcut
 else:
