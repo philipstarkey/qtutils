@@ -119,12 +119,12 @@ class OutputBox(object):
         container.addWidget(self.output_textedit)
         self.output_textedit.setReadOnly(True)
         palette = self.output_textedit.palette()
-        palette.setColor(QPalette.Base, QColor(BACKGROUND))
+        palette.setColor(QPalette.ColorRole.Base, QColor(BACKGROUND))
         self.output_textedit.setPalette(palette)
 
         self.linepos = self.LINE_NEW
         self.output_textedit.setBackgroundVisible(False)
-        self.output_textedit.setWordWrapMode(QTextOption.WrapAnywhere)
+        self.output_textedit.setWordWrapMode(QTextOption.WrapMode.WrapAnywhere)
         set_auto_scroll_to_end(self.output_textedit.verticalScrollBar())
         self.output_textedit.setMaximumBlockCount(scrollback_lines)
 
@@ -294,10 +294,10 @@ class OutputBox(object):
         prevline_len = 0
         charsprinted = 0
         for line in lines:
-            cursor.movePosition(QTextCursor.End)
+            cursor.movePosition(QTextCursor.MoveOperation.End)
             thisline = line.rstrip('\r\n') # Remove any of \r, \n or \r\n
             if self.linepos == self.LINE_START:    # Previous line ended in a carriage return. 
-                cursor.movePosition(QTextCursor.StartOfBlock, QTextCursor.KeepAnchor) # "Highlight" the text to be overwritten
+                cursor.movePosition(QTextCursor.MoveOperation.StartOfBlock, QTextCursor.MoveMode.KeepAnchor) # "Highlight" the text to be overwritten
                 cursor.insertText(thisline)
                 charsprinted -= prevline_len # We are replacing the previous line...
                 prevline_len = len(thisline) # Reset the line length to this overwriting line
@@ -318,9 +318,9 @@ class OutputBox(object):
                 self.linepos = self.LINE_START
             else:
                 self.linepos = self.LINE_MID
-            cursor.movePosition(QTextCursor.End)
-            cursor.movePosition(QTextCursor.PreviousCharacter, n=charsprinted)
-            cursor.movePosition(QTextCursor.End, QTextCursor.KeepAnchor)
+            cursor.movePosition(QTextCursor.MoveOperation.End)
+            cursor.movePosition(QTextCursor.MoveOperation.PreviousCharacter, n=charsprinted)
+            cursor.movePosition(QTextCursor.MoveOperation.End, QTextCursor.MoveMode.KeepAnchor)
             cursor.setCharFormat(charformats(charformat_repr))
         
     def shutdown(self):
