@@ -34,7 +34,7 @@ if qtutils.qt.QT_ENV in [qtutils.qt.PYSIDE6]:
     # QApplication to have any effect - otherwise only a warning is printed. On the
     # other hand, We can't actually load UI files until after instantiating a
     # QApplication. Therefore we set this now, before instantiating a QApplication.
-    QApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
+    QApplication.setAttribute(Qt.ApplicationAttribute.AA_ShareOpenGLContexts)
 
     class UiLoader(QUiLoader):
         """
