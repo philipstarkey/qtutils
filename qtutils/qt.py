@@ -92,3 +92,13 @@ if QT_ENV == PYQT6:
     # Add shims for short enum names in PyQt6 as supported in PyQt5 and PySide6:
     _add_enum_aliases()
     
+
+# Add aliases for exec() and exec_(). The former doesn't exist in older PyQt5 versions
+# (which needed to retain Python 2 compatibility), and the latter was removed in PyQt6.
+# Both are present in PySide6.
+if not hasattr(QtCore.QCoreApplication, 'exec'):
+    QtCore.QCoreApplication.exec = QtCore.QCoreApplication.exec_
+    QtWidgets.QDialog.exec = QtWidgets.QDialog.exec_
+elif not hasattr(QtCore.QCoreApplication, 'exec_'):
+    QtCore.QCoreApplication.exec_ = QtCore.QCoreApplication.exec
+    QtWidgets.QDialog.exec_ = QtWidgets.QDialog.exec
