@@ -6,8 +6,6 @@ from setuptools.command.editable_wheel import editable_wheel
 import zipfile
 import shutil
 
-import requests
-
 
 def build_icons(target_dir):
     target_dir.mkdir(parents=True, exist_ok=True)
@@ -19,6 +17,8 @@ def build_icons(target_dir):
 
 
 def download_fonts(target_dir):
+    import requests
+
     VERSION = '0.83'
     HASH = "0cef8205"
     NAME = f"ubuntu-font-family-{VERSION}"
