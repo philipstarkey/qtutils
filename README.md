@@ -58,7 +58,9 @@ applications using the PyQt5/PyQt6/PySide6 widget library.
   aliases to make it easier to write code that works with both libraries. Note that this
   is not a comprehensive abstraction layer like [QtPy](https://pypi.org/project/QtPy/)
   and your code will still need to be written in a way generally compatible with both
-  libraries if you want to support both.
+  libraries if you want to support both. `qtutils` does provide aliases for short enums
+  in PyQt6, however, which is one of the most singificant differences between PySide6 and
+  PyQt6.
 
 * `outputbox`: a `QTextEdit` widget for displaying log/output text of an application,
   either by calling methods or by sending data to it over `zeromq`.
