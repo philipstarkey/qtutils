@@ -59,9 +59,7 @@ docs = [
 
 
 [tool.setuptools_conda]
-conda_name_differences = {
-    PyQt5 = "pyqt",
-    # PyQt6 = "pyqt", # Not even on conda-forge yet, future naming uncertain
-}
+# PyQt6 not even on conda-forge yet, and whether it will be named pyqt==6 is not clear:
+conda_name_differences = {PyQt5 = "pyqt"}
 channels = ["conda-forge"] # PySide6 is only in conda-forge
 ignore_run_exports = ["pyqt", "python_abi"]
