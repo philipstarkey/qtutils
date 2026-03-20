@@ -1,11 +1,14 @@
-import qtutils.qt
-try:
-    if qtutils.qt.QT_ENV == qtutils.qt.PYSIDE6:
-        import qtutils.icons._icons_pyside6
-    elif qtutils.qt.QT_ENV == qtutils.qt.PYQT5:
-        import qtutils.icons._icons_pyqt5
-except ImportError:
-    msg = """Can't import icon resource files. This package must be built before icons
-        can be used, please install it or create in editable install with `pip install
-        -e .`"""
+from pathlib import Path
+from qtutils.qt import QtCore
+
+THIS_DIR = Path(__file__).absolute().parent
+ICONS_RCC = THIS_DIR / '_icons.rcc'
+
+if not ICONS_RCC.exists():
+    msg = f"""Icon resource file {ICONS_RCC} not found. This package must be built
+    before icons can be used, please install it or create in editable install with `pip
+    install -e .`"""
     raise EnvironmentError(' '.join(msg.split()))
+
+QtCore.QResource.registerResource(str(ICONS_RCC))
+

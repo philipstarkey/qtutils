@@ -9,11 +9,12 @@ import shutil
 
 def build_icons(target_dir):
     target_dir.mkdir(parents=True, exist_ok=True)
-    icons_pyqt5 = target_dir / '_icons_pyqt5.py'
-    icons_pyside6 = target_dir / '_icons_pyside6.py'
+    rcc_file = target_dir / '_icons.rcc'
     qrc_file = Path('icons', 'icons.qrc')
-    check_call(['pyrcc5', '-o', str(icons_pyqt5), str(qrc_file)])
-    check_call(['pyside6-rcc', '-o', str(icons_pyside6), str(qrc_file)])
+    # We write a single .rcc file useable by Qt5 and Qt6. rcc format version 1 supports
+    # all version of Qt5, whereas the default version 3 requires Qt 5.13+.
+    options = ['--binary', '--format-version', '1']
+    check_call(['pyside6-rcc', *options, '-o', str(rcc_file), str(qrc_file)])
 
 
 def download_fonts(target_dir):
