@@ -17,9 +17,15 @@ authors = [
     {name = "Chris Billington", email = "chrisjbillington@gmail.com"},
 ]
 keywords = ["Qt", "PyQt", "PySide"]
-license = {file = 'LICENSE.txt'}
+license = "(BSD-2-Clause OR BSD-3-Clause) AND CC-BY-3.0 AND Ubuntu-font-1.0"
+license-files = [
+    "LICENSE.txt",
+    "BSD-2-CLAUSE-LICENSE.txt",
+    "BSD-3-CLAUSE-LICENSE.txt",
+    "icons/LICENSE.txt",
+    "UBUNTU-FONT-LICENSE.txt",
+]
 classifiers = [
-    "License :: OSI Approved :: BSD License",
     "Programming Language :: Python :: 3 :: Only",
 ]
 requires-python = ">=3.8"
