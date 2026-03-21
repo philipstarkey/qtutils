@@ -90,12 +90,21 @@ else:
     raise NotImplementedError(QT_ENV)
 
 def _add_enum_aliases():
+    # For all classes defined in the three modules, look for enum attributes of those
+    # classes, and add aliases for all the enums' members directly to the class:
     for module in (QtCore, QtGui, QtWidgets):
-        for cls in [c for c in module.__dict__.values() if isinstance(c, type)]:
-            for a in [a for a in cls.__dict__.values() if isinstance(a, enum.EnumMeta)]:
-                for name, member in a.__members__.items():
-                    if not hasattr(cls, name):
-                        setattr(cls, name, member)
+        for cls_name in dir(module):
+            cls = getattr(module, cls_name)
+            if not isinstance(cls, type):
+                continue
+            for enum_name in dir(cls):
+                enum_cls = getattr(cls, enum_name, None)
+                if not (isinstance(enum_cls, type) and issubclass(enum_cls, enum.Enum)):
+                    continue
+                for member_name, member in enum_cls.__members__.items():
+                    if not hasattr(cls, member_name):
+                        setattr(cls, member_name, member)
+
 
 if QT_ENV == PYQT6:
     # Add shims for short enum names in PyQt6 as supported in PyQt5 and PySide6:
