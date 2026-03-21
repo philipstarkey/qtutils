@@ -17,7 +17,9 @@
 #####################################################################
 
 import sys
+import os
 import enum
+import importlib
 
 PYSIDE6 = 'PySide6'
 PYQT5 = 'PyQt5'
@@ -28,37 +30,44 @@ PYSIDE_LIBS = [PYSIDE6]
 QT5_LIBS = [PYQT5]
 QT6_LIBS = [PYQT6, PYSIDE6]
 
-QT_ENV = None
+QT_LIBS = [PYQT5, PYSIDE6, PYQT6]
 
-libs = [PYQT5, PYSIDE6, PYQT6]
-for lib in libs:
-    if lib in sys.modules:
-        QT_ENV = lib
-        break
-else:
-    for lib in libs:
+
+def _choose_qt_lib():
+    # Check environment variable first:
+    lib = os.getenv('QT_ENV')
+    if lib is not None:
+        if lib not in QT_LIBS:
+            msg = f"Enviroment variable QT_ENV={lib} must be one of {','.join(QT_LIBS)}"
+            raise EnvironmentError(msg)
+        return lib
+
+    # Check if a Qt library has already been imported:
+    for lib in QT_LIBS:
+        if f"{lib}.QtCore" in sys.modules:
+            return lib
+
+    # Choose any that is importable, in order defined in QT_LIBS:
+    for lib in QT_LIBS:
         try:
-            __import__(lib)
-            QT_ENV = lib
-            break
+            importlib.import_module(f"{lib}.QtCore")
+            return lib
         except ImportError:
-            pass
+            continue
 
-if QT_ENV is None:
-    raise Exception("No Qt Enviroment was detected!")
+    raise EnvironmentError(f"No Qt library (of {','.join(QT_LIBS)}) found")
 
-if QT_ENV == PYQT5:
-    from PyQt5 import QtGui, QtCore, QtWidgets
-elif QT_ENV == PYQT6:
-    from PyQt6 import QtGui, QtCore, QtWidgets
-elif QT_ENV == PYSIDE6:
-    from PySide6 import QtGui, QtCore, QtWidgets
-else:
-    raise NotImplementedError(QT_ENV)
 
+QT_ENV = _choose_qt_lib()
+
+QtCore = importlib.import_module(f"{QT_ENV}.QtCore")
+QtGui = importlib.import_module(f"{QT_ENV}.QtGui")
+QtWidgets = importlib.import_module(f"{QT_ENV}.QtWidgets")
+
+sys.modules['qtutils.qt.QtCore'] = QtCore
 sys.modules['qtutils.qt.QtGui'] = QtGui
 sys.modules['qtutils.qt.QtWidgets'] = QtWidgets
-sys.modules['qtutils.qt.QtCore'] = QtCore
+
 
 # Make Signal available under both names 'Signal' and 'pyqtSignal':
 if QT_ENV in PYQT_LIBS:
