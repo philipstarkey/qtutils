@@ -93,9 +93,9 @@ def _add_enum_aliases():
     for module in (QtCore, QtGui, QtWidgets):
         for cls in [c for c in module.__dict__.values() if isinstance(c, type)]:
             for a in [a for a in cls.__dict__.values() if isinstance(a, enum.EnumMeta)]:
-                for member in a:
-                    if not hasattr(cls, member.name):
-                        setattr(cls, member.name, member)
+                for name, member in a.__members__.items():
+                    if not hasattr(cls, name):
+                        setattr(cls, name, member)
 
 if QT_ENV == PYQT6:
     # Add shims for short enum names in PyQt6 as supported in PyQt5 and PySide6:
