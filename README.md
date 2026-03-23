@@ -53,17 +53,18 @@ applications using the PyQt5/PyQt6/PySide6 widget library.
   If you can't or don't want to provide attribution, please purchase a royalty-free
   license from http://p.yusukekamiyamane.com/
 
-* `Qt`: a PyQt5/PyQt6/PySide6 agnostic interface to Qt that allows you to import qtutils.qt
-  instead of PySide6 or PyQt5/6, and have your code run on both, with some convenience
-  aliases to make it easier to write code that works with both libraries. Note that this
-  is not a comprehensive abstraction layer like [QtPy](https://pypi.org/project/QtPy/)
-  and your code will still need to be written in a way generally compatible with both
-  libraries if you want to support both. `qtutils` does provide aliases for short enums
-  in PyQt6, however, which is one of the most singificant differences between PySide6 and
-  PyQt6. `qtutils.qt` will choose which Qt library to use based on a) if the `QT_ENV`
-  environment variable is set to `PyQt5`, `PySide6`, or `PyQt6`, otherwise whichever
-  library has already been imported, or if none, whichever is installed, with order of
-  priority `PyQt5`, `PySide6`, then `PyQt6`.
+* `qt`: a PyQt5/PyQt6/PySide6 agnostic interface to Qt that allows you to do e.g `from
+  qtutils.qt import QtCore, QtGui, QtWidgets` instead of specifying PySide6 or PyQt5/6,
+  and have your code use whichever Qt library is available, with some convenience
+  aliases to make it easier to write code that works with the different libraries. Note
+  that this is not a comprehensive abstraction layer like
+  [QtPy](https://pypi.org/project/QtPy/) and your code will still need to be written in
+  a way generally compatible with the libraries you want to support both. `qtutils` does
+  provide aliases for short enums in PyQt6, however, which is one of the most
+  singificant differences between PySide6 and PyQt6. `qtutils.qt` will choose which Qt
+  library to use based on a) if the `QT_ENV` environment variable is set to `PyQt5`,
+  `PySide6`, or `PyQt6`, otherwise whichever library has already been imported, or if
+  none, whichever is installed, with order of priority `PyQt5`, `PySide6`, then `PyQt6`.
 
 * `outputbox`: a `QTextEdit` widget for displaying log/output text of an application,
   either by calling methods or by sending data to it over `zeromq`.
