@@ -127,6 +127,8 @@ class OutputBox(object):
         self.output_textedit.setWordWrapMode(QTextOption.WrapMode.WrapAnywhere)
         set_auto_scroll_to_end(self.output_textedit.verticalScrollBar())
         self.output_textedit.setMaximumBlockCount(scrollback_lines)
+        self.output_textedit.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.output_textedit.customContextMenuRequested.connect(self._show_context_menu)
 
         if zmq_context is None:
             zmq_context = zmq.Context.instance()
@@ -224,6 +226,22 @@ class OutputBox(object):
             color = WHITE
             bold = False
         self.write(text, color=color, bold=bold)
+
+    def _show_context_menu(self, pos):
+        menu = self.output_textedit.createStandardContextMenu()
+        menu.addSeparator()
+        clear_action = menu.addAction('Clear output')
+        # PyQt passes the action's checked state to the slot; discard it.
+        clear_action.triggered.connect(lambda *args: self.clear_output())
+        menu.exec(self.output_textedit.mapToGlobal(pos))
+        menu.deleteLater()
+
+    @inmain_decorator(False)
+    def clear_output(self):
+        """Clear the text in the output box. Text that has been written but not yet
+        displayed is kept."""
+        self.output_textedit.clear()
+        self.linepos = self.LINE_NEW
 
     def mainloop(self, socket):
         while True:

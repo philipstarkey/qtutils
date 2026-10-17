@@ -1,3 +1,7 @@
+Version 4.1.4 released xxxx 2026
+------------------------------
+* Added "Clear output" to the OutputBox context menu (#2)
+
 Version 4.0 released xxxx 2024
 ------------------------------
 * Added PySide6 support, dropped PySide2 support
