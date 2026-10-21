@@ -11,11 +11,14 @@
 # for the full license.                                             #
 #                                                                   #
 #####################################################################
+import os
+
 from .__version__ import __version__
 from qtutils.qt.QtCore import qInstallMessageHandler
 from qtutils.locking import qtlock
 
-qtlock.enforce()
+if os.getenv('QTUTILS_ENFORCE_QTLOCK', '') not in ('', '0'):
+    qtlock.enforce()
 
 from qtutils.invoke_in_main import inmain, inmain_later, inthread, inmain_decorator
 
