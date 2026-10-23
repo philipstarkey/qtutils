@@ -6,6 +6,9 @@ Version 4.1.4 released xxxx 2026
   without its ".png" extension
 * Widgets set to scroll to the end, such as the OutputBox, stay at the end when content
   is added while they are hidden (labscript-suite/runmanager#32)
+* qtlock is no longer enforced by default. Set the environment variable
+  QTUTILS_ENFORCE_QTLOCK to a value other than "" or "0" to raise an exception on Qt
+  calls from a non-main thread that does not hold qtlock
 
 Version 4.0 released xxxx 2024
 ------------------------------
