@@ -10,10 +10,11 @@ FOOTER = """  </qresource>
 </RCC>"""
 
 def make_qrc_file():
-    """Each icon is listed under its file name and under an alias without the extension,
-    so that both ':/qtutils/fugue/name.png' and ':/qtutils/fugue/name' resolve, and the
-    '@2x' variant of either is found by Qt on high-DPI screens. The resource compiler
-    stores a file listed twice only once."""
+    """Each icon is listed under its file name and under an alias without the
+    extension. For a path without an extension, such as ':/qtutils/fugue/name', Qt's
+    high-DPI lookup checks whether the path with '@2x' appended exists, so the '@2x'
+    variant of an icon referenced without its extension is found through its alias. The
+    resource compiler stores a file listed twice only once."""
     lines = [HEADER]
     for folder in icon_folders:
         for filename in sorted(folder.iterdir()):
