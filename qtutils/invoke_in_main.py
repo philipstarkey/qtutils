@@ -97,7 +97,8 @@ def inmain_later(fn, *args, **kwargs):
     a Python Queue which will eventually hold the result from the executing of 
     :code:`fn`. To access the result, use :func:`qtutils.invoke_in_main.get_inmain_result`.
     
-    This function can be used from the MainThread, but such use will just directly call the function, bypassing the Qt event loop.
+    This function can be used from the MainThread, in which case the function is
+    still queued and is called when control returns to the Qt event loop.
     
     Arguments:
         fn: A reference to the function or method to run in the MainThread.
