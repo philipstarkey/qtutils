@@ -153,9 +153,9 @@ class OutputBox(object):
         self.local = threading.local()
 
         # A queue for text queued to be added to the box. The reason this is not passed
-        # as an argument directly to self.add_text() is so that self.shutdown() can call
-        # self.add_text repeatedly to synchronously finish adding pending text to the
-        # box. Otherwise, one cannot shutdown in a race-free way that does not deadlock.
+        # as an argument directly to self.add_text() is so that self.shutdown() can add
+        # the remaining text synchronously. Otherwise, one cannot shutdown in a race-free
+        # way that does not deadlock.
         self._text_queue = queue.Queue()
 
         self.shutting_down = False
@@ -286,8 +286,11 @@ class OutputBox(object):
 
     @inmain_decorator(False)
     def add_text(self):
+        self._add_text()
+
+    def _add_text(self):
         try:
-            text, charformat_repr = self._text_queue.get()
+            text, charformat_repr = self._text_queue.get_nowait()
         except queue.Empty:
             # self.shutdown(), or some other additional calls to this method, have
             # beaten us to the punch. Nothing for us to do.
@@ -348,10 +351,12 @@ class OutputBox(object):
         self.shutting_down = True
         self.write("shutdown")
         self.mainloop_thread.join()
-        # Print queued text to the box until there is none left:
-        while not self._text_queue.empty():
-            self.add_text()
+        inmain(self._add_remaining_text)
         self.shutting_down = False
+
+    def _add_remaining_text(self):
+        while not self._text_queue.empty():
+            self._add_text()
 
     # Ensure instances can be treated as a file-like object:
     def close(self):

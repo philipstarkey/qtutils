@@ -9,6 +9,9 @@ Version 4.1.4 released xxxx 2026
 * qtlock is no longer enforced by default. Set the environment variable
   QTUTILS_ENFORCE_QTLOCK to a value other than "" or "0" to raise an exception on Qt
   calls from a non-main thread that does not hold qtlock
+* OutputBox.shutdown() adds the remaining queued text to the box. Previously, called
+  from the main thread with text queued it never returned, and called from another
+  thread it could leave the main thread blocked
 
 Version 4.0 released xxxx 2024
 ------------------------------
