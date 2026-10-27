@@ -52,6 +52,16 @@ applications using the PyQt5/PyQt6/PySide6 widget library.
   Yusuke Kamiyamane, and is licensed under a Creative Commons Attribution 3.0 License.
   If you can't or don't want to provide attribution, please purchase a royalty-free
   license from http://p.yusukekamiyamane.com/
+  Each icon is a 16×16 image with a 32×32 variant for high DPI displays.
+  `qtutils.icons.Icon(':/qtutils/fugue/tick')` is a `QIcon` with both images, drawn
+  from the 32×32 one on a high DPI screen, including a screen attached after the
+  application started; `QIcon(path)` has the 32×32 image only if a high DPI screen is
+  attached when it is made. `UiLoader` sets the icons of a `.ui` file in the same way.
+
+* `iconlabel`: `IconLabel`, a widget that displays a `QIcon` in place of a `QLabel`
+  with a pixmap, so that the icon is drawn from the image for the screen that the
+  widget is on. In Qt designer, promote a `QWidget` to `IconLabel` with the header
+  `qtutils/widgets.h`.
 
 * `qt`: a PyQt5/PyQt6/PySide6 agnostic interface to Qt that allows you to do e.g `from
   qtutils.qt import QtCore, QtGui, QtWidgets` instead of specifying `PySide6` or
