@@ -1,3 +1,8 @@
+Version 4.4.0 released Oct 27 2026
+----------------------------------
+* The OutputBox font is Ubuntu Mono at 15 pixels on every platform, instead of 11
+  points (13 on macOS). FONT_SIZE is replaced by FONT_PIXEL_SIZE
+
 Version 4.3.0 released Oct 27 2026
 ----------------------------------
 * Icons are drawn from their 2× image on a high DPI screen under PyQt5 and PyQt6 as
