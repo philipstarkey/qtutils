@@ -1,5 +1,5 @@
-Version 4.3.0 unreleased
-------------------------
+Version 4.3.0 released Oct 27 2026
+----------------------------------
 * Icons are drawn from their 2× image on a high DPI screen under PyQt5 and PyQt6 as
   well as PySide6, and on a screen attached after the application started: UiLoader
   sets every icon of a .ui file with its 2× variant, qtutils.icons.Icon makes a QIcon
