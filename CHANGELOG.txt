@@ -1,3 +1,13 @@
+Version 4.3.0 unreleased
+------------------------
+* Icons are drawn from their 2× image on a high DPI screen under PyQt5 and PyQt6 as
+  well as PySide6, and on a screen attached after the application started: UiLoader
+  sets every icon of a .ui file with its 2× variant, qtutils.icons.Icon makes a QIcon
+  with the 2× variant in code, and qtutils.icons.in_mode renders an icon in a mode
+* Added IconLabel, a widget that displays an icon in place of a QLabel with a pixmap.
+  UiLoader promotes it from .ui files with the header qtutils/widgets.h
+* Under PyQt5, importing qtutils.icons enables the use of high DPI pixmaps
+
 Version 4.2.0 released Oct 27 2026
 ----------------------------------
 * Python 3.11 or later is required
