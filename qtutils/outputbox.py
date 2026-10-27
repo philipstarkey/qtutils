@@ -28,15 +28,9 @@ import qtutils.fonts
 import ast
 
 
-if sys.platform == 'darwin':
-    # Gotta make the font bigger on macOS for some reason:
-    FONT_SIZE = 13
-else:
-    FONT_SIZE = 11
-
-
-
 FONT = "Ubuntu Mono"
+# Font size in device-independent pixels, which is the same on every platform:
+FONT_PIXEL_SIZE = 15
 
 GREY = GRAY = '#75715E' 
 BACKGROUND = '#141411'
@@ -84,7 +78,8 @@ def charformats(charformat_repr):
     if not qtutils.fonts.fonts_loaded:
         qtutils.fonts.load_fonts()
 
-    font = QFont(FONT, FONT_SIZE)
+    font = QFont(FONT)
+    font.setPixelSize(FONT_PIXEL_SIZE)
     font.setBold(bold)
     font.setItalic(italic)
     fmt = QTextCharFormat()
