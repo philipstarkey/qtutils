@@ -1,5 +1,6 @@
-Version 4.1.4 released xxxx 2026
-------------------------------
+Version 4.2.0 released Oct 27 2026
+----------------------------------
+* Python 3.11 or later is required
 * Added "Clear output" to the OutputBox context menu (#2)
 * Icons are 16×16 with the 2× versions as "@2x" variants, so that raw pixmaps are the
   right size and Qt picks the 2× version on high DPI displays, including for icons
