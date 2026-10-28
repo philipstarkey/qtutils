@@ -49,13 +49,12 @@ def add_file(icon, path, size=QtCore.QSize(), mode=QtGui.QIcon.Normal, state=QtG
         icon.addFile(path_2x, size, mode, state)
 
 
-class Icon(QtGui.QIcon):
+def Icon(path):
     """A QIcon of the image at `path` and its 2× variant, such as
     Icon(':/qtutils/fugue/tick')."""
-
-    def __init__(self, path):
-        super().__init__()
-        add_file(self, path)
+    icon = QtGui.QIcon()
+    add_file(icon, path)
+    return icon
 
 
 def in_mode(icon, mode, state=QtGui.QIcon.Off):
