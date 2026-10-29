@@ -11,6 +11,11 @@ To install qtutils from the Python Package Index run::
 
     pip install qtutils
 
+qtutils requires one of the Qt bindings PyQt5, PyQt6 or PySide6, and :code:`pip install qtutils` does not install any of them.
+To install qtutils together with a binding, name the binding as an extra, which is one of :code:`pyqt5`, :code:`pyqt6` or :code:`pyside6`::
+
+    pip install "qtutils[pyside6]"
+
 
 Upgrading qtutils with PyPI
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
