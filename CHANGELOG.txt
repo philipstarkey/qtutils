@@ -1,3 +1,10 @@
+Version 4.4.2 released Oct 30 2026
+----------------------------------
+* The dark background of the OutputBox is set on its viewport only, so that the Fusion
+  style does not draw the scroll bar grooves black (#51)
+* The 1× and 2× outer and zip group icons have the same colours and extent, and the
+  Python file icon is a Fugue document icon with the Python logo (#48)
+
 Version 4.4.1 released Oct 28 2026
 ----------------------------------
 * qtutils.icons.Icon returns a plain QIcon instead of an instance of a QIcon subclass,
