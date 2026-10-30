@@ -9,7 +9,7 @@ While there are solutions using Qt signals, slots and a :code:`QThread`, these r
 
 .. note:: There is some `debate`_ as to whether using Python threads with any part of the Qt library is safe, however this has been recently `challenged`_. The QtUtils library only instantiates a :code:`QEvent` and calls :code:`QCoreApplication.postEvent()` from a Python thread. It seems likely that as long as the underlying Python threading implementation matches the underlying Qt threading implementation **for your particular platform**, that there is no issue with how we have written this library. While we have not observed any issues with our library (and we have used it extensively on Windows, OSX and Ubuntu), this does not mean all platforms will behave in the same way. If this matters to you, we suggest you confirm the underlying thread implementation for your build of Python and Qt.
 
-.. _`Qt documentation`: http://doc.qt.io/qt-5/threads-qobject.html
+.. _`Qt documentation`: https://doc.qt.io/qt-6/threads-qobject.html
 .. _`debate`: https://stackoverflow.com/q/1595649
 .. _`challenged`: https://stackoverflow.com/a/49802578
   
@@ -29,13 +29,14 @@ QtUtils provides a function called :code:`inmain` which takes a reference to a m
     result = inmain(my_func, arg1, arg2, foo=7, bar='baz')
     
 A call to :code:`inmain` blocks the calling thread until the Qt event loop can process our message, execute the specified method and return the result.
-For situations where you don't wait to wait for the result, or you wish to do some other processing while waiting for the result, QtUtils provides the :code:`inmain_later` function.
+For situations where you don't want to wait for the result, or you wish to do some other processing while waiting for the result, QtUtils provides the :code:`inmain_later` function.
 This works in the same way as :code:`inmain`, but returns a reference to a Python :code:`Queue` object immediately.
 The result can be retrieved from this queue at any time, as shown in the following example:
     
 .. code-block:: python
 
-    from qtutils import inmain_later, get_inmain_result
+    from qtutils import inmain_later
+    from qtutils.invoke_in_main import get_inmain_result
 
     # This is equivalent to calling my_func(arg1, arg2, foo=7, bar='baz') in the MainThread
     # The calling thread will immediately continue execution, and the result of the function
@@ -50,7 +51,9 @@ For example:
 
 .. code-block:: python
 
-    from qtutils import inmain_later, get_inmain_result, inthread
+    from qtutils import inmain, inmain_later, inthread
+    from qtutils.invoke_in_main import get_inmain_result
+    from qtutils.qt.QtWidgets import QApplication, QLineEdit
 
     def run_in_thread(a_line_edit, ignore=True):
         # set the text of the line edit, and wait for it to be set before continuing
@@ -72,14 +75,21 @@ For example:
         current_text = get_inmain_result(queue)
         print(current_text)
 
+        # stop the Qt event loop
+        inmain_later(QApplication.instance().quit)
+
+    app = QApplication([])
+
     # instantiate a QLineEdit
     # This object should only be accessed from the MainThread
     my_line_edit = QLineEdit()
 
-    # starts a Python thread (in daemon mode) 
+    # starts a Python thread (in daemon mode)
     # with target run_in_thread(my_line_edit, ignore=False)
     thread = inthread(run_in_thread,my_line_edit,ignore=False)
-    
+
+    app.exec()
+
 As you can see, the change between a direct call to a Qt method, and doing it in a thread safe way, is very simple:
 
 .. code-block:: python
@@ -92,6 +102,8 @@ This is particularly useful when combined with Python properties.
 
 .. code-block:: python
 
+    from qtutils import inmain_decorator
+
     # This function will always run in the MainThread, regardless of which thread calls it.
     # The calling thread will block until the function is run in the MainThread, and the result returned.
     # If called from the MainThread, the function is executed immediately as if you had called a_function()
@@ -102,7 +114,7 @@ This is particularly useful when combined with Python properties.
 
     # This function will always run in the MainThread, regardless of which thread calls it.
     # A call to this function will return immediately, and the function will be run at a
-    # later time. A call to this function returns a python Queue.Queue() in which the result of
+    # later time. A call to this function returns a Python queue.Queue in which the result of
     # the decorated function will eventually be placed (or any exception raised)
     @inmain_decorator(wait_for_return=False)
     def another_function(a_line_edit):
@@ -121,7 +133,7 @@ However, :code:`inmain_later` and the associated decorator will also raise the e
 ---------------------------------
 Using QtUtils from the MainThread
 ---------------------------------
-When using :code:`inmain`, or the associated decorator, QtUtils will bypass the Qt Event loop as just immediately execute the specified method. 
+When using :code:`inmain`, or the associated decorator, QtUtils will bypass the Qt event loop and immediately execute the specified method. 
 This avoids the obvious deadlock where the calling code is being executed by the Qt event loop, and is now waiting for the Qt event loop to execute the next event (which won't ever happen because it is blocked waiting for the next event by the calling code).
 :code:`inmain_later` still posts an event to the Qt event loop when used from the MainThread.
 This is useful if you want to execute something asynchronously from the MainThread (for example, asynchronously update the text of a label) but we recommend you do not attempt to read the result of such a call as you risk creating a deadlock.

@@ -1,8 +1,3 @@
-.. qtutils documentation master file, created by
-   sphinx-quickstart on Mon Jan 29 11:06:51 2018.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 QtUtils
 =======
 QtUtils is a Python library that provides convenient tools for Python Developers creating applications using the PyQt/PySide widget library.
