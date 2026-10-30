@@ -1,3 +1,8 @@
+Version 4.4.3 released Oct 30 2026
+----------------------------------
+* The OutputBox paints its background, so that it stays dark when a style sheet applies
+  to it, which it did not in 4.4.2 (#52)
+
 Version 4.4.2 released Oct 30 2026
 ----------------------------------
 * The dark background of the OutputBox is set on its viewport only, so that the Fusion
