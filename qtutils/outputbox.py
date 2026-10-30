@@ -113,9 +113,10 @@ class OutputBox(object):
         self.output_textedit = QPlainTextEdit()
         container.addWidget(self.output_textedit)
         self.output_textedit.setReadOnly(True)
-        palette = self.output_textedit.palette()
+        viewport = self.output_textedit.viewport()
+        palette = viewport.palette()
         palette.setColor(QPalette.ColorRole.Base, QColor(BACKGROUND))
-        self.output_textedit.setPalette(palette)
+        viewport.setPalette(palette)
 
         self.linepos = self.LINE_NEW
         self.output_textedit.setBackgroundVisible(False)
