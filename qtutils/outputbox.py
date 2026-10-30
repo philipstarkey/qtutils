@@ -89,6 +89,23 @@ def charformats(charformat_repr):
     return fmt
 
 
+class OutputTextEdit(QPlainTextEdit):
+    """A QPlainTextEdit that paints the output box background. The background is not set
+    in a palette, because the scroll bars would inherit it from the QPlainTextEdit, and
+    any style sheet that applies to the QPlainTextEdit replaces the palette of its
+    viewport."""
+
+    def __init__(self):
+        super().__init__()
+        self.viewport().setAutoFillBackground(False)
+
+    def paintEvent(self, event):
+        painter = QPainter(self.viewport())
+        painter.fillRect(event.rect(), QColor(BACKGROUND))
+        painter.end()
+        super().paintEvent(event)
+
+
 class OutputBox(object):
 
     # enum for keeping track of partial lines and carriage returns:
@@ -110,13 +127,9 @@ class OutputBox(object):
         number of lines of scrollback to keep. Set a zmq_context for creating
         sockets, otherwise zmq.Context.instance() will be used. set
         bind_address, defaulting to the local interface."""
-        self.output_textedit = QPlainTextEdit()
+        self.output_textedit = OutputTextEdit()
         container.addWidget(self.output_textedit)
         self.output_textedit.setReadOnly(True)
-        viewport = self.output_textedit.viewport()
-        palette = viewport.palette()
-        palette.setColor(QPalette.ColorRole.Base, QColor(BACKGROUND))
-        viewport.setPalette(palette)
 
         self.linepos = self.LINE_NEW
         self.output_textedit.setBackgroundVisible(False)
